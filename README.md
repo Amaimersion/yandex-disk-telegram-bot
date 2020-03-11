@@ -19,7 +19,7 @@
 - [Git](https://git-scm.com/)
 - [Curl](https://curl.haxx.se/)
 
-It is expected that all of the above software is available as a global variable: `python3`, `python3 -m pip`, `git`, `curl`.
+It is expected that all of the above software is available as a global variable: `python3`, [`python3 -m pip`](https://github.com/pypa/pip/issues/5599#issuecomment-597042338), `git`, `curl`.
 
 If you want to host this server somewhere, then you need install additional software. See your host installation guide.
 
