@@ -10,6 +10,7 @@
 
 - [Content](#content)
 - [Requirements](#requirements)
+- [Deployment](#deployment)
 
 ## Requirements
 
@@ -22,3 +23,9 @@ It is expected that all of the above software is available as a global variable:
 If you want to host this server somewhere, then you need install additional software. See your host installation guide.
 
 All subsequent instructions is for Unix systems (primarily for Linux). You may need to make some changes on your own if you work on Windows.
+
+## Deployment
+
+git clone
+token - https://yandex.ru/dev/disk/rest/
+token - telegram
