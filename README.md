@@ -20,3 +20,5 @@
 It is expected that all of the above software is available as a global variable: `python3`, `git`, `curl`.
 
 If you want to host this server somewhere, then you need install additional software. See your host installation guide.
+
+All subsequent instructions is for Unix systems (primarily for Linux). You may need to make some changes on your own if you work on Windows.
