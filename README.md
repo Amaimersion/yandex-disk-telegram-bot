@@ -10,6 +10,7 @@
 
 - [Content](#content)
 - [Requirements](#requirements)
+- [Installation](#installation)
 - [Deployment](#deployment)
 
 ## Requirements
@@ -26,8 +27,36 @@ If you want to host this server somewhere, then you need install additional soft
 
 All subsequent instructions is for Unix systems (primarily for Linux). You may need to make some changes on your own if you work on Windows.
 
+## Installation
+
+1. Create virtual environment.
+
+```shell
+python3 -m venv <path>
+cd <path>
+source ./bin/activate
+```
+
+Run `deactivate` when you end in order to exit from virtual environment.
+
+After that step we will use `python` instead of `python3` and `pip` instead of `python3 -m pip`. If for some reason you don't want create virtual environment, then you should use `python3` and `python3 -m pip`.
+
+You may also want to upgrade `pip`, because [there can be](https://github.com/pypa/pip/issues/5221) an old version (9.0.1) instead of new one. Run `pip install --upgrade pip`.
+
+2. Clone this repository.
+
+```shell
+git clone https://github.com/Amaimersion/yandex-disk-telegram-bot.git
+cd <path>/yandex-disk-telegram-bot
+```
+
+3. Install dependencies.
+
+```shell
+pip install -r requirements.txt
+```
+
 ## Deployment
 
-git clone
 token - https://yandex.ru/dev/disk/rest/
 token - telegram
