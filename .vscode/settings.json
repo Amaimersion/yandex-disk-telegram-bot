@@ -1,3 +1,4 @@
 {
-    "python.pythonPath": "../bin/python"
+    "python.pythonPath": "../bin/python",
+    "cornflakes.linter.executablePath": "../bin/flake8"
 }
