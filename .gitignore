@@ -2,6 +2,7 @@
 *.pyc
 
 # Folders.
+__pycache__
 venv
 
 # API keys and secrets.
