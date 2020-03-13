@@ -1,2 +1,5 @@
+# Files.
+*.pyc
+
 # API keys and secrets.
 .env
