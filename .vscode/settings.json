@@ -1,4 +1,10 @@
 {
-    "python.pythonPath": "../bin/python",
-    "cornflakes.linter.executablePath": "../bin/flake8"
+    "python.pythonPath": "./venv/bin/python",
+    "cornflakes.linter.executablePath": "./venv/bin/flake8",
+    "files.exclude": {
+        "venv": true
+    },
+    "search.exclude": {
+        "**/venv": true
+    }
 }

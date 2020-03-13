@@ -1,5 +1,8 @@
 # Files.
 *.pyc
 
+# Folders.
+venv
+
 # API keys and secrets.
 .env

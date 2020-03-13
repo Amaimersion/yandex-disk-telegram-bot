@@ -29,12 +29,18 @@ All subsequent instructions is for Unix systems (primarily for Linux). You may n
 
 ## Installation
 
-1. Create virtual environment.
+1. Clone this repository.
 
 ```shell
-python3 -m venv <path>
-cd <path>
-source ./bin/activate
+git clone https://github.com/Amaimersion/yandex-disk-telegram-bot.git
+cd yandex-disk-telegram-bot
+```
+
+2. Create virtual environment.
+
+```shell
+python3 -m venv venv
+source ./venv/bin/activate
 ```
 
 Run `deactivate` when you end in order to exit from virtual environment.
@@ -42,20 +48,14 @@ Run `deactivate` when you end in order to exit from virtual environment.
 After that step we will use `python` instead of `python3` and `pip` instead of `python3 -m pip`. If for some reason you don't want create virtual environment, then:
 - use `python3` and `python3 -m pip`
 - edit executable paths in `.vscode/settings.json`
+- edit names in `./scripts` files
 
 You may also want to upgrade `pip`, because [there can be](https://github.com/pypa/pip/issues/5221) an old version (9.0.1) instead of new one. Run `pip install --upgrade pip`.
 
-1. Clone this repository.
+3. Install requirements.
 
 ```shell
-git clone https://github.com/Amaimersion/yandex-disk-telegram-bot.git
-cd <path>/yandex-disk-telegram-bot
-```
-
-3. Install dependencies.
-
-```shell
-pip install -r requirements.txt
+./scripts/requirements/install.sh
 ```
 
 ## Deployment
