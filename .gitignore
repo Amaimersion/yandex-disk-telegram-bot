@@ -7,5 +7,5 @@ __pycache__
 *.egg-info
 venv
 
-# API keys and secrets.
-.env
+# Secrets.
+instance
