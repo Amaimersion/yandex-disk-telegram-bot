@@ -1,5 +1,6 @@
 # Files.
 *.pyc
+*.log
 
 # Folders.
 __pycache__
