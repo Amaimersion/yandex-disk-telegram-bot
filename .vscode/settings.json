@@ -3,10 +3,12 @@
     "cornflakes.linter.executablePath": "./venv/bin/flake8",
     "files.exclude": {
         "venv": true,
-        "**/__pycache__": true
+        "**/__pycache__": true,
+        "**/*.egg-info": true
     },
     "search.exclude": {
         "venv": true,
-        "**/__pycache__": true
+        "**/__pycache__": true,
+        "**/*.egg-info": true
     }
 }

@@ -4,6 +4,7 @@
 
 # Folders.
 __pycache__
+*.egg-info
 venv
 
 # API keys and secrets.
