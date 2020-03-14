@@ -1,4 +1,6 @@
+attrs==19.3.0
 click==7.1.1
+coverage==5.0.3
 entrypoints==0.3
 flake8==3.7.9
 Flask==1.1.1
@@ -6,7 +8,15 @@ itsdangerous==1.1.0
 Jinja2==2.11.1
 MarkupSafe==1.1.1
 mccabe==0.6.1
+more-itertools==8.2.0
+packaging==20.3
 pkg-resources==0.0.0
+pluggy==0.13.1
+py==1.8.1
 pycodestyle==2.5.0
 pyflakes==2.1.1
+pyparsing==2.4.6
+pytest==5.4.1
+six==1.14.0
+wcwidth==0.1.8
 Werkzeug==1.0.0
