@@ -1,5 +1,6 @@
 {
     "python.pythonPath": "./venv/bin/python",
+    "python.autoComplete.extraPaths": ["./src"],
     "cornflakes.linter.executablePath": "./venv/bin/flake8",
     "files.exclude": {
         "venv": true,
