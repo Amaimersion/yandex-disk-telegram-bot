@@ -1,12 +1,12 @@
-# Files.
+# Files
 *.pyc
 *.log
 
-# Folders.
+# Folders
 __pycache__
 *.egg-info
 venv
 
-# Secrets.
+# Secrets
 instance
 .env
