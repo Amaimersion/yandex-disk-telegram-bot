@@ -1,3 +1,7 @@
+"""
+WSGI App.
+"""
+
 from src.app import create_app
 
 
