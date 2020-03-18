@@ -1,1 +1,1 @@
-web: ./scripts/wsgi/production.sh
+web: bash ./scripts/wsgi/production.sh gunicorn
