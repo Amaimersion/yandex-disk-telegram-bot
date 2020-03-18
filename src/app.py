@@ -6,7 +6,7 @@ import os
 
 from flask import Flask
 
-from .config import config as Config
+from .configs.flask import config as Config
 
 
 def create_app(config_name=None):

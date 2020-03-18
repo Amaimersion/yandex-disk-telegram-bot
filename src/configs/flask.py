@@ -1,5 +1,5 @@
 """
-Configurations of the app for specific environments.
+Configurations of the flask app for specific environments.
 """
 
 import os
