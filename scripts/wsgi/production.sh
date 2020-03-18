@@ -1,4 +1,6 @@
+#!/bin/bash
+
 export FLASK_ENV=production
 export CONFIG_NAME=production
 
-flask run
+source ./scripts/wsgi/server.sh
