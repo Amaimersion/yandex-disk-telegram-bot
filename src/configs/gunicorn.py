@@ -19,4 +19,4 @@ bind = "localhost:8000"
 worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
 threads = 1
-worker_connections = 1000
+worker_connections = 1024
