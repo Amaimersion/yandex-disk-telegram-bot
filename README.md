@@ -6,6 +6,7 @@
   A bot for Telegram that integrates Yandex.Disk right into Telegram.
 </p>
 
+
 ## Content
 
 - [Content](#content)
@@ -21,9 +22,11 @@
 - [Contribution](#contribution)
 - [License](#license)
 
+
 ## Features
 
 Nothing here yet.
+
 
 ## Requirements
 
@@ -39,6 +42,7 @@ It is expected that all of the above software is available as a global variable:
 If you want to host this server somewhere, then you need install additional software. See your host installation guide.
 
 All subsequent instructions is for Unix systems (primarily for Linux). You may need to make some changes on your own if you work on Windows.
+
 
 ## Installation
 
@@ -71,6 +75,7 @@ You may also want to upgrade `pip`, because [there can be](https://github.com/py
 ./scripts/requirements/install.sh
 ```
 
+
 ## Integration with external API's
 
 ### Telegram
@@ -80,6 +85,7 @@ telegram
 ### Yandex.Disk
 
 https://yandex.ru/dev/disk/rest/
+
 
 ## Local usage
 
@@ -94,6 +100,7 @@ In order to run both `gunicorn` and `nginx` run scripts in separate terminals (r
 Run `./scripts/server/stop_nginx.sh` in order to stop nginx.
 
 nginx uses simple configuration from `./src/configs/nginx.conf`. You can ignore this and use any configuration for nginx that is appropriate to you. However, it is recommend to use exact configuration as in current version for `flask` and `gunicorn`. Instead, make PR if you think that something is wrong with these two configurations.
+
 
 ## Deployment
 
@@ -128,6 +135,7 @@ git commit -m "heroku"
 ```git
 git push heroku heroku:master
 ```
+
 
 ## Contribution
 
