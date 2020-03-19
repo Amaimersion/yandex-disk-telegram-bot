@@ -9,13 +9,21 @@
 ## Content
 
 - [Content](#content)
+- [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
+- [Integration with external API's](#integration-with-external-apis)
+  - [Telegram](#telegram)
+  - [Yandex.Disk](#yandexdisk)
 - [Local usage](#local-usage)
 - [Deployment](#deployment)
   - [Heroku](#heroku)
 - [Contribution](#contribution)
 - [License](#license)
+
+## Features
+
+Nothing here yet.
 
 ## Requirements
 
@@ -62,6 +70,16 @@ You may also want to upgrade `pip`, because [there can be](https://github.com/py
 ```shell
 ./scripts/requirements/install.sh
 ```
+
+## Integration with external API's
+
+### Telegram
+
+telegram
+
+### Yandex.Disk
+
+https://yandex.ru/dev/disk/rest/
 
 ## Local usage
 
