@@ -8,7 +8,7 @@ import multiprocessing
 
 is_development = (os.getenv("FLASK_ENV", "production") == "development")
 
-
+# gunicorn settings
 reload = is_development
 accesslog = "-"
 errorlog = "-"

@@ -1,5 +1,5 @@
 """
-Configurations of the flask app for specific environments.
+Configurations of the Flask app for specific environments.
 """
 
 import os
@@ -11,7 +11,7 @@ load_dotenv(verbose=True)
 
 
 class Config:
-    # Flask
+    # Flask settings
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv("SECRET_KEY")
