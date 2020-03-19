@@ -11,17 +11,20 @@
 - [Content](#content)
 - [Requirements](#requirements)
 - [Installation](#installation)
+- [Local usage](#local-usage)
 - [Deployment](#deployment)
+  - [Heroku](#heroku)
 
 ## Requirements
 
-- [Python 3.6+](https://www.python.org/)
-- [Pip](https://pypi.org/project/pip/)
-- [Venv](https://docs.python.org/3/library/venv.html)
-- [Git](https://git-scm.com/)
-- [Curl](https://curl.haxx.se/)
+- [python 3.8+](https://www.python.org/)
+- [pip](https://pypi.org/project/pip/)
+- [venv](https://docs.python.org/3/library/venv.html)
+- [git](https://git-scm.com/)
+- [curl](https://curl.haxx.se/) (optional)
+- [nginx](https://nginx.org/) (optional)
 
-It is expected that all of the above software is available as a global variable: `python3`, [`python3 -m pip`](https://github.com/pypa/pip/issues/5599#issuecomment-597042338), `python3 -m venv`, `git`, `curl`.
+It is expected that all of the above software is available as a global variable: `python3`, [`python3 -m pip`](https://github.com/pypa/pip/issues/5599#issuecomment-597042338), `python3 -m venv`, `git`, `curl`, `nginx`.
 
 If you want to host this server somewhere, then you need install additional software. See your host installation guide.
 
@@ -58,7 +61,50 @@ You may also want to upgrade `pip`, because [there can be](https://github.com/py
 ./scripts/requirements/install.sh
 ```
 
+## Local usage
+
+This WSGI App uses `gunicorn` as WSGI HTTP Server and `nginx` as HTTP Reverse Proxy Server. For development purposes `flask` built-in WSGI HTTP Server is used.
+
+`gunicorn` and `flask` uses `http://localhost:8000`, `nginx` uses `http://localhost:80`. Make sure these addresses is free for usage, or change specific server configuration.
+
+Open terminal and move in project root. Run `./scripts/wsgi/<environment>.sh <server>` where `<environment>` is either `prodction`, `development` or `testing`, and `<server>` is either `flask`, `gunicorn` or `nginx`. Example: `./scripts/wsgi/production.sh gunicorn`.
+
+In order to run both `gunicorn` and `nginx` run scripts in separate terminals (recommend way). After that visit `http://localhost:80` which will redirect to `http://localhost:8000`.
+
+Run `./scripts/server/stop_nginx.sh` in order to stop nginx.
+
+nginx uses simple configuration from `./src/configs/nginx.conf`. You can ignore this and use any configuration for nginx that is appropriate to you. However, it is recommend to use exact configuration as in current version for `flask` and `gunicorn`. Instead, make PR if you think that something is wrong with these two configurations.
+
 ## Deployment
 
-token - https://yandex.ru/dev/disk/rest/
-token - telegram
+### Heroku
+
+1. If you don't have [Heroku](https://heroku.com/) installed, then it is a time to do that.
+
+2. If you don't have Heroku remote, then add it:
+- for existing app:
+```git
+git remote add heroku <URL>
+```
+- for new app:
+```
+heroku create
+```
+
+3. Switch to new branch (don't ever push it!):
+```git
+git checkout -b heroku
+```
+
+4. Make sure `.env` file is created. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
+
+5. Add changes for pushing to Heroku:
+```git
+git add .
+git commit -m "heroku"
+```
+
+6. Upload files to Heroku:
+```git
+git push heroku heroku:master
+```
