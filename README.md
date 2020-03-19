@@ -14,6 +14,8 @@
 - [Local usage](#local-usage)
 - [Deployment](#deployment)
   - [Heroku](#heroku)
+- [Contribution](#contribution)
+- [License](#license)
 
 ## Requirements
 
@@ -108,3 +110,12 @@ git commit -m "heroku"
 ```git
 git push heroku heroku:master
 ```
+
+## Contribution
+
+Feel free to use [issues](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new). [Pull requests](https://github.com/Amaimersion/yandex-disk-telegram-bot/compare) are also always welcome!
+
+
+## License
+
+[MIT](https://github.com/Amaimersion/yandex-disk-telegram-bot/blob/master/LICENSE).
