@@ -14,7 +14,7 @@ accesslog = "-"
 errorlog = "-"
 loglevel = ("debug" if is_development else "info")
 syslog = True
-bind = "127.0.0.1:8000"
+bind = "localhost:8000"
 # it is I/O bound app
 worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
