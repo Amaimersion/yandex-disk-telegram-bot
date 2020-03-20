@@ -15,6 +15,7 @@ errorlog = "-"
 loglevel = ("debug" if is_development else "info")
 syslog = True
 bind = "unix:/tmp/nginx-gunicorn.socket"
+keepalive = 20
 # it is I/O bound app
 worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
