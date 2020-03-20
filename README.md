@@ -91,11 +91,11 @@ https://yandex.ru/dev/disk/rest/
 
 This WSGI App uses `gunicorn` as WSGI HTTP Server and `nginx` as HTTP Reverse Proxy Server. For development purposes `flask` built-in WSGI HTTP Server is used.
 
-`gunicorn` and `flask` uses `http://localhost:8000`, `nginx` uses `http://localhost:80`. Make sure these addresses is free for usage, or change specific server configuration.
+`flask` uses `http://localhost:8000`, `gunicorn` uses `unix:/tmp/nginx-gunicorn.socket`, `nginx` uses `http://localhost:80`. Make sure these addresses is free for usage, or change specific server configuration.
 
 Open terminal and move in project root. Run `./scripts/wsgi/<environment>.sh <server>` where `<environment>` is either `prodction`, `development` or `testing`, and `<server>` is either `flask`, `gunicorn` or `nginx`. Example: `./scripts/wsgi/production.sh gunicorn`.
 
-In order to run both `gunicorn` and `nginx` run scripts in separate terminals (recommend way). After that visit `http://localhost:80` which will redirect to `http://localhost:8000`.
+Usually you will want to run both `gunicorn` and `nginx`. To do so run scripts in separate terminals (recommend way). After that visit `nginx` address.
 
 Run `./scripts/server/stop_nginx.sh` in order to stop nginx.
 
