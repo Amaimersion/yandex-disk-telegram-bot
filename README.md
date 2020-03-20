@@ -93,6 +93,8 @@ This WSGI App uses `gunicorn` as WSGI HTTP Server and `nginx` as HTTP Reverse Pr
 
 `flask` uses `http://localhost:8000`, `gunicorn` uses `unix:/tmp/nginx-gunicorn.socket`, `nginx` uses `http://localhost:80`. Make sure these addresses is free for usage, or change specific server configuration.
 
+`nginx` will not start until `gunicorn` creates `/tmp/gunicorn-ready` file. Make sure you have access to create this file.
+
 Open terminal and move in project root. Run `./scripts/wsgi/<environment>.sh <server>` where `<environment>` is either `prodction`, `development` or `testing`, and `<server>` is either `flask`, `gunicorn` or `nginx`. Example: `./scripts/wsgi/production.sh gunicorn`.
 
 Usually you will want to run both `gunicorn` and `nginx`. To do so run scripts in separate terminals (recommend way). After that visit `nginx` address.

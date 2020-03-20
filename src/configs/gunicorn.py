@@ -6,13 +6,14 @@ import os
 import multiprocessing
 
 
-is_development = (os.getenv("FLASK_ENV", "production") == "development")
+IS_DEVELOPMENT = (os.getenv("FLASK_ENV", "production") == "development")
+SERVER_READY_FILE = "/tmp/gunicorn-ready"
 
 # gunicorn settings
-reload = is_development
+reload = IS_DEVELOPMENT
 accesslog = "-"
 errorlog = "-"
-loglevel = ("debug" if is_development else "info")
+loglevel = ("debug" if IS_DEVELOPMENT else "info")
 syslog = True
 bind = "unix:/tmp/nginx-gunicorn.socket"
 keepalive = 20
@@ -21,3 +22,15 @@ worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
 threads = 1
 worker_connections = 1024
+
+
+def when_ready(server):
+    with open(SERVER_READY_FILE, 'w'):
+        pass
+
+
+def on_exit(server):
+    try:
+        os.remove(SERVER_READY_FILE)
+    except FileNotFoundError:
+        pass
