@@ -1,1 +1,1 @@
-web: bash ./scripts/wsgi/production.sh gunicorn
+web: bin/start-nginx bash ./scripts/wsgi/production.sh gunicorn
