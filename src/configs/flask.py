@@ -14,7 +14,7 @@ class Config:
     # Flask settings
     DEBUG = False
     TESTING = False
-    SECRET_KEY = os.getenv("SECRET_KEY")
+    SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
 
 class ProductionConfig(Config):
