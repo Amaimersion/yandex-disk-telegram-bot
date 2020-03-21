@@ -126,7 +126,7 @@ heroku buildpacks:set heroku/python
 heroku buildpacks:add https://github.com/Amaimersion/heroku-buildpack-nginx-for-yandex-disk-telegram-bot.git
 ```
 
-4. Switch to new branch (don't ever push it!):
+4. Switch to new branch special for Heroku (don't ever push it!):
 ```git
 git checkout -b heroku
 ```
@@ -134,9 +134,14 @@ git checkout -b heroku
 5. Make sure `.env` file is created and filled. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
 
 6. Add changes for pushing to Heroku:
+- if you edited files on heroku branch:
 ```git
 git add .
-git commit -m "deploy to heroku"
+git commit -m <message>
+```
+- if you want push changes from another branch:
+```git
+git merge <another branch> -m <message>
 ```
 
 7. Upload files to Heroku:
