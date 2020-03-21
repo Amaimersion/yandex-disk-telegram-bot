@@ -80,7 +80,7 @@ You may also want to upgrade `pip`, because [there can be](https://github.com/py
 
 ### Telegram
 
-telegram
+Register your bot in chat with [@BotFather](http://t.me/BotFather) and get API token.
 
 ### Yandex.Disk
 
