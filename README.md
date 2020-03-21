@@ -120,20 +120,26 @@ git remote add heroku <URL>
 heroku create
 ```
 
-3. Switch to new branch (don't ever push it!):
+3. We need both python and nginx build packs. Python build pack should be added automatically, but we will do it manually. For nginx build pack you can use whatever you want: [official one](https://github.com/heroku/heroku-buildpack-nginx), [my own one](https://github.com/Amaimersion/heroku-buildpack-nginx-for-yandex-disk-telegram-bot) or create your own one. In case of not using my own nginx build pack don't forget about compatibility (config paths, environment variables names, etc.).
+```
+heroku buildpacks:set heroku/python
+heroku buildpacks:add https://github.com/Amaimersion/heroku-buildpack-nginx-for-yandex-disk-telegram-bot.git
+```
+
+4. Switch to new branch (don't ever push it!):
 ```git
 git checkout -b heroku
 ```
 
-4. Make sure `.env` file is created. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
+5. Make sure `.env` file is created and filled. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
 
-5. Add changes for pushing to Heroku:
+6. Add changes for pushing to Heroku:
 ```git
 git add .
 git commit -m "heroku"
 ```
 
-6. Upload files to Heroku:
+7. Upload files to Heroku:
 ```git
 git push heroku heroku:master
 ```
