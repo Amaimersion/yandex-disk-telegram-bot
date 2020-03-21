@@ -11,8 +11,8 @@ SERVER_READY_FILE = "/tmp/gunicorn-ready"
 
 # gunicorn settings
 reload = IS_DEVELOPMENT
-accesslog = os.getenv("GUNICORN_ACCESS_LOG_PATH", "-")
-errorlog = os.getenv("GUNICORN_ERROR_LOG_PATH", "-")
+accesslog = "-"
+errorlog = "-"
 loglevel = ("debug" if IS_DEVELOPMENT else "info")
 syslog = True
 sendfile = True
