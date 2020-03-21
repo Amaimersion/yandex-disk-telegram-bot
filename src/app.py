@@ -7,6 +7,7 @@ import os
 from flask import Flask
 
 from .configs.flask import config as Config
+from .telegram_bot import telegram_bot_blueprint
 
 
 def create_app(config_name=None):
@@ -16,6 +17,7 @@ def create_app(config_name=None):
     app = Flask(__name__)
 
     configure_app(app, config_name)
+    configure_blueprints(app)
 
     return app
 
@@ -30,3 +32,13 @@ def configure_app(app, config_name):
     config = Config[config_name]
 
     app.config.from_object(config)
+
+
+def configure_blueprints(app: Flask):
+    """
+    Configures blueprints.
+    """
+    app.register_blueprint(
+        telegram_bot_blueprint,
+        url_prefix="/telegram_bot"
+    )
