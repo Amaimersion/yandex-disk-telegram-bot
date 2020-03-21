@@ -16,6 +16,9 @@ class Config:
     TESTING = False
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
+    # Telegram settings
+    TELEGRAM_BOT_API_TOKEN = os.getenv("TELEGRAM_BOT_API_TOKEN")
+
 
 class ProductionConfig(Config):
     pass
