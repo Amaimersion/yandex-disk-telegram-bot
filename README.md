@@ -136,7 +136,7 @@ git checkout -b heroku
 6. Add changes for pushing to Heroku:
 ```git
 git add .
-git commit -m "heroku"
+git commit -m "deploy to heroku"
 ```
 
 7. Upload files to Heroku:
