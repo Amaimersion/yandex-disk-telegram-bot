@@ -10,7 +10,7 @@ from .configs.flask import config as Config
 from .telegram_bot import telegram_bot_blueprint
 
 
-def create_app(config_name=None):
+def create_app(config_name: str = None) -> Flask:
     """
     Creates and configures the app.
     """
@@ -22,7 +22,7 @@ def create_app(config_name=None):
     return app
 
 
-def configure_app(app, config_name):
+def configure_app(app: Flask, config_name: str):
     """
     Configures app.
     """
