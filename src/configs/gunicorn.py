@@ -11,8 +11,8 @@ SERVER_READY_FILE = "/tmp/gunicorn-ready"
 
 # gunicorn settings
 reload = IS_DEVELOPMENT
-accesslog = "-"
-errorlog = "-"
+accesslog = os.getenv("GUNICORN_ACCESS_LOG_PATH", "-")
+errorlog = os.getenv("GUNICORN_ERROR_LOG_PATH", "-")
 loglevel = ("debug" if IS_DEVELOPMENT else "info")
 syslog = True
 sendfile = True
@@ -22,8 +22,9 @@ keepalive = 15
 worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
 workers = (4 if workers > 4 else workers)
-threads = 1
-worker_connections = 1024
+workers = os.getenv("GUNICORN_WORKERS", workers)
+threads = os.getenv("GUNICORN_THREADS", 1)
+worker_connections = os.getenv("GUNICORN_WORKER_CONNECTIONS", 1024)
 
 
 def when_ready(server):
