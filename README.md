@@ -80,7 +80,19 @@ You may also want to upgrade `pip`, because [there can be](https://github.com/py
 
 ### Telegram
 
-Register your bot in chat with [@BotFather](http://t.me/BotFather) and get API token.
+1. Register your bot in chat with [@BotFather](http://t.me/BotFather) and get API token.
+
+2. [Set a webhook](https://core.telegram.org/bots/api#setwebhook):
+```shell
+./scripts/telegram/set_webhook.sh <TELEGRAM_BOT_TOKEN> <SERVER_URL>
+```
+
+Russian users may need a proxy:
+```shell
+./scripts/telegram/set_webhook.sh <TELEGRAM_BOT_TOKEN> <SERVER_URL> "--proxy <PROXY>"
+```
+
+> If you'd like to make sure that the Webhook request comes from Telegram, Telegram recommend using a secret path in the URL, e.g. `https://www.example.com/<token>`. Since nobody else knows your bot‘s token, you can be pretty sure it’s Telegram.
 
 ### Yandex.Disk
 
