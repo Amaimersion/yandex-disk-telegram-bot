@@ -1,11 +1,13 @@
 # Files
 *.pyc
 *.log
+**/temp.*
 
 # Folders
 __pycache__
 *.egg-info
 venv
+**/temp
 
 # Secrets
 instance
