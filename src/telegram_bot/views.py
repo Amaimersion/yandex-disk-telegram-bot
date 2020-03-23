@@ -1,8 +1,10 @@
 from flask import (
     Blueprint,
     request,
-    abort
+    make_response
 )
+
+from . import handlers
 
 
 bp = Blueprint(
@@ -17,8 +19,8 @@ def index():
     Handles Webhook POST request from Telegram server.
 
     For Webhook we always should return 200 to indicate
-    that we successfully got an update. But if we return
-    not 200, then we suppose this update not from Telegram.
+    that we successfully got an update, otherwise Telegram
+    will flood the server. So, not use `abort()` or anything.
     """
     data = request.get_json(
         force=True,
@@ -27,25 +29,48 @@ def index():
     )
 
     if (data is None):
-        abort(400)
+        return error()
 
     if (not data_is_valid(data)):
-        abort(400)
+        return error()
 
     message = get_message(data)
 
     if (not message_is_valid(message)):
-        abort(400)
+        return error()
 
     entities = get_entities(message)
     message_text = message["text"]
     command = get_command(entities, message_text)
 
-    return {
-        "method": "sendMessage",
-        "chat_id": message["chat"]["id"],
-        "text": "Success %s" % command
-    }
+    route_command(command)
+
+    return success()
+
+
+def error():
+    """
+    Creates error response for Telegram Webhook.
+    """
+    return make_response((
+        {
+            "ok": False,
+            "error_code": 400
+        },
+        200
+    ))
+
+
+def success():
+    """
+    Creates success response for Telegram Webhook.
+    """
+    return make_response((
+        {
+            "ok": True
+        },
+        200
+    ))
 
 
 def data_is_valid(data: dict) -> bool:
@@ -172,3 +197,15 @@ def get_command(entities: list, message_text: str, default="/help") -> str:
         break
 
     return command
+
+
+def route_command(command: str) -> None:
+    """
+    Routes command to specific handler.
+    """
+    routes = {
+        "/help": handlers.help
+    }
+    method = routes.get(command, handlers.unknown)
+
+    method()
