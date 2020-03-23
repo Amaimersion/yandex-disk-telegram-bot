@@ -24,8 +24,8 @@ def _make_request(method_name: str, data: dict) -> None:
     requests.post(url, data)
 
 
-def send_message(**kwargs) -> None:
+def send_message(data: dict) -> None:
     """
     https://core.telegram.org/bots/api/#sendmessage
     """
-    _make_request("sendMessage", kwargs)
+    _make_request("sendMessage", data)
