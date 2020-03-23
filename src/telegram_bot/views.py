@@ -63,7 +63,7 @@ def data_is_valid(data: dict) -> bool:
                 dict
             ) or
             isinstance(
-                data.get("channel_post"),
+                data.get("edited_message"),
                 dict
             )
         )
@@ -76,7 +76,7 @@ def get_message(data: dict) -> dict:
     """
     return (
         data.get("message") or
-        data.get("channel_post")
+        data.get("edited_message")
     )
 
 
