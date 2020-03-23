@@ -7,7 +7,7 @@ import os
 from flask import Flask
 
 from .configs.flask import config as Config
-from .telegram_bot import telegram_bot_blueprint
+from .views import telegram_bot_blueprint
 
 
 def create_app(config_name: str = None) -> Flask:
