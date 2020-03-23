@@ -1,7 +1,8 @@
 from flask import (
     Blueprint,
     request,
-    make_response
+    make_response,
+    g
 )
 
 from . import handlers
@@ -35,6 +36,7 @@ def index():
         return error()
 
     message = get_message(data)
+    g.message = message
 
     if (not message_is_valid(message)):
         return error()
