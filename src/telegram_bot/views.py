@@ -37,7 +37,11 @@ def index():
     message_text = message["text"]
     command = get_command(entities, message_text)
 
-    return "Hello!"
+    return {
+        "method": "sendMessage",
+        "chat_id": message["chat"]["id"],
+        "text": "Success %s" % command
+    }
 
 
 def data_is_valid(data: dict) -> bool:
@@ -84,6 +88,18 @@ def message_is_valid(message: dict) -> bool:
         isinstance(
             message.get("from"),
             dict
+        ) and
+        isinstance(
+            message["from"].get("id"),
+            int
+        ) and
+        isinstance(
+            message.get("chat"),
+            dict
+        ) and
+        isinstance(
+            message["chat"].get("id"),
+            int
         ) and
         isinstance(
             message.get("text"),
