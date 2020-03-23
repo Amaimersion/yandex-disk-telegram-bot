@@ -14,7 +14,11 @@ bp = Blueprint(
 @bp.route("/", methods=["POST"], strict_slashes=False)
 def index():
     """
-    Handles POST request from Telegram server.
+    Handles Webhook POST request from Telegram server.
+
+    For Webhook we always should return 200 to indicate
+    that we successfully got an update. But if we return
+    not 200, then we suppose this update not from Telegram.
     """
     data = request.get_json(
         force=True,
@@ -104,16 +108,6 @@ def message_is_valid(message: dict) -> bool:
         isinstance(
             message.get("text"),
             str
-        ) and
-        (
-            isinstance(
-                message.get("entities"),
-                list
-            ) or
-            isinstance(
-                message.get("caption_entities"),
-                list
-            )
         )
     )
 
@@ -124,7 +118,8 @@ def get_entities(message: dict) -> list:
     """
     return (
         message.get("entities") or
-        message.get("caption_entities")
+        message.get("caption_entities") or
+        []
     )
 
 
