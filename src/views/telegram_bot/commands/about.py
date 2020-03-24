@@ -9,6 +9,7 @@ def handle():
     """
     telegram.send_message(
         chat_id=g.message["chat"]["id"],
+        disable_web_page_preview=True,
         text=(
             "I'm free and open-source bot that allows "
             "you to interact with Yandex.Disk through Telegram."
