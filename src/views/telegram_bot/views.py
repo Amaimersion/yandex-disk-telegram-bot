@@ -206,7 +206,8 @@ def route_command(command: str) -> None:
     Routes command to specific handler.
     """
     routes = {
-        "/help": commands.help_handler
+        "/help": commands.help_handler,
+        "/about": commands.about_handler
     }
     method = routes.get(command, commands.unknown_handler)
 
