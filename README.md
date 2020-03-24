@@ -119,6 +119,8 @@ nginx uses simple configuration from `./src/configs/nginx.conf`. You can ignore 
 
 ## Deployment
 
+Regardless of any platform you choose for hosting, it is recommend to manually configure number of workers, number of workers connections and number of threads for both `gunicorn` and `nginx`.
+
 ### Heroku
 
 1. If you don't have [Heroku](https://heroku.com/) installed, then it is a time to do that.
