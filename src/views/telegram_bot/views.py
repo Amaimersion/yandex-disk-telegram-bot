@@ -5,7 +5,7 @@ from flask import (
     g
 )
 
-from . import handlers
+from . import commands
 
 
 bp = Blueprint(
@@ -30,27 +30,27 @@ def index():
     )
 
     if (data is None):
-        return error()
+        return error_response()
 
     if (not data_is_valid(data)):
-        return error()
+        return error_response()
 
     message = get_message(data)
-    g.message = message
 
     if (not message_is_valid(message)):
-        return error()
+        return error_response()
 
+    g.message = message
     entities = get_entities(message)
     message_text = message["text"]
     command = get_command(entities, message_text)
 
     route_command(command)
 
-    return success()
+    return success_response()
 
 
-def error():
+def error_response():
     """
     Creates error response for Telegram Webhook.
     """
@@ -63,7 +63,7 @@ def error():
     ))
 
 
-def success():
+def success_response():
     """
     Creates success response for Telegram Webhook.
     """
@@ -206,8 +206,8 @@ def route_command(command: str) -> None:
     Routes command to specific handler.
     """
     routes = {
-        "/help": handlers.help
+        "/help": commands.help_handler
     }
-    method = routes.get(command, handlers.unknown)
+    method = routes.get(command, commands.unknown_handler)
 
     method()

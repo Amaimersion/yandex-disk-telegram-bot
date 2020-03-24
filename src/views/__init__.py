@@ -1,1 +1,1 @@
-from .telegram_bot import telegram_bot_blueprint # noqa
+from .telegram_bot import telegram_bot_blueprint
