@@ -6,19 +6,19 @@
     "telegram": "Ya_Disk_Bot",
     "commands": [
         {
-            "command": "/start",
+            "command": "start",
             "description": "Start a work"
         },
         {
-            "command": "/help",
+            "command": "help",
             "description": "Get a help"
         },
         {
-            "command": "/settings",
+            "command": "settings",
             "description": "Edit a settings"
         },
         {
-            "command": "/about",
+            "command": "about",
             "description": "Read about me"
         }
     ]
