@@ -3,5 +3,23 @@
     "version": "1.0.0",
     "description": "This bot integrates Yandex.Disk right into Telegram.",
     "about": "Work with Yandex.Disk.",
-    "telegram": "Ya_Disk_Bot"
+    "telegram": "Ya_Disk_Bot",
+    "commands": [
+        {
+            "command": "/start",
+            "description": "Start a work"
+        },
+        {
+            "command": "/help",
+            "description": "Get a help"
+        },
+        {
+            "command": "/settings",
+            "description": "Edit a settings"
+        },
+        {
+            "command": "/about",
+            "description": "Read about me"
+        }
+    ]
 }
