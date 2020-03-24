@@ -21,10 +21,10 @@ keepalive = 15
 # it is I/O bound app
 worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
-workers = (4 if workers > 4 else workers)
-workers = os.getenv("GUNICORN_WORKERS", workers)
-threads = os.getenv("GUNICORN_THREADS", 1)
-worker_connections = os.getenv("GUNICORN_WORKER_CONNECTIONS", 1024)
+workers = (2 if (IS_DEVELOPMENT and workers > 2) else workers)
+workers = int(os.getenv("GUNICORN_WORKERS", workers))
+threads = int(os.getenv("GUNICORN_THREADS", 1))
+worker_connections = int(os.getenv("GUNICORN_WORKER_CONNECTIONS", 1024))
 
 
 def when_ready(server):
