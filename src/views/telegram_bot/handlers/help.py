@@ -1,10 +1,10 @@
 from flask import g
 
-from ....api.telegram import send_message
+from ....api import telegram
 
 
 def handle():
-    send_message({
-        "chat_id": g.message["chat"]["id"],
-        "text": "Success from /help"
-    })
+    telegram.send_message(
+        chat_id=g.message["chat"]["id"],
+        text="Success from /help"
+    )
