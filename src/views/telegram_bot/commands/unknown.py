@@ -9,5 +9,8 @@ def handle():
     """
     telegram.send_message(
         chat_id=g.message["chat"]["id"],
-        text="Unrecognized command. See command list or type /help"
+        text=(
+            "I can't understand this command. "
+            "See command list or type /help"
+        )
     )
