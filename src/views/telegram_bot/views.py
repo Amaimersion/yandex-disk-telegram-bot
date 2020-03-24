@@ -206,6 +206,7 @@ def route_command(command: str) -> None:
     Routes command to specific handler.
     """
     routes = {
+        "/start": commands.help_handler,
         "/help": commands.help_handler,
         "/about": commands.about_handler
     }
