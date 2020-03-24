@@ -16,6 +16,10 @@ class Config:
     TESTING = False
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
+    # Telegram API settings
+    # stop waiting for a Telegram response after a given number of seconds
+    TELEGRAM_API_TIMEOUT = 5
+
 
 class ProductionConfig(Config):
     pass

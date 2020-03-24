@@ -1,6 +1,7 @@
 import os
 
 import requests
+from flask import current_app
 
 from .exceptions import (
     InvalidResponseFormatException,
@@ -34,7 +35,7 @@ def make_request(method_name: str, data: dict) -> None:
     :raises TelegramApiException:
     See `exceptions.py` for documentation.
     """
-    timeout = os.getenv("TELEGRAM_API_TIMEOUT", 5)
+    timeout = current_app.config.get("TELEGRAM_API_TIMEOUT", 5)
     url = create_url(method_name)
     response = requests.post(
         url,
