@@ -11,7 +11,7 @@ def send_message(**kwargs) -> None:
     """
     try:
         make_request("sendMessage", kwargs)
-    except requests.RequestException:
-        pass
-    except TelegramApiException:
-        pass
+    except requests.RequestException as error:
+        print(error)
+    except TelegramApiException as error:
+        print(error)
