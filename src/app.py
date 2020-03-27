@@ -7,6 +7,7 @@ import os
 from flask import Flask
 
 from .configs.flask import config as Config
+from .db import db, migrate
 from .views import telegram_bot_blueprint
 
 
@@ -17,6 +18,7 @@ def create_app(config_name: str = None) -> Flask:
     app = Flask(__name__)
 
     configure_app(app, config_name)
+    configure_db(app)
     configure_blueprints(app)
 
     return app
@@ -32,6 +34,14 @@ def configure_app(app: Flask, config_name: str):
     config = Config[config_name]
 
     app.config.from_object(config)
+
+
+def configure_db(app: Flask):
+    """
+    Configures database.
+    """
+    db.init_app(app)
+    migrate.init_app(app, db)
 
 
 def configure_blueprints(app: Flask):
