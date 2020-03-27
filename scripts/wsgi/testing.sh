@@ -1,6 +1,4 @@
 #!/bin/bash
 
-export FLASK_ENV=development
-export CONFIG_NAME=testing
-
+source ./scripts/env/testing.sh
 source ./scripts/server/run.sh
