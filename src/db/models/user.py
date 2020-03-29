@@ -63,3 +63,41 @@ class User(db.Model):
 
     def __repr__(self):
         return f"<User {self.id}>"
+
+    @staticmethod
+    def create_fake():
+        """
+        Creates fake user.
+        """
+        from random import choice
+
+        from faker import Faker
+
+        fake = Faker()
+
+        create_date = fake.date_time_between(
+            start_date="-2y",
+            end_date="now",
+            tzinfo=None
+        )
+        last_update_date = fake.date_time_between_dates(
+            datetime_start=create_date,
+            tzinfo=None
+        )
+        telegram_id = fake.pyint(
+            min_value=10000,
+            max_value=1000000,
+            step=1
+        )
+        is_bot = (fake.pyint() % 121 == 0)
+        language = choice(list(SupportedLanguages))
+        group = choice(list(UserGroup))
+
+        return User(
+            create_date=create_date,
+            last_update_date=last_update_date,
+            telegram_id=telegram_id,
+            is_bot=is_bot,
+            language=language,
+            group=group
+        )
