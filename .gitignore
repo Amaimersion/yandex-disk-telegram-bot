@@ -3,6 +3,7 @@
 *.log
 **/temp.*
 *.sqlite
+*.sqlite-journal
 
 # Folders
 __pycache__
