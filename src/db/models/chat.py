@@ -52,3 +52,29 @@ class Chat(db.Model):
 
     def __repr__(self):
         return f"<Chat {self.id}>"
+
+    @staticmethod
+    def create_fake(user=None):
+        """
+        Creates fake chat.
+
+        :param user: User to associate this chat with.
+        """
+        from random import choice
+
+        from faker import Faker
+
+        fake = Faker()
+
+        telegram_id = fake.pyint(
+            min_value=10000000,
+            max_value=10000000000,
+            step=1
+        )
+        type = choice(list(ChatType))
+
+        return Chat(
+            telegram_id=telegram_id,
+            type=type,
+            user=user
+        )
