@@ -31,12 +31,14 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    SECRET_KEY = "development"
     SQLALCHEMY_DATABASE_URI = "sqlite:///development.sqlite"
     SQLALCHEMY_ECHO = "debug"
 
 
 class TestingConfig(Config):
     TESTING = True
+    SECRET_KEY = "testing"
     SQLALCHEMY_DATABASE_URI = "sqlite:///testing.sqlite"
 
 
