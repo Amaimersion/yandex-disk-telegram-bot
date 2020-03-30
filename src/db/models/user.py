@@ -2,8 +2,8 @@ from enum import IntEnum, unique
 
 from sqlalchemy.sql import func
 
-from ..db import db
 from ...localization import SupportedLanguages
+from .. import db
 
 
 @unique
@@ -22,6 +22,7 @@ class User(db.Model):
     """
     __tablename__ = "users"
 
+    # Columns
     id = db.Column(
         db.Integer,
         primary_key=True
@@ -60,6 +61,8 @@ class User(db.Model):
         nullable=False,
         comment="User rights group"
     )
+
+    # Relationships
     chats = db.relationship(
         "Chat",
         back_populates="user",
@@ -79,35 +82,36 @@ class User(db.Model):
         """
         Creates fake user.
         """
-        from random import choice
-
         from faker import Faker
 
         fake = Faker()
+        random_number = fake.pyint(
+            min_value=1,
+            max_value=20,
+            step=1
+        )
+        result = User()
 
-        create_date = fake.date_time_between(
+        result.create_date = fake.date_time_between(
             start_date="-2y",
             end_date="now",
             tzinfo=None
         )
-        last_update_date = fake.date_time_between_dates(
-            datetime_start=create_date,
+        result.last_update_date = fake.date_time_between_dates(
+            datetime_start=result.create_date,
             tzinfo=None
         )
-        telegram_id = fake.pyint(
-            min_value=10000,
-            max_value=1000000,
+        result.telegram_id = fake.pyint(
+            min_value=100000,
+            max_value=10000000,
             step=1
         )
-        is_bot = (fake.pyint() % 121 == 0)
-        language = choice(list(SupportedLanguages))
-        group = choice(list(UserGroup))
-
-        return User(
-            create_date=create_date,
-            last_update_date=last_update_date,
-            telegram_id=telegram_id,
-            is_bot=is_bot,
-            language=language,
-            group=group
+        result.is_bot = (fake.pyint() % 121 == 0)
+        result.language = fake.random_element(list(SupportedLanguages))
+        result.group = (
+            fake.random_element(list(UserGroup)) if (
+                random_number % 20 == 0
+            ) else UserGroup.USER
         )
+
+        return result
