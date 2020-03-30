@@ -9,7 +9,9 @@ from src.db import (
     User,
     Chat,
     YandexDiskToken,
-    UserQuery
+    UserQuery,
+    ChatQuery,
+    YandexDiskTokenQuery
 )
 
 
@@ -85,7 +87,7 @@ def add_fake_users(count):
             # error because of same `telegram_id`
             error_count += 1
 
-    click.echo("Done")
+    click.echo(f"Done ({count})")
 
 
 @cli.command()
@@ -128,7 +130,7 @@ def add_fake_chats(count):
             # error because of same `telegram_id`
             error_count += 1
 
-    click.echo("Done")
+    click.echo(f"Done ({count})")
 
 
 @cli.command()
@@ -163,7 +165,83 @@ def add_fake_yd_tokens(count):
 
         i += 1
 
-    click.echo("Done")
+    click.echo(f"Done ({count})")
+
+
+@cli.command()
+@click.option(
+    "--users-count",
+    default=50,
+    show_default=True,
+    help="How many user fakes should be added"
+)
+@click.option(
+    "--chats-count",
+    default=60,
+    show_default=True,
+    help="How many chat fakes should be added"
+)
+@click.option(
+    "--yd-tokens-count",
+    default=40,
+    show_default=True,
+    help="How many Y.D. token fakes should be added"
+)
+@click.pass_context
+def add_fake_data(context, users_count, chats_count, yd_tokens_count):
+    """
+    Adds fake data in all DB tables.
+    """
+    context.invoke(add_fake_users, count=users_count)
+    context.invoke(add_fake_chats, count=chats_count)
+    context.invoke(add_fake_yd_tokens, count=yd_tokens_count)
+
+
+@cli.command()
+@with_app_context
+def clear_users():
+    """
+    Removes all users from a table.
+    """
+    count = UserQuery.delete_all_users()
+    db.session.commit()
+
+    click.echo(f"Done ({count})")
+
+
+@cli.command()
+@with_app_context
+def clear_chats():
+    """
+    Removes all chats from a table.
+    """
+    count = ChatQuery.delete_all_chats()
+    db.session.commit()
+
+    click.echo(f"Done ({count})")
+
+
+@cli.command()
+@with_app_context
+def clear_yd_tokens():
+    """
+    Removes all Yandex.Disk tokens from a table.
+    """
+    count = YandexDiskTokenQuery.delete_all_yd_tokens()
+    db.session.commit()
+
+    click.echo(f"Done ({count})")
+
+
+@cli.command()
+@click.pass_context
+def clear_db(context):
+    """
+    Removes all data from DB tables.
+    """
+    context.invoke(clear_users)
+    context.invoke(clear_chats)
+    context.invoke(clear_yd_tokens)
 
 
 if (__name__ == "__main__"):
