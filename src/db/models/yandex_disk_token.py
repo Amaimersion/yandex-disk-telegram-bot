@@ -1,6 +1,7 @@
 import os
 from typing import Union
 
+from flask import current_app
 from sqlalchemy.sql import null
 from sqlalchemy.ext.hybrid import hybrid_property
 from cryptography.fernet import (
@@ -8,10 +9,7 @@ from cryptography.fernet import (
     InvalidToken as InvalidTokenFernetError
 )
 
-from ..db import db
-
-
-fernet = Fernet(os.getenv("FLASK_SECRET_KEY").encode())
+from .. import db
 
 
 class YandexDiskToken(db.Model):
@@ -79,11 +77,8 @@ class YandexDiskToken(db.Model):
     # Relationships
     user = db.relationship(
         'User',
-        backref=db.backref(
-            'token',
-            lazy="select",
-            uselist=False
-        )
+        back_populates="yandex_disk_token",
+        uselist=False
     )
 
     def __init__(self, **kwargs):
@@ -211,6 +206,7 @@ class YandexDiskToken(db.Model):
         :param token_attribute_name: Name of token attribute in class.
         :param value: Value to set.
         """
+        fernet = Fernet(current_app.secret_key.encode())
         token_attribute_name = kwargs["token_attribute_name"]
         value = kwargs["value"]
 
@@ -235,6 +231,7 @@ class YandexDiskToken(db.Model):
         :raises DataCorruptedError: Data in DB is corrupted.
         :raises InvalidTokenError: Encrypted token is invalid.
         """
+        fernet = Fernet(current_app.secret_key.encode())
         token_attribute_name = kwargs["token_attribute_name"]
         encrypted_token = self[token_attribute_name]
 

@@ -65,6 +65,11 @@ class User(db.Model):
         back_populates="user",
         uselist=True
     )
+    yandex_disk_token = db.relationship(
+        "YandexDiskToken",
+        back_populates="user",
+        uselist=False
+    )
 
     def __repr__(self):
         return f"<User {self.id}>"
