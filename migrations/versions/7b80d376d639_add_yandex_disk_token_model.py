@@ -24,9 +24,9 @@ def upgrade():
     sa.Column('access_token_type', sa.String(), nullable=True, comment='Type of access token'),
     sa.Column('access_token_expires_in', sa.DateTime(), nullable=True, comment='Access token expires at this date (UTC+0)'),
     sa.Column('refresh_token', sa.String(), nullable=True, comment='Encrypted Y.D. refresh token to use to update access token'),
-    sa.Column('insert_token', sa.String(), nullable=True, comment="Encrypted token for update controlling. i.e., you shouldn't insert values if you don't know insert token"),
+    sa.Column('insert_token', sa.String(), nullable=True, comment="Encrypted token for DB update controlling. i.e., you shouldn't insert values if you don't know insert token"),
     sa.Column('insert_token_expires_in', sa.DateTime(), nullable=True, comment='Insert token expires on this date (UTC+0)'),
-    sa.Column('user_id', sa.Integer(), nullable=False, comment='Token belongs to this user'),
+    sa.Column('user_id', sa.Integer(), nullable=False, comment='Tokens belongs to this user'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('user_id')
