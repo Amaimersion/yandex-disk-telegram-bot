@@ -5,7 +5,7 @@ from sqlalchemy.sql import null
 from sqlalchemy.ext.hybrid import hybrid_property
 from cryptography.fernet import (
     Fernet,
-    InvalidToken as InvalidTokenFernetException
+    InvalidToken as InvalidTokenFernetError
 )
 
 from ..db import db
@@ -58,7 +58,7 @@ class YandexDiskToken(db.Model):
         nullable=True,
         default=null(),
         comment=(
-            "Encrypted token for update controlling. "
+            "Encrypted token for DB update controlling. "
             "i.e., you shouldn't insert values if you don't know insert token"
         )
     )
@@ -73,7 +73,7 @@ class YandexDiskToken(db.Model):
         db.ForeignKey("users.id"),
         unique=True,
         nullable=False,
-        comment="Token belongs to this user"
+        comment="Tokens belongs to this user"
     )
 
     # Relationships
@@ -133,16 +133,16 @@ class YandexDiskToken(db.Model):
         """
         Sets encrypted token.
 
-        :param token_attribute_name: Attribute name of token in instance.
-        :param data: Data to set.
+        :param token_attribute_name: Name of token attribute in class.
+        :param value: Value to set.
         """
-        data = kwargs["data"]
         token_attribute_name = kwargs["token_attribute_name"]
+        value = kwargs["value"]
 
-        if (data is None):
+        if (value is None):
             self[token_attribute_name] = None
         else:
-            encrypted_data = fernet.encrypt(data.encode())
+            encrypted_data = fernet.encrypt(value.encode())
             self[token_attribute_name] = encrypted_data.decode()
 
     def _get_token(self, **kwargs) -> Union[str, None]:
@@ -150,16 +150,15 @@ class YandexDiskToken(db.Model):
         Returns decrypted token.
 
         :param token_attribute_name:
-        Attribute name of token in instance.
+        Name of token attribute in class.
         :param expires_attribute_name:
-        Optional.
-        Token lifetime in seconds.
+        Optional. Token lifetime in seconds.
         If specified, expiration date will be checked.
 
-        :returns: Decrypted token or `None` if data is empty.
+        :returns: Decrypted token or `None` if value is NULL.
 
-        :raises DataCorruptedException: Data from DB is corrupted.
-        :raises InvalidTokenException: Encrypted token is invalid.
+        :raises DataCorruptedError: Data in DB is corrupted.
+        :raises InvalidTokenError: Encrypted token is invalid.
         """
         token_attribute_name = kwargs["token_attribute_name"]
         encrypted_token = self[token_attribute_name]
@@ -167,22 +166,22 @@ class YandexDiskToken(db.Model):
         if (encrypted_token is None):
             return None
 
-        expires_attribute_name = kwargs.get("expires_attribute_name")
         token_lifetime = None
+        expires_attribute_name = kwargs.get("expires_attribute_name")
 
         if (expires_attribute_name is not None):
             token_lifetime = self[expires_attribute_name]
 
             if (not isinstance(token_lifetime, int)):
-                raise DataCorruptedException("Token lifetime is not integer")
+                raise DataCorruptedError("Token lifetime is not an integer")
 
         encrypted_token = encrypted_token.encode()
         decrypted_token = None
 
         try:
             decrypted_token = fernet.decrypt(encrypted_token, token_lifetime)
-        except InvalidTokenFernetException:
-            raise InvalidTokenException("Token is invalid")
+        except InvalidTokenFernetError:
+            raise InvalidTokenError("Token is invalid or expired")
 
         decrypted_token = decrypted_token.decode()
 
@@ -194,15 +193,15 @@ class YandexDiskToken(db.Model):
         """
         self._set_token(
             token_attribute_name="_access_token",
-            data=token
+            value=token
         )
 
     def get_access_token(self) -> Union[str, None]:
         """
         Returns decrypted access token.
 
-        :raises DataCorruptedException: Data from DB is corrupted.
-        :raises InvalidTokenException: Encrypted token is invalid.
+        :raises DataCorruptedError: Data in DB is corrupted.
+        :raises InvalidTokenError: Encrypted token is invalid or expired.
         """
         return self._get_token(
             token_attribute_name="_access_token",
@@ -215,15 +214,15 @@ class YandexDiskToken(db.Model):
         """
         self._set_token(
             token_attribute_name="_refresh_token",
-            data=token
+            value=token
         )
 
     def get_refresh_token(self) -> Union[str, None]:
         """
         Returns decrypted refresh token.
 
-        :raises DataCorruptedException: Data from DB is corrupted.
-        :raises InvalidTokenException: Encrypted token is invalid.
+        :raises DataCorruptedError: Data in DB is corrupted.
+        :raises InvalidTokenError: Encrypted token is invalid.
         """
         return self._get_token(
             token_attribute_name="_refresh_token"
@@ -235,15 +234,15 @@ class YandexDiskToken(db.Model):
         """
         self._set_token(
             token_attribute_name="_insert_token",
-            data=token
+            value=token
         )
 
     def get_insert_token(self) -> Union[str, None]:
         """
         Returns decrypted insert token.
 
-        :raises DataCorruptedException: Data from DB is corrupted.
-        :raises InvalidTokenException: Encrypted token is invalid.
+        :raises DataCorruptedError: Data in DB is corrupted.
+        :raises InvalidTokenError: Encrypted token is invalid or expired.
         """
         return self._get_token(
             token_attribute_name="_insert_token",
@@ -251,16 +250,16 @@ class YandexDiskToken(db.Model):
         )
 
 
-class DataCorruptedException(Exception):
+class DataCorruptedError(Exception):
     """
     Data in databse is corrupted.
-    For example, if some required fields is missing or
-    have invalid type.
+    For example, when some of required fields
+    is missing or have invalid type.
     """
     pass
 
 
-class InvalidTokenException(Exception):
+class InvalidTokenError(Exception):
     """
     Token is invalid. From `cryptography` documentation:
     "A token may be invalid for a number of reasons:
