@@ -6,5 +6,7 @@ from .models import (
     YandexDiskToken
 )
 from .queries import (
-    UserQuery
+    UserQuery,
+    ChatQuery,
+    YandexDiskTokenQuery
 )

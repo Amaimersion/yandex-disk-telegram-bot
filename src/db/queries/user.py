@@ -61,3 +61,14 @@ def get_random_user_without_yd_token() -> UserOrNone:
     query = _get_query_all_users_without_yd_token()
 
     return query.order_by(func.random()).first()
+
+
+def delete_all_users() -> int:
+    """
+    Deletes all users from a table.
+
+    You have to commit DB changes!
+
+    :returns: Count of deleted users.
+    """
+    return User.query.delete()
