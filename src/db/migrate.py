@@ -8,4 +8,7 @@ from .models import (
 )
 
 
-migrate = Migrate()
+migrate = Migrate(
+    compare_type=True,
+    render_as_batch=True
+)
