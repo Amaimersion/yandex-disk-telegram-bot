@@ -105,6 +105,81 @@ class YandexDiskToken(db.Model):
     def __setitem__(self, key, value):
         return setattr(self, key, value)
 
+    @staticmethod
+    def create_fake(user):
+        """
+        Creates fake Yandex.Disk token.
+
+        There is two types of token: "pending" or "received".
+
+        Pending means the app wants to write in `access_token`
+        column, but request to Yandex not maded at the moment.
+        If app received invalid `insert_token` from user, then
+        it shouldn't make request to Yandex.
+
+        Received means the app successfully made a request to Yandex
+        and `insert_token` not exists in a row, because `INSERT`
+        operation was successfully completed.
+
+        :param user: User to associate token with.
+
+        :returns: "Pending" token (chance is 1/10) or
+        "received" token (chance is 9/10).
+        """
+        from faker import Faker
+
+        fake = Faker()
+        result = YandexDiskToken(user=user)
+        result_type = None
+        random_number = fake.pyint(
+            min_value=1,
+            max_value=10,
+            step=1
+        )
+
+        if (random_number % 10):
+            result_type = "pending"
+
+            result.set_access_token(
+                fake.pystr(
+                    min_chars=32,
+                    max_chars=32
+                )
+            )
+            result.set_refresh_token(
+                fake.pystr(
+                    min_chars=32,
+                    max_chars=32
+                )
+            )
+
+            result.access_token_type = "bearer"
+            result.access_token_expires_in = fake.pyint(
+                min_value=31536000,
+                max_value=63072000,
+                step=1
+            )
+        else:
+            result_type = "received"
+
+            result.set_insert_token(
+                fake.pystr(
+                    min_chars=32,
+                    max_chars=32
+                )
+            )
+
+            result.insert_token_expires_in = fake.pyint(
+                min_value=600,
+                max_value=900,
+                step=100
+            )
+
+        return {
+            "value": result,
+            "type": result_type
+        }
+
     @hybrid_property
     def access_token(self):
         raise AttributeError("`access_token` can't be accessed directly")
