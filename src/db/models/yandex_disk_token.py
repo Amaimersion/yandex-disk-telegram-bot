@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 from typing import Union
 
 from sqlalchemy.sql import null
@@ -41,10 +40,10 @@ class YandexDiskToken(db.Model):
         comment="Type of access token"
     )
     access_token_expires_in = db.Column(
-        db.DateTime(timezone=False),
+        db.Integer,
         nullable=True,
         default=null(),
-        comment="Access token expires at this date (UTC+0)"
+        comment="Access token lifetime in seconds"
     )
     _refresh_token = db.Column(
         "refresh_token",
@@ -64,10 +63,10 @@ class YandexDiskToken(db.Model):
         )
     )
     insert_token_expires_in = db.Column(
-        db.DateTime(timezone=False),
+        db.Integer,
         nullable=True,
         default=null(),
-        comment="Insert token expires at this date (UTC+0)"
+        comment="Insert token lifetime in seconds"
     )
     user_id = db.Column(
         db.Integer,
@@ -154,13 +153,12 @@ class YandexDiskToken(db.Model):
         Attribute name of token in instance.
         :param expires_attribute_name:
         Optional.
-        Attribute name of expiration date in instance.
+        Token lifetime in seconds.
         If specified, expiration date will be checked.
 
         :returns: Decrypted token or `None` if data is empty.
 
         :raises DataCorruptedException: Data from DB is corrupted.
-        :raises TokenExpiredException: Token has expired.
         :raises InvalidTokenException: Encrypted token is invalid.
         """
         token_attribute_name = kwargs["token_attribute_name"]
@@ -170,23 +168,19 @@ class YandexDiskToken(db.Model):
             return None
 
         expires_attribute_name = kwargs.get("expires_attribute_name")
+        token_lifetime = None
 
         if (expires_attribute_name is not None):
-            expiration_date = self[expires_attribute_name]
+            token_lifetime = self[expires_attribute_name]
 
-            if (expiration_date is None):
-                raise DataCorruptedException("Expiration date is NULL")
-
-            current_date = datetime.utcnow()
-
-            if (current_date >= expiration_date):
-                raise TokenExpiredException("Token has expired")
+            if (not isinstance(token_lifetime, int)):
+                raise DataCorruptedException("Token lifetime is not integer")
 
         encrypted_token = encrypted_token.encode()
         decrypted_token = None
 
         try:
-            decrypted_token = fernet.decrypt(encrypted_token)
+            decrypted_token = fernet.decrypt(encrypted_token, token_lifetime)
         except InvalidTokenFernetException:
             raise InvalidTokenException("Token is invalid")
 
@@ -208,7 +202,6 @@ class YandexDiskToken(db.Model):
         Returns decrypted access token.
 
         :raises DataCorruptedException: Data from DB is corrupted.
-        :raises TokenExpiredException: Token has expired.
         :raises InvalidTokenException: Encrypted token is invalid.
         """
         return self._get_token(
@@ -250,7 +243,6 @@ class YandexDiskToken(db.Model):
         Returns decrypted insert token.
 
         :raises DataCorruptedException: Data from DB is corrupted.
-        :raises TokenExpiredException: Token has expired.
         :raises InvalidTokenException: Encrypted token is invalid.
         """
         return self._get_token(
@@ -262,22 +254,17 @@ class YandexDiskToken(db.Model):
 class DataCorruptedException(Exception):
     """
     Data in databse is corrupted.
-    For example: some required fields is missing.
-    """
-    pass
-
-
-class TokenExpiredException(Exception):
-    """
-    Token is expired and now it is invalid.
+    For example, if some required fields is missing or
+    have invalid type.
     """
     pass
 
 
 class InvalidTokenException(Exception):
     """
-    Token is invalid.
-    From `cryptography` documentation:
-    "it is malformed, or it does not have a valid signature."
+    Token is invalid. From `cryptography` documentation:
+    "A token may be invalid for a number of reasons:
+    it is older than the token lifetime, it is malformed,
+    or it does not have a valid signature."
     """
     pass
