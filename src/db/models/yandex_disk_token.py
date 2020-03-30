@@ -40,7 +40,7 @@ class YandexDiskToken(db.Model):
         comment="Type of access token"
     )
     access_token_expires_in = db.Column(
-        db.Integer,
+        db.BigInteger,
         nullable=True,
         default=null(),
         comment="Access token lifetime in seconds"
@@ -63,7 +63,7 @@ class YandexDiskToken(db.Model):
         )
     )
     insert_token_expires_in = db.Column(
-        db.Integer,
+        db.BigInteger,
         nullable=True,
         default=null(),
         comment="Insert token lifetime in seconds"
