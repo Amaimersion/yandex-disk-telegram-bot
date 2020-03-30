@@ -1,14 +1,47 @@
-import random
+from functools import wraps
 
 import click
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.sql.expression import func
 
 from src.app import create_app
-from src.db import db, User, Chat, YandexDiskToken
+from src.db import (
+    db,
+    User,
+    Chat,
+    YandexDiskToken,
+    UserQuery
+)
 
 
 app = create_app()
+
+
+class PossibleInfiniteLoopError(Exception):
+    """
+    Indicates that loop probably become an infinite.
+    Because of this dangerous loop a script runtime was interrupted.
+    """
+    pass
+
+
+class InvalidTableError(Exception):
+    """
+    Indicates that table in DB is invalid
+    (data is empty, some required data is NULL, etc,)
+    """
+    pass
+
+
+def with_app_context(func):
+    """
+    Decorator which enables app context.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with app.app_context():
+            func(*args, **kwargs)
+
+    return wrapper
 
 
 @click.group()
@@ -22,100 +55,113 @@ def cli():
 @cli.command()
 @click.option(
     "--count",
-    default=1,
+    default=5,
     show_default=True,
-    help="How many fake users should be added"
+    help="How many fakes should be added"
 )
+@with_app_context
 def add_fake_users(count):
     """
     Add fake users in DB.
     """
     i = 0
+    error_count = 0
 
     while (i != count):
-        user = User.create_fake()
+        if (error_count >= 5):
+            raise PossibleInfiniteLoopError(
+                "Too many errors in a row"
+            )
 
-        with app.app_context():
-            db.session.add(user)
+        db.session.add(
+            User.create_fake()
+        )
 
-            try:
-                db.session.commit()
-                i += 1
-            except IntegrityError:
-                # same telegram_id
-                pass
+        try:
+            db.session.commit()
+            i += 1
+            error_count = 0
+        except IntegrityError:
+            # error because of same `telegram_id`
+            error_count += 1
 
-    click.echo("Added")
+    click.echo("Done")
 
 
 @cli.command()
 @click.option(
     "--count",
-    default=1,
+    default=8,
     show_default=True,
-    help="How many fake chats should be added"
+    help="How many fakes should be added"
 )
+@with_app_context
 def add_fake_chats(count):
     """
     Add fake chats in DB.
     """
     i = 0
+    error_count = 0
 
     while (i != count):
-        chat = Chat.create_fake()
+        if (error_count >= 5):
+            raise PossibleInfiniteLoopError(
+                "Too many errors in a row"
+            )
 
-        with app.app_context():
-            random_user = User.query.order_by(func.random()).first()
+        chat = Chat.create_fake(None)
+        user = UserQuery.get_random_user()
 
-            if (random_user is None):
-                raise Exception("Random user is none. Users table is empty?")
+        if (user is None):
+            raise InvalidTableError(
+                "Random user is none. Users table is empty?"
+            )
 
-            chat.user = random_user
+        chat.user = user
+        db.session.add(chat)
 
-            db.session.add(chat)
+        try:
+            db.session.commit()
+            i += 1
+            error_count = 0
+        except IntegrityError:
+            # error because of same `telegram_id`
+            error_count += 1
 
-            try:
-                db.session.commit()
-                i += 1
-            except IntegrityError:
-                # same telegram_id
-                pass
-
-    click.echo("Added")
+    click.echo("Done")
 
 
 @cli.command()
 @click.option(
     "--count",
-    default=1,
+    default=3,
     show_default=True,
-    help="How many fake tokens should be added"
+    help="How many fakes should be added"
 )
-def add_fake_yandex_disk_tokens(count):
+@with_app_context
+def add_fake_yd_tokens(count):
     """
-    Add fake yandex disk tokens in DB.
+    Add fake Yandex.Disk tokens in DB.
     """
-    with app.app_context():
-        users_count = db.session.query(User).count()
+    free_users_count = UserQuery.get_users_without_yd_token_count()
 
-        if (count > users_count):
-            raise ValueError("Number of tokens can't be greater than number of users") # noqa
+    if (count > free_users_count):
+        raise ValueError(
+            f"Number of tokens ({count}) can't be greater than "
+            f"number of free users ({free_users_count})"
+        )
 
     i = 0
 
     while (i != count):
-        with app.app_context():
-            subquery = ~User.query.filter(User.id == YandexDiskToken.user_id).exists() # noqa
-            query = db.session.query(User).filter(subquery)
-            free_users = query.all()
-            random_user = random.choice(free_users)
-            result = YandexDiskToken.create_fake(random_user)
-            token = result["value"]
+        free_user = UserQuery.get_random_user_without_yd_token()
+        result = YandexDiskToken.create_fake(free_user)
+        token = result["value"]
 
-            db.session.add(token)
-            db.session.commit()
+        db.session.add(token)
+        db.session.commit()
 
-            i += 1
+        i += 1
 
     click.echo("Done")
 
