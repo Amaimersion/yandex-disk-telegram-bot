@@ -5,3 +5,6 @@ from .models import (
     Chat,
     YandexDiskToken
 )
+from .queries import (
+    UserQuery
+)
