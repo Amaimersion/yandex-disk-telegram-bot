@@ -86,9 +86,15 @@ source ./scripts/env/development.sh
 flask db upgrade
 ```
 
-5. If needed, perform [integration with external API's](#integration-with-external-apis).
+5. Run this to see more actions:
 
-5. See [Local usage](#local-usage) or [Deployment](#deployment).
+```python
+python manage.py --help
+```
+
+6. If needed, perform [integration with external API's](#integration-with-external-apis).
+
+7. See [Local usage](#local-usage) or [Deployment](#deployment).
 
 
 ## Integration with external API's
