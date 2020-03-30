@@ -60,6 +60,11 @@ class User(db.Model):
         nullable=False,
         comment="User rights group"
     )
+    chats = db.relationship(
+        "Chat",
+        back_populates="user",
+        uselist=True
+    )
 
     def __repr__(self):
         return f"<User {self.id}>"

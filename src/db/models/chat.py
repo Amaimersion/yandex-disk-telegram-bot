@@ -1,6 +1,6 @@
 from enum import IntEnum, unique
 
-from ..db import db
+from .. import db
 
 
 @unique
@@ -21,6 +21,7 @@ class Chat(db.Model):
     """
     __tablename__ = "chats"
 
+    # Columns
     id = db.Column(
         db.Integer,
         primary_key=True
@@ -42,39 +43,43 @@ class Chat(db.Model):
         nullable=False,
         comment="Through this chat message can be sent to this user"
     )
+
+    # Relationships
     user = db.relationship(
-        'User',
-        backref=db.backref(
-            'chats',
-            lazy="select"
-        )
+        "User",
+        back_populates="chats",
+        uselist=False
     )
 
     def __repr__(self):
         return f"<Chat {self.id}>"
 
     @staticmethod
-    def create_fake(user=None):
+    def create_fake(user):
         """
         Creates fake chat.
 
-        :param user: User to associate this chat with.
+        :param user: User to associate created chat with.
         """
-        from random import choice
-
         from faker import Faker
 
         fake = Faker()
+        random_number = fake.pyint(
+            min_value=1,
+            max_value=10,
+            step=1
+        )
+        result = Chat(user=user)
 
-        telegram_id = fake.pyint(
+        result.telegram_id = fake.pyint(
             min_value=10000000,
             max_value=10000000000,
             step=1
         )
-        type = choice(list(ChatType))
-
-        return Chat(
-            telegram_id=telegram_id,
-            type=type,
-            user=user
+        result.type = (
+            fake.random_element(list(ChatType)) if (
+                random_number % 10 == 0
+            ) else ChatType.PRIVATE
         )
+
+        return result
