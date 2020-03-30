@@ -33,6 +33,16 @@ def _get_query_all_users_without_yd_token():
     return query
 
 
+def get_users_without_yd_token_count() -> int:
+    """
+    Returns count of users which doesn't have Yandex.Disk token
+    (either "pending" token or "received" token).
+    """
+    query = _get_query_all_users_without_yd_token()
+
+    return query.count()
+
+
 def get_all_users_without_yd_token() -> List[UserOrNone]:
     """
     Returns all users which doesn't have Yandex.Disk token
