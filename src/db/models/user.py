@@ -14,6 +14,7 @@ class UserGroup(IntEnum):
     Access level is presented in ascending order.
     i.e., greater number means higher access (more rights).
     """
+    INVALID = 0
     USER = 1
     TESTER = 2
     ADMIN = 3
