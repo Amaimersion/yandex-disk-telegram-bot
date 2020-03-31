@@ -23,7 +23,7 @@ def handle():
             "\n\n"
             "*Yandex.Disk Authorization*"
             "\n"
-            "/yandex_disk_auth — give me an access to your Yandex.Disk"
+            "/yandex\_disk\_auth — give me an access to your Yandex.Disk"
             "\n\n"
             "*Information*"
             "\n"
