@@ -1,15 +1,19 @@
+import os
 import secrets
 
 from flask import g, current_app
+import jwt
 
 from ....db import (
     db,
     User,
     Chat,
     YandexDiskToken,
-    UserQuery
+    UserQuery,
+    ChatQuery
 )
 from ....db.models import ChatType
+from ....api import telegram
 
 
 def handle():
@@ -63,8 +67,56 @@ def handle():
     )
     db.session.commit()
 
+    insert_token = ""
+
+    try:
+        insert_token = yd_token.get_insert_token()
+    except Exception as e:
+        print(e)
+        return
+
+    if (insert_token is None):
+        print("Error: Insert Token is NULL")
+        return
+
+    state = jwt.encode(
+        {
+            "user_id": user.id,
+            "insert_token": insert_token
+        },
+        current_app.secret_key.encode(),
+        algorithm="HS256"
+    ).decode()
+    yandex_oauth_url = create_yandex_oauth_url(state)
+    private_chat = ChatQuery.get_private_chat(user.id)
+    insert_token_lifetime = int(
+        yd_token.insert_token_expires_in / 60
+    )
+
+    if (private_chat is None):
+        print("Error: Not found any private chats for user")
+        return
+
+    telegram.send_message(
+        chat_id=private_chat.telegram_id,
+        parse_mode="Markdown",
+        disable_web_page_preview=True,
+        text=(
+            "Follow this link and allow me access to your "
+            f"Yandex.Disk — ${yandex_oauth_url}"
+            "\n\n"
+            "*Important: don't even think about giving this link to anyone, "
+            "because it contains your sensitive information*"
+            "\n\n"
+            f"_This link will expire in {insert_token_lifetime} minutes._"
+        )
+    )
+
 
 def register_user() -> User:
+    # TODO: check if user came from different chat,
+    # then also register that chat in db.
+
     incoming_user = g.user
     incoming_chat = g.chat
 
@@ -91,3 +143,14 @@ def create_empty_yd_token(user: User) -> YandexDiskToken:
     db.session.commit()
 
     return new_yd_token
+
+
+def create_yandex_oauth_url(state: str) -> str:
+    client_id = os.getenv("YD_API_APP_ID", "")
+
+    return (
+        f"https://oauth.yandex.ru/authorize?"
+        "response_type=code"
+        f"&client_id={client_id}"
+        f"&state={state}"
+    )
