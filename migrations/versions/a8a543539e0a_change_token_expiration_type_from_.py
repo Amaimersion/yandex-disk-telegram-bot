@@ -22,11 +22,25 @@ def upgrade():
         batch_op.alter_column('access_token_expires_in',
                existing_type=sa.DATETIME(),
                type_=sa.Integer(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using=(
+                   "ALTER TABLE yandex_disk_tokens "
+                   "ALTER COLUMN access_token_expires_in "
+                   "TYPE INTEGER "
+                   "USING access_token_expires_in::integer"
+               )
+            )
         batch_op.alter_column('insert_token_expires_in',
                existing_type=sa.DATETIME(),
                type_=sa.Integer(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using=(
+                   "ALTER TABLE yandex_disk_tokens "
+                   "ALTER COLUMN insert_token_expires_in "
+                   "TYPE INTEGER "
+                   "USING insert_token_expires_in::integer"
+               )
+            )
 
     # ### end Alembic commands ###
 
@@ -37,10 +51,24 @@ def downgrade():
         batch_op.alter_column('insert_token_expires_in',
                existing_type=sa.Integer(),
                type_=sa.DATETIME(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using=(
+                   "ALTER TABLE yandex_disk_tokens "
+                   "ALTER COLUMN insert_token_expires_in "
+                   "TYPE TIMESTAMP "
+                   "USING insert_token_expires_in::timestamp"
+               )
+            )
         batch_op.alter_column('access_token_expires_in',
                existing_type=sa.Integer(),
                type_=sa.DATETIME(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using=(
+                   "ALTER TABLE yandex_disk_tokens "
+                   "ALTER COLUMN access_token_expires_in "
+                   "TYPE TIMESTAMP "
+                   "USING access_token_expires_in::timestamp"
+               )
+            )
 
     # ### end Alembic commands ###
