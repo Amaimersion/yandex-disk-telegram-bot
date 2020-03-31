@@ -118,7 +118,13 @@ From Telegram documentation:
 
 ### Yandex.Disk
 
-https://yandex.ru/dev/disk/rest/
+1. Register your app in [Yandex](https://yandex.ru/dev/oauth/).
+
+2. Most likely it will take a while for Yandex moderators to check your app.
+
+3. Get your app ID at special Yandex page for your app.
+
+4. At special Yandex page for your app find "Callback URI" settings and add this URI: `https://<your site>/telegram_bot_yandex_disk_auth`.
 
 
 ## Local usage
