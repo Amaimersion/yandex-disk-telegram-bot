@@ -8,7 +8,7 @@ from flask import Flask
 
 from .configs.flask import config as Config
 from .db import db, migrate
-from .views import telegram_bot_blueprint
+from .blueprints import telegram_bot_blueprint
 
 
 def create_app(config_name: str = None) -> Flask:
