@@ -20,6 +20,10 @@
         {
             "command": "about",
             "description": "Read about me"
+        },
+        {
+            "command": "yandex_disk_auth",
+            "description": "Give me an access to your Yandex.Disk"
         }
     ]
 }

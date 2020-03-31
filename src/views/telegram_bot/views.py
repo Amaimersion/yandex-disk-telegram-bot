@@ -208,7 +208,8 @@ def route_command(command: str) -> None:
     routes = {
         "/start": commands.help_handler,
         "/help": commands.help_handler,
-        "/about": commands.about_handler
+        "/about": commands.about_handler,
+        "/yandex_disk_auth": commands.yd_auth_handler
     }
     method = routes.get(command, commands.unknown_handler)
 
