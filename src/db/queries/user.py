@@ -22,6 +22,13 @@ def get_random_user() -> UserOrNone:
     return User.query.order_by(func.random()).first()
 
 
+def get_user_by_telegram_id(telegram_id: int) -> UserOrNone:
+    """
+    Returns user with specified telegram id.
+    """
+    return User.query.filter(User.telegram_id == telegram_id).first()
+
+
 def _get_query_all_users_without_yd_token():
     """
     Returns query for all users which doesn't have Yandex.Disk token

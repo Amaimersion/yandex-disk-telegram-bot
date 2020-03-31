@@ -259,6 +259,20 @@ class YandexDiskToken(db.Model):
 
         return decrypted_token
 
+    def _have_token(self, **kwargs) -> bool:
+        """
+        :param token_attribute_name: Name of token attribute in class.
+
+        :returns: `True` if token contains any value, `False` otherwise.
+        """
+        token_attribute_name = kwargs["token_attribute_name"]
+        value = self[token_attribute_name]
+
+        return (
+            isinstance(value, str) and
+            len(value) > 0
+        )
+
     def set_access_token(self, token: Union[str, None]) -> None:
         """
         Sets encrypted access token.
@@ -320,6 +334,46 @@ class YandexDiskToken(db.Model):
             token_attribute_name="_insert_token",
             expires_attribute_name="insert_token_expires_in"
         )
+
+    def have_access_token(self) -> bool:
+        """
+        :returns: `True` if `access_token` contains
+        any value otherwise `False`.
+        """
+        return self._have_token(
+            token_attribute_name="_access_token"
+        )
+
+    def have_refresh_token(self) -> bool:
+        """
+        :returns: `True` if `refresh_token` contains
+        any value otherwise `False`.
+        """
+        return self._have_token(
+            token_attribute_name="_refresh_token"
+        )
+
+    def have_insert_token(self) -> bool:
+        """
+        :returns: `True` if `insert_token` contains
+        any value otherwise `False`.
+        """
+        return self._have_token(
+            token_attribute_name="_insert_token"
+        )
+
+    def clear_all_token_data(self) -> None:
+        """
+        Clears all data that belongs to any kind of token.
+
+        Do a commit in order to save changes!
+        """
+        self._access_token = null()
+        self.access_token_type = null()
+        self.access_token_expires_in = null()
+        self._refresh_token = null()
+        self._insert_token = null()
+        self.insert_token_expires_in = null()
 
 
 class DataCorruptedError(Exception):

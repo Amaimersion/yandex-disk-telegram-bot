@@ -21,8 +21,19 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Telegram API
-    # stop waiting for a Telegram response after a given number of seconds
+    # stop waiting for a Telegram response
+    # after a given number of seconds
     TELEGRAM_API_TIMEOUT = 5
+
+    # Yandex.Disk API
+    # `insert_token` (controls `INSERT` operation)
+    # will contain n random bytes. Each byte will be
+    # converted to two hex digits
+    YD_API_INSERT_TOKEN_BYTES = 8
+    # lifetime of `insert_token` in seconds starting
+    # from date of issue. It is better to find
+    # best combination between `bytes` and `lifetime`
+    YD_API_INSERT_TOKEN_LIFETIME = 60 * 10
 
 
 class ProductionConfig(Config):

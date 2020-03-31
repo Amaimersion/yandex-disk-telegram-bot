@@ -1,11 +1,11 @@
 from flask import (
     Blueprint,
     request,
-    make_response,
     g
 )
 
 from . import commands
+from . import response
 
 
 bp = Blueprint(
@@ -30,49 +30,27 @@ def index():
     )
 
     if (data is None):
-        return error_response()
+        return response.error()
 
     if (not data_is_valid(data)):
-        return error_response()
+        return response.error()
 
     message = get_message(data)
 
     if (not message_is_valid(message)):
-        return error_response()
+        return response.error()
 
     g.message = message
+    g.user = message["from"]
+    g.chat = message["chat"]
+
     entities = get_entities(message)
     message_text = message["text"]
     command = get_command(entities, message_text)
 
     route_command(command)
 
-    return success_response()
-
-
-def error_response():
-    """
-    Creates error response for Telegram Webhook.
-    """
-    return make_response((
-        {
-            "ok": False,
-            "error_code": 400
-        },
-        200
-    ))
-
-
-def success_response():
-    """
-    Creates success response for Telegram Webhook.
-    """
-    return make_response((
-        {
-            "ok": True
-        },
-        200
-    ))
+    return response.success()
 
 
 def data_is_valid(data: dict) -> bool:
@@ -131,6 +109,10 @@ def message_is_valid(message: dict) -> bool:
         isinstance(
             message["chat"].get("id"),
             int
+        ) and
+        isinstance(
+            message["chat"].get("type"),
+            str
         ) and
         isinstance(
             message.get("text"),

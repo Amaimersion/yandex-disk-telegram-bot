@@ -8,10 +8,26 @@ class ChatType(IntEnum):
     """
     Type of Telegram chat.
     """
+    UNKNOWN = 0
     PRIVATE = 1
     GROUP = 2
     SUPERGROUP = 3
     CHANNEL = 4
+
+    @staticmethod
+    def get(type_name: str):
+        """
+        Return type by name.
+        """
+        type_name = type_name.lower()
+        types = {
+            "private": ChatType.PRIVATE,
+            "group": ChatType.GROUP,
+            "supergroup": ChatType.SUPERGROUP,
+            "channel": ChatType.CHANNEL
+        }
+
+        return types.get(type_name, ChatType.UNKNOWN)
 
 
 class Chat(db.Model):
