@@ -199,80 +199,6 @@ class YandexDiskToken(db.Model):
     def insert_token(self, new_value):
         raise AttributeError("`insert_token` can't be accessed directly")
 
-    def _set_token(self, **kwargs) -> None:
-        """
-        Sets encrypted token.
-
-        :param token_attribute_name: Name of token attribute in class.
-        :param value: Value to set.
-        """
-        fernet = Fernet(current_app.secret_key.encode())
-        token_attribute_name = kwargs["token_attribute_name"]
-        value = kwargs["value"]
-
-        if (value is None):
-            self[token_attribute_name] = None
-        else:
-            encrypted_data = fernet.encrypt(value.encode())
-            self[token_attribute_name] = encrypted_data.decode()
-
-    def _get_token(self, **kwargs) -> Union[str, None]:
-        """
-        Returns decrypted token.
-
-        :param token_attribute_name:
-        Name of token attribute in class.
-        :param expires_attribute_name:
-        Optional. Token lifetime in seconds.
-        If specified, expiration date will be checked.
-
-        :returns: Decrypted token or `None` if value is NULL.
-
-        :raises DataCorruptedError: Data in DB is corrupted.
-        :raises InvalidTokenError: Encrypted token is invalid.
-        """
-        fernet = Fernet(current_app.secret_key.encode())
-        token_attribute_name = kwargs["token_attribute_name"]
-        encrypted_token = self[token_attribute_name]
-
-        if (encrypted_token is None):
-            return None
-
-        token_lifetime = None
-        expires_attribute_name = kwargs.get("expires_attribute_name")
-
-        if (expires_attribute_name is not None):
-            token_lifetime = self[expires_attribute_name]
-
-            if (not isinstance(token_lifetime, int)):
-                raise DataCorruptedError("Token lifetime is not an integer")
-
-        encrypted_token = encrypted_token.encode()
-        decrypted_token = None
-
-        try:
-            decrypted_token = fernet.decrypt(encrypted_token, token_lifetime)
-        except InvalidTokenFernetError:
-            raise InvalidTokenError("Token is invalid or expired")
-
-        decrypted_token = decrypted_token.decode()
-
-        return decrypted_token
-
-    def _have_token(self, **kwargs) -> bool:
-        """
-        :param token_attribute_name: Name of token attribute in class.
-
-        :returns: `True` if token contains any value, `False` otherwise.
-        """
-        token_attribute_name = kwargs["token_attribute_name"]
-        value = self[token_attribute_name]
-
-        return (
-            isinstance(value, str) and
-            len(value) > 0
-        )
-
     def set_access_token(self, token: Union[str, None]) -> None:
         """
         Sets encrypted access token.
@@ -374,6 +300,80 @@ class YandexDiskToken(db.Model):
         self._refresh_token = null()
         self._insert_token = null()
         self.insert_token_expires_in = null()
+
+    def _set_token(self, **kwargs) -> None:
+        """
+        Sets encrypted token.
+
+        :param token_attribute_name: Name of token attribute in class.
+        :param value: Value to set.
+        """
+        fernet = Fernet(current_app.secret_key.encode())
+        token_attribute_name = kwargs["token_attribute_name"]
+        value = kwargs["value"]
+
+        if (value is None):
+            self[token_attribute_name] = None
+        else:
+            encrypted_data = fernet.encrypt(value.encode())
+            self[token_attribute_name] = encrypted_data.decode()
+
+    def _get_token(self, **kwargs) -> Union[str, None]:
+        """
+        Returns decrypted token.
+
+        :param token_attribute_name:
+        Name of token attribute in class.
+        :param expires_attribute_name:
+        Optional. Token lifetime in seconds.
+        If specified, expiration date will be checked.
+
+        :returns: Decrypted token or `None` if value is NULL.
+
+        :raises DataCorruptedError: Data in DB is corrupted.
+        :raises InvalidTokenError: Encrypted token is invalid.
+        """
+        fernet = Fernet(current_app.secret_key.encode())
+        token_attribute_name = kwargs["token_attribute_name"]
+        encrypted_token = self[token_attribute_name]
+
+        if (encrypted_token is None):
+            return None
+
+        token_lifetime = None
+        expires_attribute_name = kwargs.get("expires_attribute_name")
+
+        if (expires_attribute_name is not None):
+            token_lifetime = self[expires_attribute_name]
+
+            if (not isinstance(token_lifetime, int)):
+                raise DataCorruptedError("Token lifetime is not an integer")
+
+        encrypted_token = encrypted_token.encode()
+        decrypted_token = None
+
+        try:
+            decrypted_token = fernet.decrypt(encrypted_token, token_lifetime)
+        except InvalidTokenFernetError:
+            raise InvalidTokenError("Token is invalid or expired")
+
+        decrypted_token = decrypted_token.decode()
+
+        return decrypted_token
+
+    def _have_token(self, **kwargs) -> bool:
+        """
+        :param token_attribute_name: Name of token attribute in class.
+
+        :returns: `True` if token contains any value, `False` otherwise.
+        """
+        token_attribute_name = kwargs["token_attribute_name"]
+        value = self[token_attribute_name]
+
+        return (
+            isinstance(value, str) and
+            len(value) > 0
+        )
 
 
 class DataCorruptedError(Exception):
