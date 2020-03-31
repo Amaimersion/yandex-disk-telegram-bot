@@ -9,7 +9,10 @@ from .. import db
 @unique
 class UserGroup(IntEnum):
     """
-    User rights group.
+    User rights group (access level).
+
+    Access level is presented in ascending order.
+    i.e., greater number means higher access (more rights).
     """
     USER = 1
     TESTER = 2
