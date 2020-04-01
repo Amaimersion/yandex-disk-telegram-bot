@@ -6,7 +6,7 @@ touch $TEMP_FILE
 
 echo "{" >> $TEMP_FILE
 echo '"chat_id": '$2',' >> $TEMP_FILE
-echo '"text": "'$3'",' >> $TEMP_FILE
+echo '"text": "'$3'"' >> $TEMP_FILE
 echo "}" >> $TEMP_FILE
 
 source ./scripts/telegram/telegram.sh \
