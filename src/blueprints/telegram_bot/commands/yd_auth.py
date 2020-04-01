@@ -99,13 +99,13 @@ def handle():
 
     telegram.send_message(
         chat_id=private_chat.telegram_id,
-        parse_mode="Markdown",
+        parse_mode="MarkdownV2",
         disable_web_page_preview=True,
         text=(
             "Follow this link and allow me access to your "
             f"Yandex.Disk — {yandex_oauth_url}"
             "\n\n"
-            "*IMPORTANT: don't even think about giving this link to anyone, "
+            "*IMPORTANT: don't give this link to anyone, "
             "because it contains your sensitive information.*"
             "\n\n"
             f"_This link will expire in {insert_token_lifetime} minutes._"
@@ -154,7 +154,8 @@ def create_yandex_oauth_url(state: str) -> str:
     client_id = os.getenv("YD_API_APP_ID", "")
 
     return (
-        f"https://oauth.yandex.ru/authorize?"
+        # noqa
+        "https://oauth.yandex.ru/authorize?"
         "response\_type=code"
         f"&client\_id={client_id}"
         f"&state={state}"
