@@ -14,8 +14,8 @@ bp = Blueprint(
 )
 
 
-@bp.route("/", methods=["POST"], strict_slashes=False)
-def index():
+@bp.route("/webhook", methods=["POST"])
+def webhook():
     """
     Handles Webhook POST request from Telegram server.
 

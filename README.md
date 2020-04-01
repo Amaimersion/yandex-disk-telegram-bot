@@ -116,6 +116,8 @@ Russian users may need a proxy:
 From Telegram documentation:
 > If you'd like to make sure that the Webhook request comes from Telegram, we recommend using a secret path in the URL, e.g. `https://www.example.com/<token>`. Since nobody else knows your bot‘s token, you can be pretty sure it’s us.
 
+So, instead of `/telegram_bot/webhook` you can use something like this `/telegram_bot/webhook_fd1k3Bfa01WQl5S`.
+
 ### Yandex.Disk
 
 1. Register your app in [Yandex](https://yandex.ru/dev/oauth/).
