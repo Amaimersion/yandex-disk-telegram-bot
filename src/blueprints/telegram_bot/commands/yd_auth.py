@@ -99,18 +99,19 @@ def handle():
 
     telegram.send_message(
         chat_id=private_chat.telegram_id,
-        parse_mode="MarkdownV2",
+        # HTML instead of MarkdownV2 in order to not perform escaping
+        parse_mode="HTML",
         disable_web_page_preview=True,
         text=(
             "Follow this link and allow me access to your "
             f"Yandex.Disk — {yandex_oauth_url}"
             "\n\n"
-            "*IMPORTANT: don't give this link to anyone, "
-            "because it contains your sensitive information.*"
+            "<b>IMPORTANT: don't give this link to anyone, "
+            "because it contains your sensitive information.</b>"
             "\n\n"
-            f"_This link will expire in {insert_token_lifetime} minutes._"
+            f"<i>This link will expire in {insert_token_lifetime} minutes.</i>"
             "\n"
-            "_This link leads to Yandex page and redirects to bot page._"
+            "<i>This link leads to Yandex page and redirects to bot page.</i>"
         )
     )
 
@@ -148,15 +149,11 @@ def create_empty_yd_token(user: User) -> YandexDiskToken:
 
 
 def create_yandex_oauth_url(state: str) -> str:
-    """
-    :returns: Escaped (for Markdown) Yandex.OAuth URL.
-    """
     client_id = os.getenv("YD_API_APP_ID", "")
 
     return (
-        # noqa
         "https://oauth.yandex.ru/authorize?"
-        "response\_type=code"
-        f"&client\_id={client_id}"
+        "response_type=code"
+        f"&client_id={client_id}"
         f"&state={state}"
     )
