@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from flask import (
     request,
     abort,
@@ -6,12 +8,14 @@ from flask import (
 )
 import jwt
 
-from ....db import UserQuery
+from ....db import db, UserQuery, ChatQuery
+from ....api import yandex, telegram
 from .. import telegram_bot_blueprint as bp
 
 
 TEMPLATES = {
-    "error": "telegram_bot/yandex_disk_auth/error.html"
+    "error": "telegram_bot/yandex_disk_auth/error.html",
+    "success": "telegram_bot/yandex_disk_auth/success.html",
 }
 
 
@@ -77,4 +81,152 @@ def handle_error():
 
 
 def handle_success():
-    return "success"
+    errors = {
+        "invalid_credentials": {
+            "title": "Invalid credentials",
+            "description": "Your credentials is not valid."
+        },
+        "invalid_insert_token": {
+            "title": "Invalid credentials",
+            "description": (
+                "Your credentials is not valid anymore. "
+                "Request a new authorization link."
+            )
+        },
+        "link_expired": {
+            "title": "Authorization link has expired",
+            "description": (
+                "Your authorization link has expired. "
+                "Request a new one."
+            )
+        },
+        "internal_server_error": {
+            "title": "Internal server error",
+            "description": (
+                "Some error occured on server side. "
+                "Try later please."
+            )
+        }
+    }
+    encoded_state = request.args["state"]
+    decoded_state = None
+
+    try:
+        decoded_state = jwt.decode(
+            encoded_state,
+            current_app.secret_key.encode(),
+            algorithm="HS256"
+        )
+    except Exception:
+        return render_template(
+            TEMPLATES["error"],
+            error_title=errors["invalid_credentials"]["title"],
+            error_description=errors["invalid_credentials"]["description"]
+        )
+
+    incoming_user_id = decoded_state.get("user_id")
+    incoming_insert_token = decoded_state.get("insert_token")
+
+    if (
+        incoming_user_id is None or
+        incoming_insert_token is None
+    ):
+        return render_template(
+            TEMPLATES["error"],
+            error_title=errors["invalid_credentials"]["title"],
+            error_description=errors["invalid_credentials"]["description"]
+        )
+
+    db_user = UserQuery.get_user_by_id(int(incoming_user_id))
+
+    if (
+        db_user is None or
+        db_user.yandex_disk_token is None
+    ):
+        return render_template(
+            TEMPLATES["error"],
+            error_title=errors["invalid_credentials"]["title"],
+            error_description=errors["invalid_credentials"]["description"]
+        )
+
+    db_insert_token = None
+
+    try:
+        db_insert_token = db_user.yandex_disk_token.get_insert_token()
+    except Exception:
+        return render_template(
+            TEMPLATES["error"],
+            error_title=errors["link_expired"]["title"],
+            error_description=errors["link_expired"]["description"]
+        )
+
+    if (incoming_insert_token != db_insert_token):
+        return render_template(
+            TEMPLATES["error"],
+            error_title=errors["invalid_insert_token"]["title"],
+            error_description=errors["invalid_insert_token"]["description"]
+        )
+
+    code = request.args["code"]
+    yandex_response = None
+
+    try:
+        yandex_response = yandex.get_access_token(
+            grant_type="authorization_code",
+            code=code
+        )
+    except Exception:
+        return render_template(
+            TEMPLATES["error"],
+            error_title=errors["internal_server_error"]["title"],
+            error_description=errors["internal_server_error"]["description"]
+        )
+
+    if ("error" in yandex_response):
+        db_user.yandex_disk_token.clear_all_tokens()
+        db.session.commit()
+
+        return render_template(
+            TEMPLATES["error"],
+            raw_error_title=yandex_response["error"],
+            raw_error_description=yandex_response.get("error_description")
+        )
+
+    db_user.yandex_disk_token.clear_insert_token()
+    db_user.yandex_disk_token.set_access_token(
+        yandex_response["access_token"]
+    )
+    db_user.yandex_disk_token.access_token_type = (
+        yandex_response["token_type"]
+    )
+    db_user.yandex_disk_token.access_token_expires_in = (
+        yandex_response["expires_in"]
+    )
+    db_user.yandex_disk_token.set_refresh_token(
+        yandex_response["refresh_token"]
+    )
+    db.session.commit()
+
+    private_chat = ChatQuery.get_private_chat(db_user.id)
+
+    if (private_chat):
+        current_utc = datetime.utcnow(timezone.utc)
+        current_date = current_utc.strftime("%d.%m.%Y")
+        current_time = current_utc.strftime("%H:%M:%S")
+
+        telegram.send_message(
+            chat_id=private_chat.telegram_id,
+            parse_mode="MarkdownV2",
+            text=(
+                "*Yandex.Disk Token Granted*"
+                "\n\n"
+                "Token was attached to your account on "
+                f"{current_date} at {current_time} UTC."
+                "\n\n"
+                "If this wasn't you, you can detach this token by command."
+            )
+        )
+
+    return render_template(
+        TEMPLATES["success"]
+    )
