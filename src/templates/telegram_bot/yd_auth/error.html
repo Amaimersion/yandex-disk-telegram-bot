@@ -1,0 +1,45 @@
+{% extends "html5.html" %}
+
+
+{% block title %}
+  Authorization Failed
+{% endblock %}
+
+
+{% block main %}
+  <main>
+    <h1>
+      {% if error_title %}
+        {{ error_title | title }}
+      {% else %}
+        Unknown Error
+      {% endif %}
+    </h1>
+
+    <p>
+      {% if error_description %}
+        {{ error_description }}
+      {% else %}
+        Authorization in {{ config["PROJECT_APP_NAME"] }} failed due to an unknown error.
+      {% endif %}
+    </p>
+
+    {% if not error_title %}
+      <div>
+        Raw Error:
+
+        <hr />
+
+        {% if raw_error_title %}
+          Title: {{ raw_error_title }}
+        {% endif %}
+
+        <br />
+
+        {% if raw_error_description %}
+          Description: {{ raw_error_description }}
+        {% endif %}
+      </div>
+    {% endif %}
+  </main>
+{% endblock %}
