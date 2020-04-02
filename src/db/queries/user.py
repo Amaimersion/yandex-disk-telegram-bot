@@ -22,6 +22,13 @@ def get_random_user() -> UserOrNone:
     return User.query.order_by(func.random()).first()
 
 
+def get_user_by_id(id: int) -> UserOrNone:
+    """
+    Returns user with specified id.
+    """
+    return User.query.filter(User.id == id).first()
+
+
 def get_user_by_telegram_id(telegram_id: int) -> UserOrNone:
     """
     Returns user with specified telegram id.
