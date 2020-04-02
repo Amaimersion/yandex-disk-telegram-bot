@@ -1,7 +1,9 @@
 from flask import (
     Blueprint,
     request,
-    g
+    g,
+    abort,
+    render_template
 )
 
 from . import commands
@@ -196,3 +198,64 @@ def route_command(command: str) -> None:
     method = routes.get(command, commands.unknown_handler)
 
     method()
+
+
+@bp.route("/yandex_disk_auth", methods=["GET"])
+def yandex_disk_auth():
+    if (is_error_request()):
+        return handle_error()
+    elif (is_success_request()):
+        return handle_success()
+    else:
+        abort(400)
+
+
+def is_error_request():
+    state = request.args.get("state")
+    error = request.args.get("error")
+
+    return (
+        isinstance(state, str) and
+        isinstance(error, str)
+    )
+
+
+def is_success_request():
+    state = request.args.get("state")
+    code = request.args.get("code")
+
+    return (
+        isinstance(state, str) and
+        isinstance(code, str)
+    )
+
+
+def handle_error():
+    error = request.args.get("error")
+    error_description = request.args.get("error_description")
+    errors = {
+        "access_denied": {
+            "title": "Access Denied",
+            "description": "You denied the access to Yandex.Disk."
+        },
+        "unauthorized_client": {
+            "title": "Application is unavailable",
+            "description": (
+                "There is a problems with the application. "
+                "Try later please."
+            )
+        }
+    }
+    error_info = errors.get(error, {})
+
+    return render_template(
+        "telegram_bot/yd_auth/error.html",
+        error_title=error_info.get("title"),
+        error_description=error_info.get("description"),
+        raw_error_title=error,
+        raw_error_description=error_description
+    )
+
+
+def handle_success():
+    return "success"
