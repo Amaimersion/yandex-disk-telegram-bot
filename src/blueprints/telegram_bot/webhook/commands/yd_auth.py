@@ -56,7 +56,7 @@ def handle():
             # TODO: try to refresh
             pass
 
-    yd_token.clear_all_token_data()
+    yd_token.clear_all_tokens()
     yd_token.set_insert_token(
         secrets.token_hex(
             current_app.config["YANDEX_DISK_API_INSERT_TOKEN_BYTES"]

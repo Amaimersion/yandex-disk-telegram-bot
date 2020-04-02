@@ -288,18 +288,47 @@ class YandexDiskToken(db.Model):
             token_attribute_name="_insert_token"
         )
 
-    def clear_all_token_data(self) -> None:
+    def clear_access_token(self) -> None:
+        """
+        Clears all data that belongs to access token.
+
+        Perform a commit in order to save changes!
+        """
+        return self._clear_token(
+            token_attribute_name="_access",
+            expires_attribute_name="access_expires_in"
+        )
+
+    def clear_refresh_token(self) -> None:
+        """
+        Clears all data that belongs to refresh token.
+
+        Perform a commit in order to save changes!
+        """
+        return self._clear_token(
+            token_attribute_name="_refresh_token"
+        )
+
+    def clear_insert_token(self) -> None:
+        """
+        Clears all data that belongs to insert token.
+
+        Perform a commit in order to save changes!
+        """
+        return self._clear_token(
+            token_attribute_name="_insert_token",
+            expires_attribute_name="insert_token_expires_in"
+        )
+
+    def clear_all_tokens(self) -> None:
         """
         Clears all data that belongs to any kind of token.
 
-        Do a commit in order to save changes!
+        Perform a commit in order to save changes!
         """
-        self._access_token = null()
-        self.access_token_type = null()
-        self.access_token_expires_in = null()
-        self._refresh_token = null()
-        self._insert_token = null()
-        self.insert_token_expires_in = null()
+        self.clear_access_token()
+        self.clear_refresh_token()
+        self.clear_insert_token()
 
     def _set_token(self, **kwargs) -> None:
         """
@@ -374,6 +403,25 @@ class YandexDiskToken(db.Model):
             isinstance(value, str) and
             len(value) > 0
         )
+
+    def _clear_token(self, **kwargs) -> None:
+        """
+        Clears token data.
+
+        Perform a commit in order to save changes!
+
+        :param token_attribute_name: Name of token attribute in class.
+        :param expires_attribute_name:
+        Optional. Token lifetime in seconds.
+        If specified, expiration date will be cleared.
+        """
+        token_attribute_name = kwargs["token_attribute_name"]
+        expires_attribute_name = kwargs.get("expires_attribute_name")
+
+        self[token_attribute_name] = null()
+
+        if (expires_attribute_name):
+            self[expires_attribute_name] = null()
 
 
 class DataCorruptedError(Exception):
