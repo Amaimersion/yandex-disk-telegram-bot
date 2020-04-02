@@ -124,7 +124,7 @@ So, instead of `/telegram_bot/webhook` you can use something like this `/telegra
 
 2. Most likely it will take a while for Yandex moderators to check your app.
 
-3. Get your app ID at special Yandex page for your app.
+3. Get your app ID and password at special Yandex page for your app.
 
 4. At special Yandex page for your app find "Callback URI" settings and add this URI: `https://<your site>/telegram_bot_yandex_disk_auth`.
 
