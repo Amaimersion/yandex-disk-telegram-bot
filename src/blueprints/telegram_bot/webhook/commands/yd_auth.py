@@ -99,12 +99,14 @@ def handle():
                     chat_id=private_chat.telegram_id,
                     parse_mode="HTML",
                     text=(
-                        "<b>Yandex.Disk Token Updated</b>"
+                        "<b>Access to Yandex.Disk Updated</b>"
                         "\n\n"
-                        "Your token was updated "
-                        f"on {current_date} at {current_time} {current_timezone}."
+                        "Your granted access was updated automatically "
+                        f"on {current_date} at {current_time} "
+                        f"{current_timezone}."
                         "\n\n"
-                        "If this wasn't you, you can detach this token by command."
+                        "If it wasn't you, you can detach this access with "
+                        "/yandex_disk_revoke"
                     )
                 )
 

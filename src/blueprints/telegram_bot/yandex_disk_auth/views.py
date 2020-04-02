@@ -219,12 +219,13 @@ def handle_success():
             chat_id=private_chat.telegram_id,
             parse_mode="HTML",
             text=(
-                "<b>Yandex.Disk Token Granted</b>"
+                "<b>Access to Yandex.Disk Granted</b>"
                 "\n\n"
-                "Token was attached to your account "
+                "Access was attached to your account "
                 f"on {current_date} at {current_time} {current_timezone}."
                 "\n\n"
-                "If this wasn't you, you can detach this token by command."
+                "If it wasn't you, you can detach this access with "
+                "/yandex_disk_revoke"
             )
         )
 
