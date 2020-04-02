@@ -217,9 +217,9 @@ def handle_success():
 
         telegram.send_message(
             chat_id=private_chat.telegram_id,
-            parse_mode="MarkdownV2",
+            parse_mode="HTML",
             text=(
-                "*Yandex.Disk Token Granted*"
+                "<b>Yandex.Disk Token Granted</b>"
                 "\n\n"
                 "Token was attached to your account "
                 f"on {current_date} at {current_time} {current_timezone}."
