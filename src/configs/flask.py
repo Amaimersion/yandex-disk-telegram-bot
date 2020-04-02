@@ -25,6 +25,11 @@ class Config:
     # after a given number of seconds
     TELEGRAM_API_TIMEOUT = 5
 
+    # Yandex Oauth API
+    # stop waiting for a Yandex response
+    # after a given number of seconds
+    YANDEX_OAUTH_API_TIMEOUT = 30
+
     # Yandex.Disk API
     # `insert_token` (controls `INSERT` operation)
     # will contain n random bytes. Each byte will be
