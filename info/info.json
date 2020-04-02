@@ -24,6 +24,10 @@
         {
             "command": "yandex_disk_auth",
             "description": "Give me an access to your Yandex.Disk"
+        },
+        {
+            "command": "yandex_disk_revoke",
+            "description": "Revoke granted access to your Yandex.Disk"
         }
     ]
 }
