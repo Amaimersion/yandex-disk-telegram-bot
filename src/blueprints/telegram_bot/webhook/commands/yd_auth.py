@@ -149,7 +149,7 @@ def create_empty_yd_token(user: User) -> YandexDiskToken:
 
 
 def create_yandex_oauth_url(state: str) -> str:
-    client_id = os.getenv("YD_API_APP_ID", "")
+    client_id = os.getenv("YANDEX_OAUTH_API_APP_ID", "")
 
     return (
         "https://oauth.yandex.ru/authorize?"
