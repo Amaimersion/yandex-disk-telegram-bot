@@ -22,7 +22,7 @@
             "description": "Read about me"
         },
         {
-            "command": "yandex_disk_auth",
+            "command": "yandex_disk_authorization",
             "description": "Give me an access to your Yandex.Disk"
         },
         {
