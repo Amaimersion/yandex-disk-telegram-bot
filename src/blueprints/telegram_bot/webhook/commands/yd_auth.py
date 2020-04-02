@@ -1,5 +1,6 @@
 import os
 import secrets
+from datetime import datetime, timezone
 
 from flask import g, current_app
 import jwt
@@ -13,7 +14,7 @@ from .....db import (
     ChatQuery
 )
 from .....db.models import ChatType
-from .....api import telegram
+from .....api import telegram, yandex
 
 
 def handle():
@@ -60,6 +61,8 @@ def handle():
 
             return
 
+    refresh_needed = False
+
     if (yd_token.have_access_token()):
         try:
             yd_token.get_access_token()
@@ -78,11 +81,34 @@ def handle():
         except Exception:
             # `access_token` is expired (most probably) or
             # data in DB is invalid
-            pass
+            refresh_needed = True
 
-        if (yd_token.have_refresh_token()):
-            # TODO: try to refresh
-            pass
+    if (refresh_needed):
+        success = refresh_access_token(yd_token)
+
+        if (success):
+            private_chat = ChatQuery.get_private_chat(user.id)
+
+            if (private_chat):
+                current_datetime = datetime.now(timezone.utc)
+                current_date = current_datetime.strftime("%d.%m.%Y")
+                current_time = current_datetime.strftime("%H:%M:%S")
+                current_timezone = current_datetime.strftime("%Z")
+
+                telegram.send_message(
+                    chat_id=private_chat.telegram_id,
+                    parse_mode="HTML",
+                    text=(
+                        "<b>Yandex.Disk Token Updated</b>"
+                        "\n\n"
+                        "Your token was updated "
+                        f"on {current_date} at {current_time} {current_timezone}."
+                        "\n\n"
+                        "If this wasn't you, you can detach this token by command."
+                    )
+                )
+
+            return
 
     yd_token.clear_all_tokens()
     yd_token.set_insert_token(
@@ -212,3 +238,41 @@ def create_yandex_oauth_url(state: str) -> str:
         f"&client_id={client_id}"
         f"&state={state}"
     )
+
+
+def refresh_access_token(yd_token) -> bool:
+    refresh_token = yd_token.get_refresh_token()
+
+    if (refresh_token is None):
+        return False
+
+    yandex_response = None
+
+    try:
+        yandex_response = yandex.get_access_token(
+            grant_type="refresh_token",
+            refresh_token=refresh_token
+        )
+    except Exception as e:
+        print(e)
+        return False
+
+    if ("error" in yandex_response):
+        return False
+
+    yd_token.clear_insert_token()
+    yd_token.set_access_token(
+        yandex_response["access_token"]
+    )
+    yd_token.access_token_type = (
+        yandex_response["token_type"]
+    )
+    yd_token.access_token_expires_in = (
+        yandex_response["expires_in"]
+    )
+    yd_token.set_refresh_token(
+        yandex_response["refresh_token"]
+    )
+    db.session.commit()
+
+    return True
