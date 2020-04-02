@@ -216,7 +216,9 @@ def is_error_request():
 
     return (
         isinstance(state, str) and
-        isinstance(error, str)
+        len(state) > 0 and
+        isinstance(error, str) and
+        len(error) > 0
     )
 
 
@@ -226,7 +228,9 @@ def is_success_request():
 
     return (
         isinstance(state, str) and
-        isinstance(code, str)
+        len(state) > 0 and
+        isinstance(code, str) and
+        len(code) > 0
     )
 
 
