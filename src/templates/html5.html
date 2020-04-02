@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+  <title>
+    {% block title %}
+      {% if title %}
+        {{ title }}
+      {% else %}
+        {{ config["PROJECT_APP_NAME"] }}
+      {% endif %}
+    {% endblock %}
+  </title>
+
+  {% block head %}
+  {% endblock %}
+</head>
+
+
+<body>
+  {% block start_body %}
+  {% endblock %}
+
+  {% block body %}
+    {% block header %}
+    {% endblock %}
+
+    {% block main %}
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+  {% endblock %}
+
+  {% block end_body %}
+  {% endblock %}
+</body>
+
+
+</html>
