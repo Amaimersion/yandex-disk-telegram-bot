@@ -72,7 +72,7 @@ def handle():
                 text=(
                     "You already gave me access to your Yandex.Disk."
                     "\n"
-                    "If you want to revoke access, then run "
+                    "If you want to revoke access, then do that with "
                     "/yandex_disk_revoke"
                 )
             )
