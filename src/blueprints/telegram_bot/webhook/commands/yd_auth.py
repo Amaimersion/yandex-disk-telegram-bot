@@ -59,11 +59,11 @@ def handle():
     yd_token.clear_all_token_data()
     yd_token.set_insert_token(
         secrets.token_hex(
-            current_app.config["YD_API_INSERT_TOKEN_BYTES"]
+            current_app.config["YANDEX_DISK_API_INSERT_TOKEN_BYTES"]
         )
     )
     yd_token.insert_token_expires_in = (
-        current_app.config["YD_API_INSERT_TOKEN_LIFETIME"]
+        current_app.config["YANDEX_DISK_API_INSERT_TOKEN_LIFETIME"]
     )
     db.session.commit()
 

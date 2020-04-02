@@ -29,11 +29,11 @@ class Config:
     # `insert_token` (controls `INSERT` operation)
     # will contain n random bytes. Each byte will be
     # converted to two hex digits
-    YD_API_INSERT_TOKEN_BYTES = 8
+    YANDEX_DISK_API_INSERT_TOKEN_BYTES = 8
     # lifetime of `insert_token` in seconds starting
     # from date of issue. It is better to find
     # best combination between `bytes` and `lifetime`
-    YD_API_INSERT_TOKEN_LIFETIME = 60 * 10
+    YANDEX_DISK_API_INSERT_TOKEN_LIFETIME = 60 * 10
 
     # Project
     # name of app that will be used in HTML and so on
