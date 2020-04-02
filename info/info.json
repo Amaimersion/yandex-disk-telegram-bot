@@ -27,7 +27,7 @@
         },
         {
             "command": "yandex_disk_revoke",
-            "description": "Revoke granted access to your Yandex.Disk"
+            "description": "Revoke my access to your Yandex.Disk"
         }
     ]
 }
