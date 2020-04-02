@@ -210,9 +210,10 @@ def handle_success():
     private_chat = ChatQuery.get_private_chat(db_user.id)
 
     if (private_chat):
-        current_utc = datetime.utcnow(timezone.utc)
-        current_date = current_utc.strftime("%d.%m.%Y")
-        current_time = current_utc.strftime("%H:%M:%S")
+        current_datetime = datetime.now(timezone.utc)
+        current_date = current_datetime.strftime("%d.%m.%Y")
+        current_time = current_datetime.strftime("%H:%M:%S")
+        current_timezone = current_datetime.strftime("%Z")
 
         telegram.send_message(
             chat_id=private_chat.telegram_id,
@@ -220,8 +221,8 @@ def handle_success():
             text=(
                 "*Yandex.Disk Token Granted*"
                 "\n\n"
-                "Token was attached to your account on "
-                f"{current_date} at {current_time} UTC."
+                "Token was attached to your account "
+                f"on {current_date} at {current_time} {current_timezone}."
                 "\n\n"
                 "If this wasn't you, you can detach this token by command."
             )
