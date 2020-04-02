@@ -1,6 +1,6 @@
 from flask import g
 
-from ....api import telegram
+from .....api import telegram
 
 
 def handle():

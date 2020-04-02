@@ -4,7 +4,7 @@ import secrets
 from flask import g, current_app
 import jwt
 
-from ....db import (
+from .....db import (
     db,
     User,
     Chat,
@@ -12,8 +12,8 @@ from ....db import (
     UserQuery,
     ChatQuery
 )
-from ....db.models import ChatType
-from ....api import telegram
+from .....db.models import ChatType
+from .....api import telegram
 
 
 def handle():
