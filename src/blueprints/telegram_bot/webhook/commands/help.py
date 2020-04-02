@@ -7,26 +7,30 @@ def handle():
     """
     Handles `/help` command.
     """
+    text = (
+        "I can help you to interact with Yandex.Disk."
+        "\n\n"
+        "Send me some data (images, files, etc.) and "
+        "i think i will handle this. "
+        "Moreover, you can control me by sending these commands:"
+        "\n\n"
+        "<b>Settings</b>"
+        "\n"
+        "/settings — full list of settings"
+        "\n\n"
+        "<b>Yandex.Disk Access</b>"
+        "\n"
+        "/yandex_disk_authorization — give me an access to your Yandex.Disk"
+        "\n"
+        "/yandex_disk_revoke — revoke my access to your Yandex.Disk"
+        "\n\n"
+        "<b>Information</b>"
+        "\n"
+        "/about — read about me"
+    )
+
     telegram.send_message(
         chat_id=g.message["chat"]["id"],
-        parse_mode="Markdown",
-        text=(
-            "I can help you to interact with Yandex.Disk."
-            "\n\n"
-            "Send me some data (images, files, etc.) and "
-            "i think i will handle this. "
-            "Moreover, you can control me by sending these commands:"
-            "\n\n"
-            "*Settings*"
-            "\n"
-            "/settings — full list of settings"
-            "\n\n"
-            "*Yandex.Disk Authorization*"
-            "\n"
-            "/yandex\_disk\_auth — give me an access to your Yandex.Disk"
-            "\n\n"
-            "*Information*"
-            "\n"
-            "/about — read about me"
-        )
+        parse_mode="HTML",
+        text=text
     )
