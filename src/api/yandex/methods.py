@@ -8,4 +8,4 @@ def get_access_token(**kwargs) -> dict:
     """
     https://yandex.ru/dev/oauth/doc/dg/reference/auto-code-client-docpage/#auto-code-client__get-token
     """
-    return make_oauth_request("/token", kwargs)
+    return make_oauth_request("token", kwargs)
