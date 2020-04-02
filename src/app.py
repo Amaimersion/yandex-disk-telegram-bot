@@ -4,7 +4,7 @@ Manages the app creation and configuration process.
 
 import os
 
-from flask import Flask
+from flask import Flask, redirect, url_for
 
 from .configs.flask import config as Config
 from .db import db, migrate
@@ -20,6 +20,7 @@ def create_app(config_name: str = None) -> Flask:
     configure_app(app, config_name)
     configure_db(app)
     configure_blueprints(app)
+    configure_redirects(app)
 
     return app
 
@@ -52,3 +53,17 @@ def configure_blueprints(app: Flask):
         telegram_bot_blueprint,
         url_prefix="/telegram_bot"
     )
+
+
+def configure_redirects(app: Flask):
+    """
+    Configures redirects.
+    """
+    @app.route("/favicon.ico")
+    def favicon():
+        return redirect(
+            url_for(
+                "static",
+                filename="favicon.ico"
+            )
+        )
