@@ -22,14 +22,24 @@ def handle():
 
     Authorization of bot in user Yandex.Disk
     """
-    incoming_telegram_id = g.user["id"]
-    user = UserQuery.get_user_by_telegram_id(incoming_telegram_id)
+    incoming_user_id = g.user["id"]
+    incoming_chat_id = g.chat["id"]
+    user = UserQuery.get_user_by_telegram_id(incoming_user_id)
 
     if (user is None):
         try:
             user = register_user()
         except Exception as e:
             print(e)
+
+            telegram.send_message(
+                chat_id=incoming_chat_id,
+                text=(
+                    "Can't process you because of internal error. "
+                    "Try later please."
+                )
+            )
+
             return
 
     yd_token = user.yandex_disk_token
@@ -39,11 +49,29 @@ def handle():
             yd_token = create_empty_yd_token(user)
         except Exception as e:
             print(e)
+
+            telegram.send_message(
+                chat_id=incoming_chat_id,
+                text=(
+                    "Can't process you because of internal error. "
+                    "Try later please."
+                )
+            )
+
             return
 
     if (yd_token.have_access_token()):
         try:
             yd_token.get_access_token()
+
+            telegram.send_message(
+                chat_id=incoming_chat_id,
+                text=(
+                    "You already gave me access to your Yandex.Disk."
+                    "\n"
+                    "If you want to revoke access, then run command."
+                )
+            )
 
             # `access_token` is valid
             return
@@ -67,16 +95,34 @@ def handle():
     )
     db.session.commit()
 
-    insert_token = ""
+    insert_token = None
 
     try:
         insert_token = yd_token.get_insert_token()
     except Exception as e:
         print(e)
+
+        telegram.send_message(
+            chat_id=incoming_chat_id,
+            text=(
+                "Can't process you because of internal error. "
+                "Try later please."
+            )
+        )
+
         return
 
     if (insert_token is None):
         print("Error: Insert Token is NULL")
+
+        telegram.send_message(
+            chat_id=incoming_chat_id,
+            text=(
+                "Can't process you because of internal error. "
+                "Try later please."
+            )
+        )
+
         return
 
     state = jwt.encode(
@@ -94,12 +140,21 @@ def handle():
     )
 
     if (private_chat is None):
-        print("Error: Not found any private chats for user")
+        telegram.send_message(
+            chat_id=incoming_chat_id,
+            text=(
+                "I don't know any private chat "
+                "with you to send authorization link "
+                "with your sensitive information. Please "
+                "contact me first through private chat "
+                "(direct message). After that request a new link."
+            )
+        )
+
         return
 
     telegram.send_message(
         chat_id=private_chat.telegram_id,
-        # HTML instead of MarkdownV2 in order to not perform escaping
         parse_mode="HTML",
         disable_web_page_preview=True,
         text=(
