@@ -35,6 +35,10 @@ class Config:
     # best combination between `bytes` and `lifetime`
     YD_API_INSERT_TOKEN_LIFETIME = 60 * 10
 
+    # Project
+    # name of app that will be used in HTML and so on
+    PROJECT_APP_NAME = "Yandex.Disk Bot"
+
 
 class ProductionConfig(Config):
     DEBUG = False
