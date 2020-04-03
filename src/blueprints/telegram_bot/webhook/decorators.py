@@ -13,6 +13,7 @@ from ....db.models import (
     ChatType
 )
 from ....api import telegram
+from . import commands
 
 
 def register_guest(func):
@@ -85,6 +86,30 @@ def get_db_data(func):
         g.db_private_chat = ChatQuery.get_private_chat(
             g.db_user.id
         )
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def yd_access_token_required(func):
+    """
+    Checks if incoming user have Yandex.Disk access token.
+    If not, then that user will be redirected to another command
+    for getting Y.D. token.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user = UserQuery.get_user_by_telegram_id(
+            g.incoming_user["id"]
+        )
+
+        if (
+            (user is None) or
+            (user.yandex_disk_token is None) or
+            (not user.yandex_disk_token.have_access_token())
+        ):
+            return commands.yd_auth_handler()
 
         return func(*args, **kwargs)
 
