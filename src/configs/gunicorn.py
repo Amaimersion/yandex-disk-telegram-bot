@@ -17,6 +17,8 @@ loglevel = ("debug" if IS_DEVELOPMENT else "info")
 syslog = True
 sendfile = True
 bind = "unix:/tmp/nginx-gunicorn.socket"
+# http://docs.gunicorn.org/en/stable/deploy.html#nginx-configuration
+forwarded_allow_ips = "*"
 keepalive = 15
 # it is I/O bound app
 worker_class = "gevent"
