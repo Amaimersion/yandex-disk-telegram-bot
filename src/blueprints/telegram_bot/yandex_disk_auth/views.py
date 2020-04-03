@@ -54,6 +54,8 @@ def is_success_request():
 
 
 def handle_error():
+    # TODO: remove user insert token.
+
     error = request.args.get("error")
     error_description = request.args.get("error_description")
     errors = {
