@@ -30,7 +30,7 @@ def handle():
     )
 
     telegram.send_message(
-        chat_id=g.incoming_message["id"],
+        chat_id=g.incoming_chat["id"],
         parse_mode="HTML",
         text=text
     )
