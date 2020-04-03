@@ -71,15 +71,19 @@ def get_db_data(func):
     `g.incoming_chat`. Data can be `None` if incoming
     data not exists in DB.
 
-    DB data will be available as: `g.db_user`, `g.db_chat`.
+    DB data will be available as: `g.db_user`, `g.db_incoming_chat`,
+    `g.db_private_chat`.
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
         g.db_user = UserQuery.get_user_by_telegram_id(
             g.incoming_user["id"]
         )
-        g.db_chat = ChatQuery.get_chat_by_telegram_id(
+        g.db_incoming_chat = ChatQuery.get_chat_by_telegram_id(
             g.incoming_chat["id"]
+        )
+        g.db_private_chat = ChatQuery.get_private_chat(
+            g.db_user.id
         )
 
         return func(*args, **kwargs)
