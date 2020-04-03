@@ -2,32 +2,25 @@ from datetime import datetime, timezone
 
 from flask import g
 
-from .....db import (
-    db,
-    UserQuery,
-    ChatQuery
-)
+from .....db import db
 from .....api import telegram
+from ..decorators import get_db_data
 
 
+@get_db_data
 def handle():
     """
     Handles `/yandex_disk_revoke` command.
 
     Revokes bot access to user Yandex.Disk
     """
-    incoming_user_id = g.incoming_user["id"]
-    user = UserQuery.get_user_by_telegram_id(incoming_user_id)
-    yd_token = None
-    private_chat = None
-
-    if (user is not None):
-        yd_token = user.yandex_disk_token
-        private_chat = ChatQuery.get_private_chat(user.id)
+    user = g.db_user
+    private_chat = g.db_private_chat
 
     if (
-        (yd_token is None) or
-        (not yd_token.have_access_token())
+        (user is None) or
+        (user.yandex_disk_token is None) or
+        (not user.yandex_disk_token.have_access_token())
     ):
         if (private_chat):
             telegram.send_message(
@@ -41,7 +34,7 @@ def handle():
 
         return
 
-    yd_token.clear_all_tokens()
+    user.yandex_disk_token.clear_all_tokens()
     db.session.commit()
 
     if (private_chat):
