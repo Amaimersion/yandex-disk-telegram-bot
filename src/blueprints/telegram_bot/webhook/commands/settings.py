@@ -11,7 +11,7 @@ def handle():
     Handles `/settings` command.
     """
     user = g.db_user
-    private_chat = g.private_chat
+    private_chat = g.db_private_chat
 
     if (private_chat is None):
         return
