@@ -48,6 +48,8 @@ class Config:
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
+    USE_X_SENDFILE = True
+    PREFERRED_URL_SCHEME = "HTTPS"
 
 
 class DevelopmentConfig(Config):
