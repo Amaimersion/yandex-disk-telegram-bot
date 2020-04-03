@@ -25,7 +25,10 @@ def handle():
         yd_token = user.yandex_disk_token
         private_chat = ChatQuery.get_private_chat(user.id)
 
-    if (yd_token is None):
+    if (
+        (yd_token is None) or
+        (not yd_token.have_access_token())
+    ):
         if (private_chat):
             telegram.send_message(
                 chat_id=private_chat.telegram_id,
