@@ -50,6 +50,7 @@ def handle():
         telegram.send_message(
             chat_id=private_chat.telegram_id,
             parse_mode="HTML",
+            disable_web_page_preview=True,
             text=(
                 "<b>Access to Yandex.Disk Revoked</b>"
                 "\n\n"
