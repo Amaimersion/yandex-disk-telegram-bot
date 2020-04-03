@@ -185,6 +185,7 @@ def route_command(command: str) -> None:
         "/start": commands.help_handler,
         "/help": commands.help_handler,
         "/about": commands.about_handler,
+        "/settings": commands.settings_handler,
         "/yandex_disk_authorization": commands.yd_auth_handler,
         "/yandex_disk_revoke": commands.yd_revoke_handler
     }
