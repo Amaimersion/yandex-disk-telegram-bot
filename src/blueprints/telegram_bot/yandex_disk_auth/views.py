@@ -117,7 +117,7 @@ def handle_success():
 
     try:
         encoded_state = base64.urlsafe_b64decode(
-            base64_state
+            base64_state.encode()
         ).decode()
     except Exception:
         return render_template(
