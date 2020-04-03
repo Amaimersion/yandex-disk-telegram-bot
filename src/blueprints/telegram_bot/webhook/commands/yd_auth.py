@@ -7,10 +7,7 @@ import jwt
 
 from .....db import (
     db,
-    User,
-    YandexDiskToken,
-    UserQuery,
-    ChatQuery
+    YandexDiskToken
 )
 from .....api import telegram, yandex
 from ..decorators import (
@@ -28,7 +25,8 @@ def handle():
     Authorization of bot in user Yandex.Disk
     """
     user = g.db_user
-    chat = g.db_chat
+    incoming_chat = g.db_incoming_chat
+    private_chat = g.db_private_chat
     yd_token = user.yandex_disk_token
 
     if (yd_token is None):
@@ -38,7 +36,7 @@ def handle():
             print(e)
 
             telegram.send_message(
-                chat_id=chat.telegram_id,
+                chat_id=incoming_chat.telegram_id,
                 text=(
                     "Can't process you because of internal error. "
                     "Try later please."
@@ -53,15 +51,16 @@ def handle():
         try:
             yd_token.get_access_token()
 
-            telegram.send_message(
-                chat_id=chat.telegram_id,
-                text=(
-                    "You already gave me access to your Yandex.Disk."
-                    "\n"
-                    "If you want to revoke access, then do that with "
-                    "/yandex_disk_revoke"
+            if (private_chat):
+                telegram.send_message(
+                    chat_id=private_chat.telegram_id,
+                    text=(
+                        "You already gave me access to your Yandex.Disk."
+                        "\n"
+                        "If you want to revoke access, then do that with "
+                        "/yandex_disk_revoke"
+                    )
                 )
-            )
 
             # `access_token` is valid
             return
@@ -74,8 +73,6 @@ def handle():
         success = refresh_access_token(yd_token)
 
         if (success):
-            private_chat = ChatQuery.get_private_chat(user.id)
-
             if (private_chat):
                 current_datetime = datetime.now(timezone.utc)
                 current_date = current_datetime.strftime("%d.%m.%Y")
@@ -118,7 +115,7 @@ def handle():
         print(e)
 
         telegram.send_message(
-            chat_id=chat.telegram_id,
+            chat_id=incoming_chat.telegram_id,
             text=(
                 "Can't process you because of internal error. "
                 "Try later please."
@@ -131,7 +128,7 @@ def handle():
         print("Error: Insert Token is NULL")
 
         telegram.send_message(
-            chat_id=chat.telegram_id,
+            chat_id=incoming_chat.telegram_id,
             text=(
                 "Can't process you because of internal error. "
                 "Try later please."
@@ -149,14 +146,13 @@ def handle():
         algorithm="HS256"
     ).decode()
     yandex_oauth_url = create_yandex_oauth_url(state)
-    private_chat = ChatQuery.get_private_chat(user.id)
     insert_token_lifetime = int(
         yd_token.insert_token_expires_in / 60
     )
 
     if (private_chat is None):
         telegram.send_message(
-            chat_id=chat.telegram_id,
+            chat_id=incoming_chat.telegram_id,
             text=(
                 "I don't know any private chat "
                 "with you to send authorization link "
@@ -186,7 +182,7 @@ def handle():
     )
 
 
-def create_empty_yd_token(user: User) -> YandexDiskToken:
+def create_empty_yd_token(user) -> YandexDiskToken:
     new_yd_token = YandexDiskToken(user=user)
 
     db.session.add(new_yd_token)
