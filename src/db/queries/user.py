@@ -36,6 +36,13 @@ def get_user_by_telegram_id(telegram_id: int) -> UserOrNone:
     return User.query.filter(User.telegram_id == telegram_id).first()
 
 
+def exists(telegram_id: int) -> bool:
+    """
+    Checks if user is exists in DB.
+    """
+    return (get_user_by_telegram_id(telegram_id) is not None)
+
+
 def _get_query_all_users_without_yd_token():
     """
     Returns query for all users which doesn't have Yandex.Disk token

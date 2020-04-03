@@ -8,15 +8,15 @@ import jwt
 from .....db import (
     db,
     User,
-    Chat,
     YandexDiskToken,
     UserQuery,
     ChatQuery
 )
-from .....db.models import ChatType
 from .....api import telegram, yandex
+from ..decorators import register_guest
 
 
+@register_guest
 def handle():
     """
     Handles `/yandex_disk_authorization` command.
@@ -26,23 +26,6 @@ def handle():
     incoming_user_id = g.user["id"]
     incoming_chat_id = g.chat["id"]
     user = UserQuery.get_user_by_telegram_id(incoming_user_id)
-
-    if (user is None):
-        try:
-            user = register_user()
-        except Exception as e:
-            print(e)
-
-            telegram.send_message(
-                chat_id=incoming_chat_id,
-                text=(
-                    "Can't process you because of internal error. "
-                    "Try later please."
-                )
-            )
-
-            return
-
     yd_token = user.yandex_disk_token
 
     if (yd_token is None):
@@ -198,29 +181,6 @@ def handle():
             "<i>This link leads to Yandex page and redirects to bot page.</i>"
         )
     )
-
-
-def register_user() -> User:
-    # TODO: check if user came from different chat,
-    # then also register that chat in db.
-
-    incoming_user = g.user
-    incoming_chat = g.chat
-
-    new_user = User(
-        telegram_id=incoming_user["id"],
-        is_bot=incoming_user.get("is_bot", False)
-    )
-    Chat(
-        telegram_id=incoming_chat["id"],
-        type=ChatType.get(incoming_chat["type"]),
-        user=new_user
-    )
-
-    db.session.add(new_user)
-    db.session.commit()
-
-    return new_user
 
 
 def create_empty_yd_token(user: User) -> YandexDiskToken:
