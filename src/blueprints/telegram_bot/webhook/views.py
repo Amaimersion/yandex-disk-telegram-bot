@@ -34,9 +34,9 @@ def webhook():
     if (not message_is_valid(message)):
         return error_response()
 
-    g.message = message
-    g.user = message["from"]
-    g.chat = message["chat"]
+    g.incoming_message = message
+    g.incoming_user = message["from"]
+    g.incoming_chat = message["chat"]
 
     entities = get_entities(message)
     message_text = message["text"]

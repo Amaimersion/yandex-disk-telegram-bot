@@ -8,7 +8,7 @@ def handle():
     Handles `/about` command.
     """
     telegram.send_message(
-        chat_id=g.message["chat"]["id"],
+        chat_id=g.incoming_message["id"],
         disable_web_page_preview=True,
         text=(
             "I'm free and open-source bot that allows "

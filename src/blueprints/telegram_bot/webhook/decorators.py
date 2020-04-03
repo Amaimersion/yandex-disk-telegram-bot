@@ -26,8 +26,8 @@ def register_guest(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        incoming_user = g.user
-        incoming_chat = g.chat
+        incoming_user = g.incoming_user
+        incoming_chat = g.incoming_chat
 
         if (UserQuery.exists(incoming_user["id"])):
             return func(*args, **kwargs)

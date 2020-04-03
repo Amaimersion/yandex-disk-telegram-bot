@@ -8,7 +8,7 @@ def handle():
     Handles unknown command.
     """
     telegram.send_message(
-        chat_id=g.message["chat"]["id"],
+        chat_id=g.incoming_message["id"],
         text=(
             "I can't understand this command. "
             "See command list or type /help"

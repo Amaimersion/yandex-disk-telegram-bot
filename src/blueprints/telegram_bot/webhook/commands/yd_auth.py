@@ -23,8 +23,8 @@ def handle():
 
     Authorization of bot in user Yandex.Disk
     """
-    incoming_user_id = g.user["id"]
-    incoming_chat_id = g.chat["id"]
+    incoming_user_id = g.incoming_user["id"]
+    incoming_chat_id = g.incoming_chat["id"]
     user = UserQuery.get_user_by_telegram_id(incoming_user_id)
     yd_token = user.yandex_disk_token
 

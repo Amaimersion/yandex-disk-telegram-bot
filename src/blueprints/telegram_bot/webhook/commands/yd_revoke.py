@@ -16,7 +16,7 @@ def handle():
 
     Revokes bot access to user Yandex.Disk
     """
-    incoming_user_id = g.user["id"]
+    incoming_user_id = g.incoming_user["id"]
     user = UserQuery.get_user_by_telegram_id(incoming_user_id)
     yd_token = None
     private_chat = None
