@@ -6,7 +6,8 @@ from ....db import (
     db,
     User,
     UserQuery,
-    Chat
+    Chat,
+    ChatQuery
 )
 from ....db.models import (
     ChatType
@@ -19,7 +20,7 @@ def register_guest(func):
     Checks if incoming user exists in DB.
     If not, then that user will be created and saved.
 
-    Row will be created in next tables: `users`, `chats`.
+    Rows will be created in next tables: `users`, `chats`.
     """
     # TODO: check if user came from different chat,
     # then also register that chat in db.
@@ -58,6 +59,28 @@ def register_guest(func):
             )
 
             return
+
+        return func(*args, **kwargs)
+
+    return wrapper
+
+
+def get_db_data(func):
+    """
+    Gets data from DB based on `g.incoming_user` and
+    `g.incoming_chat`. Data can be `None` if incoming
+    data not exists in DB.
+
+    DB data will be available as: `g.db_user`, `g.db_chat`.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        g.db_user = UserQuery.get_user_by_telegram_id(
+            g.incoming_user["id"]
+        )
+        g.db_chat = ChatQuery.get_chat_by_telegram_id(
+            g.incoming_chat["id"]
+        )
 
         return func(*args, **kwargs)
 

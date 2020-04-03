@@ -13,19 +13,22 @@ from .....db import (
     ChatQuery
 )
 from .....api import telegram, yandex
-from ..decorators import register_guest
+from ..decorators import (
+    register_guest,
+    get_db_data
+)
 
 
 @register_guest
+@get_db_data
 def handle():
     """
     Handles `/yandex_disk_authorization` command.
 
     Authorization of bot in user Yandex.Disk
     """
-    incoming_user_id = g.incoming_user["id"]
-    incoming_chat_id = g.incoming_chat["id"]
-    user = UserQuery.get_user_by_telegram_id(incoming_user_id)
+    user = g.db_user
+    chat = g.db_chat
     yd_token = user.yandex_disk_token
 
     if (yd_token is None):
@@ -35,7 +38,7 @@ def handle():
             print(e)
 
             telegram.send_message(
-                chat_id=incoming_chat_id,
+                chat_id=chat.telegram_id,
                 text=(
                     "Can't process you because of internal error. "
                     "Try later please."
@@ -51,7 +54,7 @@ def handle():
             yd_token.get_access_token()
 
             telegram.send_message(
-                chat_id=incoming_chat_id,
+                chat_id=chat.telegram_id,
                 text=(
                     "You already gave me access to your Yandex.Disk."
                     "\n"
@@ -115,7 +118,7 @@ def handle():
         print(e)
 
         telegram.send_message(
-            chat_id=incoming_chat_id,
+            chat_id=chat.telegram_id,
             text=(
                 "Can't process you because of internal error. "
                 "Try later please."
@@ -128,7 +131,7 @@ def handle():
         print("Error: Insert Token is NULL")
 
         telegram.send_message(
-            chat_id=incoming_chat_id,
+            chat_id=chat.telegram_id,
             text=(
                 "Can't process you because of internal error. "
                 "Try later please."
@@ -153,7 +156,7 @@ def handle():
 
     if (private_chat is None):
         telegram.send_message(
-            chat_id=incoming_chat_id,
+            chat_id=chat.telegram_id,
             text=(
                 "I don't know any private chat "
                 "with you to send authorization link "

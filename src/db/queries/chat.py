@@ -28,3 +28,10 @@ def get_private_chat(user_id: int) -> ChatOrNone:
         Chat.user_id == user_id,
         Chat.type == ChatType.PRIVATE
     ).first()
+
+
+def get_chat_by_telegram_id(telegram_id: int) -> ChatOrNone:
+    """
+    Returns chat with specified telegram id.
+    """
+    return Chat.query.filter(Chat.telegram_id == telegram_id).first()
