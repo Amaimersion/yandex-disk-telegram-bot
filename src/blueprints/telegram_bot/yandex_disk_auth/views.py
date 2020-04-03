@@ -19,7 +19,7 @@ TEMPLATES = {
 }
 
 
-@bp.route("/yandex_disk_auth", methods=["GET"])
+@bp.route("/yandex_disk_authorization", methods=["GET"])
 def yandex_disk_auth():
     if (is_error_request()):
         return handle_error()
