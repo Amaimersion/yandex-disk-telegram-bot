@@ -49,7 +49,7 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     USE_X_SENDFILE = True
-    PREFERRED_URL_SCHEME = "HTTPS"
+    PREFERRED_URL_SCHEME = "https"
 
 
 class DevelopmentConfig(Config):
