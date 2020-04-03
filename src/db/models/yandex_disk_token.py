@@ -295,8 +295,8 @@ class YandexDiskToken(db.Model):
         Perform a commit in order to save changes!
         """
         return self._clear_token(
-            token_attribute_name="_access",
-            expires_attribute_name="access_expires_in"
+            token_attribute_name="_access_token",
+            expires_attribute_name="access_token_expires_in"
         )
 
     def clear_refresh_token(self) -> None:
