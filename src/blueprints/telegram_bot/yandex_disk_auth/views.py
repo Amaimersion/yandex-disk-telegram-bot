@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, timezone
 
 from flask import (
@@ -110,8 +111,20 @@ def handle_success():
             )
         }
     }
-    encoded_state = request.args["state"]
+    base64_state = request.args["state"]
+    encoded_state = None
     decoded_state = None
+
+    try:
+        encoded_state = base64.urlsafe_b64decode(
+            base64_state
+        ).decode()
+    except Exception:
+        return render_template(
+            TEMPLATES["error"],
+            error_title=errors["invalid_credentials"]["title"],
+            error_description=errors["invalid_credentials"]["description"]
+        )
 
     try:
         decoded_state = jwt.decode(
