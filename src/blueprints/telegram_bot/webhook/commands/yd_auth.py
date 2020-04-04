@@ -15,6 +15,10 @@ from ..decorators import (
     register_guest,
     get_db_data
 )
+from ..responses import (
+    request_private_chat,
+    cancel_command
+)
 
 
 @register_guest
@@ -35,16 +39,7 @@ def handle():
             yd_token = create_empty_yd_token(user)
         except Exception as e:
             print(e)
-
-            telegram.send_message(
-                chat_id=incoming_chat.telegram_id,
-                text=(
-                    "Can't process you because of internal error. "
-                    "Try later please."
-                )
-            )
-
-            return
+            return cancel_command(incoming_chat.telegram_id)
 
     refresh_needed = False
 
@@ -114,29 +109,11 @@ def handle():
         insert_token = yd_token.get_insert_token()
     except Exception as e:
         print(e)
-
-        telegram.send_message(
-            chat_id=incoming_chat.telegram_id,
-            text=(
-                "Can't process you because of internal error. "
-                "Try later please."
-            )
-        )
-
-        return
+        return cancel_command(incoming_chat.telegram_id)
 
     if (insert_token is None):
         print("Error: Insert Token is NULL")
-
-        telegram.send_message(
-            chat_id=incoming_chat.telegram_id,
-            text=(
-                "Can't process you because of internal error. "
-                "Try later please."
-            )
-        )
-
-        return
+        return cancel_command(incoming_chat.telegram_id)
 
     state = jwt.encode(
         {
@@ -152,18 +129,7 @@ def handle():
     )
 
     if (private_chat is None):
-        telegram.send_message(
-            chat_id=incoming_chat.telegram_id,
-            text=(
-                "I don't know any private chat "
-                "with you to send authorization link "
-                "with your sensitive information. Please "
-                "contact me first through private chat "
-                "(direct message). After that request a new link."
-            )
-        )
-
-        return
+        return request_private_chat(incoming_chat.telegram_id)
 
     telegram.send_message(
         chat_id=private_chat.telegram_id,

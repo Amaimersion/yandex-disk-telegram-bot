@@ -2,6 +2,7 @@ from flask import g
 
 from .....api import telegram
 from ..decorators import register_guest, get_db_data
+from ..responses import request_private_chat
 
 
 @register_guest
@@ -11,10 +12,11 @@ def handle():
     Handles `/settings` command.
     """
     user = g.db_user
+    incoming_chat = g.db_incoming_chat
     private_chat = g.db_private_chat
 
     if (private_chat is None):
-        return
+        return request_private_chat(incoming_chat.telegram_id)
 
     yd_access = False
 
