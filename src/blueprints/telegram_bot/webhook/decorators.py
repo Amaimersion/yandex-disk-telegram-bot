@@ -12,8 +12,8 @@ from ....db import (
 from ....db.models import (
     ChatType
 )
-from ....api import telegram
 from . import commands
+from .responses import cancel_command
 
 
 def register_guest(func):
@@ -50,16 +50,7 @@ def register_guest(func):
             db.session.commit()
         except Exception as e:
             print(e)
-
-            telegram.send_message(
-                chat_id=incoming_chat["id"],
-                text=(
-                    "Can't process you because of internal error. "
-                    "Try later please."
-                )
-            )
-
-            return
+            return cancel_command(incoming_chat["id"])
 
         return func(*args, **kwargs)
 
