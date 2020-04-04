@@ -19,7 +19,7 @@ def handle():
     """
     Handles `/upload_photo` command.
     """
-    message = g.db_incoming_message
+    message = g.incoming_message
     user = g.db_user
     chat = g.db_incoming_chat
 
