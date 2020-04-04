@@ -1,3 +1,4 @@
 from .methods import (
-    send_message
+    send_message,
+    get_file
 )
