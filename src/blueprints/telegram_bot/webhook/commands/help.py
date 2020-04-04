@@ -16,7 +16,7 @@ def handle():
         "\n\n"
         "<b>Yandex.Disk</b>"
         "\n"
-        "/upload_photo — uploads photo"
+        "/upload_photo — uploads a photo"
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"
