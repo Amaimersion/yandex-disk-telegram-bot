@@ -23,12 +23,14 @@ def create_url(method_name: str) -> str:
     return url
 
 
-def make_request(method_name: str, data: dict) -> None:
+def make_request(method_name: str, data: dict) -> dict:
     """
     Makes HTTP request to Telegram API.
 
     :param method_name: Name of API method in URL.
     :param data: JSON data to send.
+
+    :returns: Response data from Telegram.
 
     :raises requests.RequestException:
     https://requests.readthedocs.io/en/master/api/#exceptions
@@ -65,3 +67,5 @@ def make_request(method_name: str, data: dict) -> None:
         message = f"{method_name} failed with {error_code} ({description})"
 
         raise MethodExecutionFailedException(message)
+
+    return response_data
