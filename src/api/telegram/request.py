@@ -23,6 +23,20 @@ def create_url(method_name: str) -> str:
     return url
 
 
+def create_file_download_url(file_path: str) -> str:
+    """
+    :param file_path: `file_path` property of `File` object.
+
+    :returns: URL for downloading of Telegram file.
+    """
+    bot_token = os.getenv("TELEGRAM_API_BOT_TOKEN", "")
+    base_url = "https://api.telegram.org/file"
+    bot_url = "bot{token}".format(token=bot_token)
+    url = f"{base_url}/{bot_url}/{file_path}"
+
+    return url
+
+
 def make_request(method_name: str, data: dict) -> dict:
     """
     Makes HTTP request to Telegram API.
