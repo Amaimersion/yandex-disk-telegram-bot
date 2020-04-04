@@ -15,3 +15,10 @@ def send_message(**kwargs) -> None:
         print(error)
     except TelegramApiException as error:
         print(error)
+
+
+def get_file(**kwargs) -> dict:
+    """
+    https://core.telegram.org/bots/api#getfile
+    """
+    return make_request("getFile", kwargs)
