@@ -53,7 +53,7 @@ def handle():
         operation_status_link = yandex.upload_file_with_url(
             user_access_token,
             url=download_url,
-            path=quote(file["file_path"])
+            path=quote("disk:/" + file["file_path"])
         )
     except Exception as e:
         print(e)
