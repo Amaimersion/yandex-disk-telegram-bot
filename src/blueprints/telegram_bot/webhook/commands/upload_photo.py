@@ -2,7 +2,8 @@ from typing import Union
 
 from flask import g
 
-from .....api import telegram
+from .....api import telegram, yandex
+from .....api.utils import quote
 from ..decorators import (
     yd_access_token_required,
     get_db_data
@@ -44,8 +45,19 @@ def handle():
     download_url = telegram.create_file_download_url(
         file["file_path"]
     )
+    result = None
 
-    print(download_url)
+    try:
+        result = yandex.upload_file_with_url(
+            user.yandex_disk_token.get_access_token(),
+            url=download_url,
+            path=quote(file["file_path"])
+        )
+    except Exception as e:
+        print(e)
+        return cancel_command(chat.telegram_id)
+
+    print(result)
 
 
 def message_is_valid(message: dict) -> bool:
