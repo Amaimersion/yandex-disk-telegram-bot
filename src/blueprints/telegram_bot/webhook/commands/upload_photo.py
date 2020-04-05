@@ -47,13 +47,16 @@ def handle():
     download_url = telegram.create_file_download_url(
         file["file_path"]
     )
+    path = current_app.config[
+        "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
+    ]
     operation_status_link = None
 
     try:
         operation_status_link = yandex.upload_file_with_url(
             user_access_token,
             url=download_url,
-            path=quote("disk:/" + file["file_unique_id"])
+            path=quote(path + file["file_unique_id"])
         )
     except Exception as e:
         print(e)

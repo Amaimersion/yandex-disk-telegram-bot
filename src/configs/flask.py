@@ -51,6 +51,10 @@ class Config:
     # So, if max. attempts is 5 and interval is 10,
     # then request will be blocked maxium for (5 * 10) seconds.
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 2
+    # in this folder files will be uploaded by default
+    # if user not specified custom folder.
+    # It should starts with `/`.
+    YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER = "/Telegram Bot"
 
     # Project
     # name of app that will be used in HTML and so on
