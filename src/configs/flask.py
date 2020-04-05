@@ -31,6 +31,9 @@ class Config:
     YANDEX_OAUTH_API_TIMEOUT = 30
 
     # Yandex.Disk API
+    # stop waiting for a Yandex response
+    # after a given number of seconds
+    YANDEX_DISK_API_TIMEOUT = 5
     # `insert_token` (controls `INSERT` operation)
     # will contain n random bytes. Each byte will be
     # converted to two hex digits
