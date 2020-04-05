@@ -100,7 +100,7 @@ def make_disk_request(method_name: str, data: dict, user_token: str) -> dict:
     timeout = current_app.config["YANDEX_DISK_API_TIMEOUT"]
     response = requests.post(
         url,
-        json=data,
+        params=data,
         timeout=timeout,
         auth=HTTPOAuthAuth(user_token),
         allow_redirects=False,
