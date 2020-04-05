@@ -117,3 +117,36 @@ def make_disk_request(method_name: str, data: dict, user_token: str) -> dict:
         raise InvalidResponseFormatException("Not a JSON response")
 
     return response_data
+
+
+def make_link_request(data: dict, user_token: str) -> dict:
+    """
+    https://yandex.ru/dev/disk/api/reference/response-objects-docpage/#link
+    """
+    if (data["templated"]):
+        raise NotImplementedError("Templating not implemented")
+
+    timeout = current_app.config["YANDEX_DISK_API_TIMEOUT"]
+    url = data["href"]
+    method = data["method"]
+    response = None
+
+    if (method == "GET"):
+        response = requests.get(
+            url,
+            timeout=timeout,
+            auth=HTTPOAuthAuth(user_token),
+            allow_redirects=False,
+            verify=True
+        )
+    else:
+        raise NotImplementedError("Unknown HTTP method")
+
+    response_data = {}
+
+    try:
+        response_data = response.json()
+    except ValueError:
+        raise InvalidResponseFormatException("Not a JSON response")
+
+    return response_data

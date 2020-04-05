@@ -1,6 +1,7 @@
+from time import sleep
 from typing import Union
 
-from flask import g
+from flask import g, current_app
 
 from .....api import telegram, yandex
 from .....api.utils import quote
@@ -42,14 +43,15 @@ def handle():
         print(e)
         return cancel_command(chat.telegram_id)
 
+    user_access_token = user.yandex_disk_token.get_access_token()
     download_url = telegram.create_file_download_url(
         file["file_path"]
     )
-    result = None
+    operation_status_link = None
 
     try:
-        result = yandex.upload_file_with_url(
-            user.yandex_disk_token.get_access_token(),
+        operation_status_link = yandex.upload_file_with_url(
+            user_access_token,
             url=download_url,
             path=quote(file["file_path"])
         )
@@ -57,7 +59,66 @@ def handle():
         print(e)
         return cancel_command(chat.telegram_id)
 
-    print(result)
+    if (is_error_response(operation_status_link)):
+        return telegram.send_message(
+            chat_id=chat.telegram_id,
+            text=create_error_text(operation_status_link)
+        )
+
+    track_status = True
+    result = None
+    attempt = 0
+    max_attempts = current_app.config[
+        "YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS"
+    ]
+    interval = current_app.config[
+        "YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL"
+    ]
+
+    while (track_status):
+        try:
+            result = yandex.make_link_request(
+                data=operation_status_link,
+                user_token=user_access_token
+            )
+        except Exception as e:
+            print(e)
+            return cancel_command(chat.telegram_id)
+
+        if ("status" in result):
+            telegram.send_message(
+                chat_id=chat.telegram_id,
+                text=f"Status: {result['status']}"
+            )
+
+        attempt += 1
+
+        track_status = not (
+            is_error_response(result) or
+            operation_is_completed(result) or
+            attempt >= max_attempts
+        )
+
+        if (track_status):
+            sleep(interval)
+
+    status_text = None
+
+    if (is_error_response(result)):
+        status_text = create_error_text(result)
+    else:
+        # we already logged `status` in while-loop.
+        # so, in this block max attempts exceeded.
+        status_text = (
+            "I can't track operation status anymore. "
+            "Perform manual checking."
+        )
+
+    if (status_text):
+        telegram.send_message(
+            chat_id=chat.telegram_id,
+            text=status_text
+        )
 
 
 def message_is_valid(message: dict) -> bool:
@@ -114,3 +175,41 @@ def get_biggest_photo(message: dict) -> Union[dict, None]:
             biggest_photo = current_photo
 
     return biggest_photo
+
+
+def is_error_response(data: dict) -> bool:
+    """
+    :returns: Yandex response contains error or not.
+    """
+    return ("error" in data)
+
+
+def create_error_text(data: dict) -> str:
+    """
+    Constructs error text from Yandex error response.
+    """
+    error_name = data["error"]
+    error_description = (
+        data.get("message") or
+        data.get("description") or
+        "?"
+    )
+
+    return (
+        "Error from Yandex: "
+        f"{error_name} ({error_description})"
+    )
+
+
+def operation_is_completed(data: dict) -> bool:
+    """
+    Checks if Yandex response contains completed
+    operation status.
+    """
+    return (
+        ("status" in data) and
+        (
+            (data["status"] == "success") or
+            (data["status"] == "failure")
+        )
+    )
