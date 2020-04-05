@@ -45,12 +45,12 @@ class Config:
     # maximum number of checks of operation status
     # (for example, if file is downloaded by Yandex.Disk).
     # It is blocks request until check ending!
-    YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS = 15
+    YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS = 30
     # interval in seconds between checks of operation status.
     # It is blocks request until check ending!
     # So, if max. attempts is 5 and interval is 10,
     # then request will be blocked maxium for (5 * 10) seconds.
-    YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 5
+    YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 2
 
     # Project
     # name of app that will be used in HTML and so on
