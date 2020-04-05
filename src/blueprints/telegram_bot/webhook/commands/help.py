@@ -1,4 +1,4 @@
-from flask import g
+from flask import g, current_app
 
 from .....api import telegram
 
@@ -7,6 +7,10 @@ def handle():
     """
     Handles `/help` command.
     """
+    yd_upload_default_folder = current_app.config[
+        "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
+    ]
+
     text = (
         "I can help you to interact with Yandex.Disk."
         "\n\n"
@@ -16,7 +20,9 @@ def handle():
         "\n\n"
         "<b>Yandex.Disk</b>"
         "\n"
-        "/upload_photo — uploads a photo"
+        "/upload_photo — uploads a photo. "
+        "Send photos or photos with this command. "
+        f"By default <i>{yd_upload_default_folder}</i> folder is used."
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"
