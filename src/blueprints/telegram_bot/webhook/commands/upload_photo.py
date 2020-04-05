@@ -53,7 +53,7 @@ def handle():
         operation_status_link = yandex.upload_file_with_url(
             user_access_token,
             url=download_url,
-            path=quote("disk:/" + file["file_path"])
+            path=quote("disk:/" + file["file_unique_id"])
         )
     except Exception as e:
         print(e)
@@ -65,8 +65,7 @@ def handle():
             text=create_error_text(operation_status_link)
         )
 
-    track_status = True
-    result = None
+    result = {}
     attempt = 0
     max_attempts = current_app.config[
         "YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS"
@@ -75,7 +74,13 @@ def handle():
         "YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL"
     ]
 
-    while (track_status):
+    while not (
+        is_error_response(result) or
+        operation_is_completed(result) or
+        attempt >= max_attempts
+    ):
+        sleep(interval)
+
         try:
             result = yandex.make_link_request(
                 data=operation_status_link,
@@ -93,15 +98,6 @@ def handle():
 
         attempt += 1
 
-        track_status = not (
-            is_error_response(result) or
-            operation_is_completed(result) or
-            attempt >= max_attempts
-        )
-
-        if (track_status):
-            sleep(interval)
-
     status_text = None
 
     if (is_error_response(result)):
@@ -112,7 +108,7 @@ def handle():
             "Perform manual checking."
         )
 
-    # we already logged `status` in while-loop.
+    # we already logged operation status in while-loop.
     if (status_text):
         telegram.send_message(
             chat_id=chat.telegram_id,

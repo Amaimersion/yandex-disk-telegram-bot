@@ -42,15 +42,14 @@ class Config:
     # from date of issue. It is better to find
     # best combination between `bytes` and `lifetime`
     YANDEX_DISK_API_INSERT_TOKEN_LIFETIME = 60 * 10
-    # maximum number of checking of operation status
-    # (for example, if file is download by Yandex.Disk).
-    # it is blocks request until checking is ended!
-    # can't be less than 1.
-    YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS = 13
-    # interval in seconds between checking of operation status.
-    # it is blocks request until checking is ended!
-    # so, if max attempts is 5 and interval is 10,
-    # then request will be blocked for maximum (5 - 1) * 10 seconds.
+    # maximum number of checks of operation status
+    # (for example, if file is downloaded by Yandex.Disk).
+    # It is blocks request until check ending!
+    YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS = 15
+    # interval in seconds between checks of operation status.
+    # It is blocks request until check ending!
+    # So, if max. attempts is 5 and interval is 10,
+    # then request will be blocked maxium for (5 * 10) seconds.
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 5
 
     # Project
