@@ -106,14 +106,13 @@ def handle():
 
     if (is_error_response(result)):
         status_text = create_error_text(result)
-    else:
-        # we already logged `status` in while-loop.
-        # so, in this block max attempts exceeded.
+    elif (attempt >= max_attempts):
         status_text = (
             "I can't track operation status anymore. "
             "Perform manual checking."
         )
 
+    # we already logged `status` in while-loop.
     if (status_text):
         telegram.send_message(
             chat_id=chat.telegram_id,
