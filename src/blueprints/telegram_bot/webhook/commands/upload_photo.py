@@ -195,7 +195,7 @@ def create_error_text(data: dict) -> str:
     )
 
     return (
-        "Error from Yandex: "
+        "Yandex.Disk Error: "
         f"{error_name} ({error_description})"
     )
 
