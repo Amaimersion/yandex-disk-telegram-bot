@@ -87,6 +87,8 @@ def make_disk_request(method_name: str, data: dict, user_token: str) -> dict:
     """
     Makes HTTP request to Yandex.Disk.
 
+    It will not raise if status is not 2xx!
+
     :param method_name: Name of API method in URL.
     :param data: JSON data to send.
     :param user_token: User OAuth token to access the API.
@@ -106,8 +108,6 @@ def make_disk_request(method_name: str, data: dict, user_token: str) -> dict:
         allow_redirects=False,
         verify=True
     )
-
-    response.raise_for_status()
 
     response_data = {}
 
