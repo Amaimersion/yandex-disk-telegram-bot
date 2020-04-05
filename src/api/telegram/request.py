@@ -82,4 +82,4 @@ def make_request(method_name: str, data: dict) -> dict:
 
         raise MethodExecutionFailedException(message)
 
-    return response_data
+    return response_data["result"]
