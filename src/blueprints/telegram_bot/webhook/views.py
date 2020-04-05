@@ -39,7 +39,7 @@ def webhook():
     g.incoming_chat = message["chat"]
 
     entities = get_entities(message)
-    message_text = message["text"]
+    message_text = get_text(message)
     command = get_command(entities, message_text)
 
     route_command(command)
@@ -108,10 +108,27 @@ def message_is_valid(message: dict) -> bool:
             message["chat"].get("type"),
             str
         ) and
-        isinstance(
-            message.get("text"),
-            str
+        (
+            isinstance(
+                message.get("text"),
+                str
+            ) or
+            isinstance(
+                message.get("caption"),
+                str
+            )
         )
+    )
+
+
+def get_text(message: dict) -> str:
+    """
+    Extracts text from a message.
+    """
+    return (
+        message.get("text") or
+        message.get("caption") or
+        ""
     )
 
 
