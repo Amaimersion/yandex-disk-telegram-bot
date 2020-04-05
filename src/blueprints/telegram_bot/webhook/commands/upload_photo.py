@@ -57,7 +57,7 @@ def message_is_valid(message: dict) -> bool:
             message.get("photo"),
             list
         ) and
-        len(message["photo"] > 0)
+        len(message["photo"]) > 0
     )
 
 
