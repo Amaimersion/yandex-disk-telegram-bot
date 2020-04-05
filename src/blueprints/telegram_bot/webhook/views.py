@@ -40,7 +40,12 @@ def webhook():
 
     entities = get_entities(message)
     message_text = get_text(message)
-    command = get_command(entities, message_text)
+    command = None
+
+    if (message_text):
+        command = get_command(entities, message_text)
+    else:
+        command = guess_command(message)
 
     route_command(command)
 
@@ -107,16 +112,6 @@ def message_is_valid(message: dict) -> bool:
         isinstance(
             message["chat"].get("type"),
             str
-        ) and
-        (
-            isinstance(
-                message.get("text"),
-                str
-            ) or
-            isinstance(
-                message.get("caption"),
-                str
-            )
         )
     )
 
@@ -190,6 +185,18 @@ def get_command(entities: list, message_text: str, default="/help") -> str:
 
         # ignore next commands
         break
+
+    return command
+
+
+def guess_command(message: dict, default="/help") -> str:
+    """
+    Tries to guess which command user assumed based on message.
+    """
+    command = default
+
+    if ("photo" in message):
+        command = "/upload_photo"
 
     return command
 
