@@ -212,7 +212,8 @@ def route_command(command: str) -> None:
         "/settings": commands.settings_handler,
         "/yandex_disk_authorization": commands.yd_auth_handler,
         "/yandex_disk_revoke": commands.yd_revoke_handler,
-        "/upload_photo": commands.upload_photo_handler
+        "/upload_photo": commands.upload_photo_handler,
+        "/create_folder": commands.create_folder_handler
     }
     method = routes.get(command, commands.unknown_handler)
 
