@@ -10,3 +10,10 @@ class InvalidResponseFormatException(YandexOauthAPIException):
     Format of response differ from Yandex Oauth response.
     """
     pass
+
+
+class DataConflictException(YandexOauthAPIException):
+    """
+    Response data conflicts with internal operations.
+    """
+    pass

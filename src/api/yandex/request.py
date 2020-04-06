@@ -5,7 +5,8 @@ from requests.auth import AuthBase, HTTPBasicAuth
 from flask import current_app
 
 from .exceptions import (
-    InvalidResponseFormatException
+    InvalidResponseFormatException,
+    DataConflictException
 )
 
 
@@ -92,7 +93,8 @@ def make_disk_request(
     """
     Makes HTTP request to Yandex.Disk.
 
-    It will not raise if status is not 2xx!
+    - it will not raise if status is not 2xx!
+    - adds `HTTP_STATUS_CODE` key in response data.
 
     :param http_method: Name of HTTP method for request.
     :param api_method: Name of API method in URL.
@@ -115,13 +117,18 @@ def make_disk_request(
         allow_redirects=False,
         verify=True
     )
-
     response_data = {}
+    http_code_key = "HTTP_STATUS_CODE"
 
     try:
         response_data = response.json()
     except ValueError:
         raise InvalidResponseFormatException("Not a JSON response")
+
+    if (http_code_key in response_data):
+        raise DataConflictException("Special key for HTTP Code already exists")
+
+    response_data[http_code_key] = response.status_code
 
     return response_data
 

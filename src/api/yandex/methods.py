@@ -14,6 +14,8 @@ def get_access_token(**kwargs) -> dict:
 def upload_file_with_url(user_token, **kwargs) -> dict:
     """
     https://yandex.ru/dev/disk/api/reference/upload-ext-docpage/
+
+    - adds `HTTP_STATUS_CODE` key in response data.
     """
     return make_disk_request(
         http_method="POST",
