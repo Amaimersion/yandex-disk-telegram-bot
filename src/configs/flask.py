@@ -53,8 +53,7 @@ class Config:
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 2
     # in this folder files will be uploaded by default
     # if user not specified custom folder.
-    # It should starts with `/`.
-    YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER = "/Telegram Bot"
+    YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER = "Telegram Bot"
 
     # Project
     # name of app that will be used in HTML and so on
