@@ -23,3 +23,17 @@ def upload_file_with_url(user_token, **kwargs) -> dict:
         data=kwargs,
         token=user_token
     )
+
+
+def create_folder(user_token, **kwargs) -> dict:
+    """
+    https://yandex.ru/dev/disk/api/reference/create-folder-docpage/
+
+    - adds `HTTP_STATUS_CODE` key in response data.
+    """
+    return make_disk_request(
+        http_method="PUT",
+        api_method="resources",
+        data=kwargs,
+        token=user_token
+    )
