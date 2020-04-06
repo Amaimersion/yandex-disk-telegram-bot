@@ -15,4 +15,9 @@ def upload_file_with_url(user_token, **kwargs) -> dict:
     """
     https://yandex.ru/dev/disk/api/reference/upload-ext-docpage/
     """
-    return make_disk_request("resources/upload", kwargs, user_token)
+    return make_disk_request(
+        http_method="POST",
+        api_method="resources/upload",
+        data=kwargs,
+        token=user_token
+    )
