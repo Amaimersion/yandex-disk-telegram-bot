@@ -43,7 +43,8 @@ def handle():
             access_token=access_token,
             folder_name=message_folder_name
         )
-    except YandexAPIRequestError:
+    except YandexAPIRequestError as e:
+        print(e)
         return cancel_command(chat.telegram_id)
     except YandexAPIError as e:
         error_text = "Yandex.Disk Error"
