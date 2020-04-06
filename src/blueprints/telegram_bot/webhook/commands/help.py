@@ -22,12 +22,12 @@ def handle():
         "\n"
         "/upload_photo — uploads a photo with quality loss. "
         "Send photos or photos with this command. "
-        f"By default <code>{yd_upload_default_folder}</code> folder is used."
+        f'By default "<code>{yd_upload_default_folder}</code>" folder is used.'
         "\n"
         "/create_folder — creates a folder. "
         "Send folder name with this command. "
         "Folder name should starts from root, "
-        "nested folders should be separated with <code>/</code> character."
+        'nested folders should be separated with "<code>/</code>" character.'
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"
