@@ -4,7 +4,6 @@ from typing import Union
 from flask import g, current_app
 
 from .....api import telegram, yandex
-from .....api.utils import quote
 from ..decorators import (
     yd_access_token_required,
     get_db_data
@@ -12,6 +11,11 @@ from ..decorators import (
 from ..responses import (
     abort_command,
     cancel_command
+)
+from .create_folder import (
+    create_folder,
+    YandexAPIRequestError,
+    YandexAPIError
 )
 
 
@@ -53,19 +57,38 @@ def handle():
         return cancel_command(chat.telegram_id)
 
     user_access_token = user.yandex_disk_token.get_access_token()
+    folder_path = current_app.config[
+        "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
+    ]
+
+    try:
+        create_folder(
+            access_token=user_access_token,
+            folder_name=folder_path
+        )
+    except YandexAPIRequestError as e:
+        print(e)
+        return cancel_command(chat.telegram_id)
+    except YandexAPIError as e:
+        print(e)
+        return telegram.send_message(
+            chat_id=chat.telegram_id,
+            text="I can't create default upload folder"
+        )
+
+    folder_path = [x for x in folder_path.split("/") if x]
+    file_name = file["file_unique_id"]
+    full_path = "/".join(folder_path + [file_name])
     download_url = telegram.create_file_download_url(
         file["file_path"]
     )
-    path = current_app.config[
-        "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
-    ]
     operation_status_link = None
 
     try:
         operation_status_link = yandex.upload_file_with_url(
             user_access_token,
             url=download_url,
-            path=quote(path + file["file_unique_id"])
+            path=full_path
         )
     except Exception as e:
         print(e)
