@@ -23,7 +23,7 @@ def handle():
     access_token = user.yandex_disk_token.get_access_token()
     message_text = get_text(message)
     message_folder_name = message_text.replace("/create_folder", "").strip()
-    folders = message_folder_name.split("/")
+    folders = [x for x in message_folder_name.split("/") if x]
     absolute_path = ""
     allowed_erors = [409]
 
