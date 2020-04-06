@@ -33,6 +33,15 @@ def handle():
     if (biggest_photo is None):
         return abort_command(chat.telegram_id)
 
+    try:
+        file = telegram.send_chat_action(
+            chat_id=chat.telegram_id,
+            action="upload_photo"
+        )
+    except Exception as e:
+        print(e)
+        return cancel_command(chat.telegram_id)
+
     file = None
 
     try:

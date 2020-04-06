@@ -22,3 +22,10 @@ def get_file(**kwargs) -> dict:
     https://core.telegram.org/bots/api#getfile
     """
     return make_request("getFile", kwargs)
+
+
+def send_chat_action(**kwargs) -> dict:
+    """
+    https://core.telegram.org/bots/api/#sendchataction
+    """
+    return make_request("sendChatAction", kwargs)
