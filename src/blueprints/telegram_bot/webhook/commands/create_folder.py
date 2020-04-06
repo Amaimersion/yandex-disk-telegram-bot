@@ -1,7 +1,6 @@
 from flask import g
 
 from .....api import telegram
-from ..views import get_text
 
 
 def handle():
@@ -14,4 +13,15 @@ def handle():
     telegram.send_message(
         chat_id=g.incoming_chat["id"],
         text=folder_name
+    )
+
+
+def get_text(message: dict) -> str:
+    """
+    Extracts text from a message.
+    """
+    return (
+        message.get("text") or
+        message.get("caption") or
+        ""
     )
