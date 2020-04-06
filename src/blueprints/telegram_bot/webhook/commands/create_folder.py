@@ -25,6 +25,7 @@ def handle():
     message_folder_name = message_text.replace("/create_folder", "").strip()
     folders = [x for x in message_folder_name.split("/") if x]
     absolute_path = ""
+    last_status_code = None
     allowed_erors = [409]
 
     # yandex not able to create folder if some of
@@ -45,12 +46,12 @@ def handle():
             print(e)
             return cancel_command(chat.telegram_id)
 
-        status = response["HTTP_STATUS_CODE"]
+        last_status_code = response["HTTP_STATUS_CODE"]
 
         if (
-            (status == 201) or
+            (last_status_code == 201) or
             (not is_error_response(response)) or
-            (status in allowed_erors)
+            (last_status_code in allowed_erors)
         ):
             continue
 
@@ -61,9 +62,18 @@ def handle():
             text=error_text
         )
 
+    text = None
+
+    if (last_status_code == 201):
+        text = "Created"
+    elif (last_status_code == 409):
+        text = "Already exists"
+    else:
+        text = f"Unknown status code: {last_status_code}"
+
     telegram.send_message(
         chat_id=chat.telegram_id,
-        text="Created"
+        text=text
     )
 
 
