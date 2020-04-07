@@ -10,7 +10,7 @@ from .common.decorators import (
 )
 from .common.api import (
     create_folder,
-    YandexAPIError,
+    YandexAPICreateFolderError,
     YandexAPIRequestError
 )
 
@@ -37,7 +37,7 @@ def handle():
     except YandexAPIRequestError as e:
         print(e)
         return cancel_command(chat.telegram_id)
-    except YandexAPIError as e:
+    except YandexAPICreateFolderError as e:
         error_text = "Yandex.Disk Error"
 
         if hasattr(e, "message"):

@@ -15,7 +15,7 @@ from .common.responses import (
 from .common.api import (
     create_folder,
     YandexAPIRequestError,
-    YandexAPIError
+    YandexAPICreateFolderError
 )
 
 
@@ -69,11 +69,15 @@ def handle():
     except YandexAPIRequestError as e:
         print(e)
         return cancel_command(chat.telegram_id)
-    except YandexAPIError as e:
-        print(e)
+    except YandexAPICreateFolderError as e:
+        error_text = "I can't create default upload folder"
+
+        if hasattr(e, "message"):
+            error_text = e.message
+
         return telegram.send_message(
             chat_id=chat.telegram_id,
-            text="I can't create default upload folder"
+            text=error_text
         )
 
     folder_path = [x for x in folder_path.split("/") if x]

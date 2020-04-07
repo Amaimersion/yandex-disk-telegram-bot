@@ -3,7 +3,8 @@ from ......api import yandex
 
 class YandexAPIRequestError(Exception):
     """
-    Some error occurred during Yandex.Disk API request.
+    Unknown error occurred during Yandex.Disk API request
+    (not necessarily from Yandex).
     """
     pass
 
@@ -11,6 +12,17 @@ class YandexAPIRequestError(Exception):
 class YandexAPIError(Exception):
     """
     Error response from Yandex.Disk API.
+
+    - may contain human-readable error message.
+    """
+    pass
+
+
+class YandexAPICreateFolderError(Exception):
+    """
+    Unable to create folder on Yandex.Disk.
+
+    - may contain human-readable error message.
     """
     pass
 
@@ -28,7 +40,7 @@ def create_folder(access_token: str, folder_name: str) -> int:
     :returns: Last (for last folder name) HTTP Status code.
 
     :raises: YandexAPIRequestError
-    :raises: YandexAPIError
+    :raises: YandexAPICreateFolderError
     """
     folders = [x for x in folder_name.split("/") if x]
     folder_path = ""
@@ -56,7 +68,7 @@ def create_folder(access_token: str, folder_name: str) -> int:
         ):
             continue
 
-        raise YandexAPIError(
+        raise YandexAPICreateFolderError(
             create_yandex_error_text(response)
         )
 
