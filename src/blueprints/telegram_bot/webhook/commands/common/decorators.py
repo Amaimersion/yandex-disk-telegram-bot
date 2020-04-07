@@ -2,17 +2,16 @@ from functools import wraps
 
 from flask import g
 
-from ....db import (
+from ......db import (
     db,
     User,
     UserQuery,
     Chat,
     ChatQuery
 )
-from ....db.models import (
+from ......db.models import (
     ChatType
 )
-from . import commands
 from .responses import cancel_command
 
 
@@ -100,7 +99,7 @@ def yd_access_token_required(func):
             (user.yandex_disk_token is None) or
             (not user.yandex_disk_token.have_access_token())
         ):
-            return commands.yd_auth_handler()
+            return g.route_to("/yandex_disk_authorization")
 
         return func(*args, **kwargs)
 

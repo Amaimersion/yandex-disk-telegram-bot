@@ -4,7 +4,7 @@ from flask import g
 
 from .....db import db
 from .....api import telegram
-from ..decorators import get_db_data
+from .common.decorators import get_db_data
 
 
 @get_db_data

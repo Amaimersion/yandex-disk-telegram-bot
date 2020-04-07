@@ -11,11 +11,11 @@ from .....db import (
     YandexDiskToken
 )
 from .....api import telegram, yandex
-from ..decorators import (
+from .common.decorators import (
     register_guest,
     get_db_data
 )
-from ..responses import (
+from .common.responses import (
     request_private_chat,
     cancel_command
 )

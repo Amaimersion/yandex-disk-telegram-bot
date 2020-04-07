@@ -1,8 +1,8 @@
 from flask import g
 
 from .....api import telegram
-from ..decorators import register_guest, get_db_data
-from ..responses import request_private_chat
+from .common.decorators import register_guest, get_db_data
+from .common.responses import request_private_chat
 
 
 @register_guest

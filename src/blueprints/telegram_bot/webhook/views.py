@@ -34,6 +34,7 @@ def webhook():
     if (not message_is_valid(message)):
         return error_response()
 
+    g.route_to = route_command
     g.incoming_message = message
     g.incoming_user = message["from"]
     g.incoming_chat = message["chat"]
