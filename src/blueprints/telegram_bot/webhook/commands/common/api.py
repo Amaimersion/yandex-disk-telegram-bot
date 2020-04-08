@@ -228,6 +228,6 @@ def yandex_operation_is_completed(data: dict) -> bool:
             (data["status"] == "success") or
             # Yandex documentation is different in some places
             (data["status"] == "failure") or
-            (data["status" == "failed"])
+            (data["status"] == "failed")
         )
     )
