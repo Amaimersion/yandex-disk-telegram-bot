@@ -186,7 +186,7 @@ def upload_file_with_url(
     if (is_error):
         raise YandexAPIUploadFileError(
             create_yandex_error_text(
-                operation_status_link
+                result
             )
         )
     elif (attempt >= max_attempts):
