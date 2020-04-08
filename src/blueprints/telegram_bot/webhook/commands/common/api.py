@@ -189,8 +189,8 @@ def upload_file_with_url(
                 operation_status_link
             )
         )
-
-    raise YandexAPIExceededNumberOfStatusChecksError()
+    elif (attempt >= max_attempts):
+        raise YandexAPIExceededNumberOfStatusChecksError()
 
 
 def is_error_yandex_response(data: dict) -> bool:
