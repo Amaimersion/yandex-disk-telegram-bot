@@ -77,30 +77,21 @@ def handle():
                 chat_id=chat.telegram_id,
                 text=f"Status: {status}"
             )
-    except YandexAPIRequestError as error:
-        print(error)
-        return cancel_command(chat.telegram_id)
     except YandexAPICreateFolderError as error:
-        error_text = (
+        error_text = str(error) or (
             "I can't create default upload folder "
-            "due to Yandex error"
+            "due to an unknown Yandex error."
         )
-
-        if hasattr(error, "message"):
-            error_text = error.message
 
         return telegram.send_message(
             chat_id=chat.telegram_id,
             text=error_text
         )
     except YandexAPIUploadFileError as error:
-        error_text = (
+        error_text = str(error) or (
             "I can't upload this photo "
-            "due to Yandex error"
+            "due to an unknown Yandex error."
         )
-
-        if hasattr(error, "message"):
-            error_text = error.message
 
         return telegram.send_message(
             chat_id=chat.telegram_id,
@@ -116,7 +107,7 @@ def handle():
             chat_id=chat.telegram_id,
             text=error_text
         )
-    except Exception as error:
+    except (YandexAPIRequestError, Exception) as error:
         print(error)
         return cancel_command(chat.telegram_id)
 
