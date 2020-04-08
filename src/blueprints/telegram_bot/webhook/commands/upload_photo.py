@@ -1,9 +1,8 @@
-from time import sleep
 from typing import Union
 
 from flask import g, current_app
 
-from .....api import telegram, yandex
+from .....api import telegram
 from .common.decorators import (
     yd_access_token_required,
     get_db_data
@@ -13,9 +12,11 @@ from .common.responses import (
     cancel_command
 )
 from .common.api import (
-    create_folder,
+    upload_file_with_url,
     YandexAPIRequestError,
-    YandexAPICreateFolderError
+    YandexAPICreateFolderError,
+    YandexAPIUploadFileError,
+    YandexAPIExceededNumberOfStatusChecksError
 )
 
 
@@ -60,99 +61,58 @@ def handle():
     folder_path = current_app.config[
         "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
     ]
+    file_name = file["file_unique_id"]
+    download_url = telegram.create_file_download_url(
+        file["file_path"]
+    )
 
     try:
-        create_folder(
+        for status in upload_file_with_url(
             access_token=user_access_token,
-            folder_name=folder_path
-        )
-    except YandexAPIRequestError as e:
-        print(e)
+            folder_path=folder_path,
+            file_name=file_name,
+            download_url=download_url
+        ):
+            telegram.send_message(
+                chat_id=chat.telegram_id,
+                text=f"Status: {status}"
+            )
+    except YandexAPIRequestError as error:
+        print(error)
         return cancel_command(chat.telegram_id)
-    except YandexAPICreateFolderError as e:
+    except YandexAPICreateFolderError as error:
         error_text = "I can't create default upload folder"
 
-        if hasattr(e, "message"):
-            error_text = e.message
+        if hasattr(error, "message"):
+            error_text = error.message
 
         return telegram.send_message(
             chat_id=chat.telegram_id,
             text=error_text
         )
+    except YandexAPIUploadFileError as error:
+        error_text = "I can't upload this photo"
 
-    folder_path = [x for x in folder_path.split("/") if x]
-    file_name = file["file_unique_id"]
-    full_path = "/".join(folder_path + [file_name])
-    download_url = telegram.create_file_download_url(
-        file["file_path"]
-    )
-    operation_status_link = None
+        if hasattr(error, "message"):
+            error_text = error.message
 
-    try:
-        operation_status_link = yandex.upload_file_with_url(
-            user_access_token,
-            url=download_url,
-            path=full_path
-        )
-    except Exception as e:
-        print(e)
-        return cancel_command(chat.telegram_id)
-
-    if (is_error_response(operation_status_link)):
         return telegram.send_message(
             chat_id=chat.telegram_id,
-            text=create_error_text(operation_status_link)
+            text=error_text
         )
-
-    result = {}
-    attempt = 0
-    max_attempts = current_app.config[
-        "YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS"
-    ]
-    interval = current_app.config[
-        "YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL"
-    ]
-
-    while not (
-        is_error_response(result) or
-        operation_is_completed(result) or
-        attempt >= max_attempts
-    ):
-        sleep(interval)
-
-        try:
-            result = yandex.make_link_request(
-                data=operation_status_link,
-                user_token=user_access_token
-            )
-        except Exception as e:
-            print(e)
-            return cancel_command(chat.telegram_id)
-
-        if ("status" in result):
-            telegram.send_message(
-                chat_id=chat.telegram_id,
-                text=f"Status: {result['status']}"
-            )
-
-        attempt += 1
-
-    status_text = None
-
-    if (is_error_response(result)):
-        status_text = create_error_text(result)
-    elif (attempt >= max_attempts):
-        status_text = (
+    except YandexAPIExceededNumberOfStatusChecksError:
+        error_text = (
             "I can't track operation status anymore. "
             "Perform manual checking."
         )
 
-    # we already logged operation status in while-loop.
-    if (status_text):
-        telegram.send_message(
+        return telegram.send_message(
             chat_id=chat.telegram_id,
-            text=status_text
+            text=error_text
         )
+    except Exception as error:
+        print(error)
+        return cancel_command(chat.telegram_id)
 
 
 def message_is_valid(message: dict) -> bool:
@@ -209,41 +169,3 @@ def get_biggest_photo(message: dict) -> Union[dict, None]:
             biggest_photo = current_photo
 
     return biggest_photo
-
-
-def is_error_response(data: dict) -> bool:
-    """
-    :returns: Yandex response contains error or not.
-    """
-    return ("error" in data)
-
-
-def create_error_text(data: dict) -> str:
-    """
-    Constructs error text from Yandex error response.
-    """
-    error_name = data["error"]
-    error_description = (
-        data.get("message") or
-        data.get("description") or
-        "?"
-    )
-
-    return (
-        "Yandex.Disk Error: "
-        f"{error_name} ({error_description})"
-    )
-
-
-def operation_is_completed(data: dict) -> bool:
-    """
-    Checks if Yandex response contains completed
-    operation status.
-    """
-    return (
-        ("status" in data) and
-        (
-            (data["status"] == "success") or
-            (data["status"] == "failure")
-        )
-    )
