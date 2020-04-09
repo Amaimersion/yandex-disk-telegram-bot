@@ -141,4 +141,9 @@ def create_file_name(audio: dict, file: dict) -> str:
     if ("performer" in audio):
         name = f"{audio['performer']} - {name}"
 
+    if ("mime_type" in audio):
+        types = audio["mime_type"].split("/")
+        extension = types[1]
+        name = f"{name}.{extension}"
+
     return name
