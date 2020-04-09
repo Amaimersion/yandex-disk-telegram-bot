@@ -227,6 +227,7 @@ def route_command(command: Union[str, CommandNames]) -> None:
         CommandNames.YD_REVOKE.value: commands.yd_revoke_handler,
         CommandNames.UPLOAD_PHOTO.value: commands.upload_photo_handler,
         CommandNames.UPLOAD_FILE.value: commands.upload_file_handler,
+        CommandNames.UPLOAD_AUDIO.value: commands.upload_audio_handler,
         CommandNames.CREATE_FOLDER.value: commands.create_folder_handler
     }
     method = routes.get(command, commands.unknown_handler)

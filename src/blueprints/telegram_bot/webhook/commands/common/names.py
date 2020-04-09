@@ -14,4 +14,5 @@ class CommandNames(Enum):
     YD_REVOKE = "/yandex_disk_revoke"
     UPLOAD_PHOTO = "/upload_photo"
     UPLOAD_FILE = "/upload_file"
+    UPLOAD_AUDIO = "/upload_audio"
     CREATE_FOLDER = "/create_folder"
