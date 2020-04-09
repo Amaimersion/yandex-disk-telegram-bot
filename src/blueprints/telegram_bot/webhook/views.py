@@ -207,6 +207,8 @@ def guess_command(message: dict, default=CommandNames.HELP) -> str:
         command = CommandNames.UPLOAD_PHOTO
     elif ("document" in message):
         command = CommandNames.UPLOAD_FILE
+    elif ("audio" in message):
+        command = CommandNames.UPLOAD_AUDIO
     elif ("video" in message):
         command = CommandNames.UPLOAD_VIDEO
 
