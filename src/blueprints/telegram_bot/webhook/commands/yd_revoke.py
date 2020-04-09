@@ -29,7 +29,7 @@ def handle():
                 text=(
                     "You don't gave me access to your Yandex.Disk."
                     "\n"
-                    f"You can do that with {CommandNames.YD_AUTH}"
+                    f"You can do that with {CommandNames.YD_AUTH.value}"
                 )
             )
 

@@ -55,7 +55,7 @@ def handle():
                         "You already gave me access to your Yandex.Disk."
                         "\n"
                         "If you want to revoke access, then do that with "
-                        f"{CommandNames.YD_REVOKE}"
+                        f"{CommandNames.YD_REVOKE.value}"
                     )
                 )
 
@@ -87,7 +87,7 @@ def handle():
                         f"{current_timezone}."
                         "\n\n"
                         "If it wasn't you, you can detach this access with "
-                        f"{CommandNames.YD_REVOKE}"
+                        f"{CommandNames.YD_REVOKE.value}"
                     )
                 )
 

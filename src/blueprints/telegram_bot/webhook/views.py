@@ -1,3 +1,5 @@
+from typing import Union
+
 from flask import (
     request,
     g,
@@ -209,20 +211,23 @@ def guess_command(message: dict, default=CommandNames.HELP) -> str:
     return command
 
 
-def route_command(command: str) -> None:
+def route_command(command: Union[str, CommandNames]) -> None:
     """
     Routes command to specific handler.
     """
+    if (isinstance(command, CommandNames)):
+        command = command.value
+
     routes = {
-        CommandNames.START: commands.help_handler,
-        CommandNames.HELP: commands.help_handler,
-        CommandNames.ABOUT: commands.about_handler,
-        CommandNames.SETTINGS: commands.settings_handler,
-        CommandNames.YD_AUTH: commands.yd_auth_handler,
-        CommandNames.YD_REVOKE: commands.yd_revoke_handler,
-        CommandNames.UPLOAD_PHOTO: commands.upload_photo_handler,
-        CommandNames.UPLOAD_FILE: commands.upload_file_handler,
-        CommandNames.CREATE_FOLDER: commands.create_folder_handler
+        CommandNames.START.value: commands.help_handler,
+        CommandNames.HELP.value: commands.help_handler,
+        CommandNames.ABOUT.value: commands.about_handler,
+        CommandNames.SETTINGS.value: commands.settings_handler,
+        CommandNames.YD_AUTH.value: commands.yd_auth_handler,
+        CommandNames.YD_REVOKE.value: commands.yd_revoke_handler,
+        CommandNames.UPLOAD_PHOTO.value: commands.upload_photo_handler,
+        CommandNames.UPLOAD_FILE.value: commands.upload_file_handler,
+        CommandNames.CREATE_FOLDER.value: commands.create_folder_handler
     }
     method = routes.get(command, commands.unknown_handler)
 
