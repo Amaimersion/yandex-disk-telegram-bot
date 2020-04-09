@@ -24,6 +24,11 @@ def handle():
         "Send photos or photos with this command. "
         f'By default "<code>{yd_upload_default_folder}</code>" folder is used.'
         "\n"
+        "/upload_file — uploads a file. "
+        "Original name will be saved. "
+        "For photos, original quality will be saved. "
+        "Send file(s) with this command."
+        "\n"
         "/create_folder — creates a folder. "
         "Send folder name with this command. "
         "Folder name should starts from root, "

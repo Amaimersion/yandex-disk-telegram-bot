@@ -198,6 +198,8 @@ def guess_command(message: dict, default="/help") -> str:
 
     if ("photo" in message):
         command = "/upload_photo"
+    elif ("document" in message):
+        command = "/upload_file"
 
     return command
 
@@ -214,6 +216,7 @@ def route_command(command: str) -> None:
         "/yandex_disk_authorization": commands.yd_auth_handler,
         "/yandex_disk_revoke": commands.yd_revoke_handler,
         "/upload_photo": commands.upload_photo_handler,
+        "/upload_file": commands.upload_file_handler,
         "/create_folder": commands.create_folder_handler
     }
     method = routes.get(command, commands.unknown_handler)
