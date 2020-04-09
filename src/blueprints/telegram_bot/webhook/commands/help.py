@@ -20,9 +20,11 @@ def handle():
         "\n\n"
         "<b>Yandex.Disk</b>"
         "\n"
-        "/upload_photo — uploads a photo with quality loss. "
-        "Send photos or photos with this command. "
         f'By default "<code>{yd_upload_default_folder}</code>" folder is used.'
+        "\n"
+        "/upload_photo — uploads a photo. "
+        "Original name will be not saved, quality of photo will be decreased. "
+        "Send photo(s) with this command."
         "\n"
         "/upload_file — uploads a file. "
         "Original name will be saved. "
