@@ -13,6 +13,7 @@ from .common.api import (
     YandexAPICreateFolderError,
     YandexAPIRequestError
 )
+from .common.names import CommandNames
 
 
 @yd_access_token_required
@@ -26,7 +27,10 @@ def handle():
     chat = g.db_incoming_chat
     access_token = user.yandex_disk_token.get_access_token()
     message_text = get_text(message)
-    message_folder_name = message_text.replace("/create_folder", "").strip()
+    message_folder_name = message_text.replace(
+        CommandNames.CREATE_FOLDER,
+        ""
+    ).strip()
     last_status_code = None
 
     try:

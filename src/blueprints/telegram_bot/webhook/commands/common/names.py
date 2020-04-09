@@ -1,0 +1,17 @@
+from enum import Enum, unique
+
+
+@unique
+class CommandNames(Enum):
+    """
+    Commands supported by bot.
+    """
+    START = "/start"
+    HELP = "/help"
+    ABOUT = "/about"
+    SETTINGS = "/settings"
+    YD_AUTH = "/yandex_disk_authorization"
+    YD_REVOKE = "/yandex_disk_revoke"
+    UPLOAD_PHOTO = "/upload_photo"
+    UPLOAD_FILE = "/upload_file"
+    CREATE_FOLDER = "/create_folder"

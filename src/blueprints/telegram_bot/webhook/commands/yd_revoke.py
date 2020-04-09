@@ -5,6 +5,7 @@ from flask import g
 from .....db import db
 from .....api import telegram
 from .common.decorators import get_db_data
+from .common.names import CommandNames
 
 
 @get_db_data
@@ -28,7 +29,7 @@ def handle():
                 text=(
                     "You don't gave me access to your Yandex.Disk."
                     "\n"
-                    "You can do that with /yandex_disk_authorization"
+                    f"You can do that with {CommandNames.YD_AUTH}"
                 )
             )
 

@@ -6,6 +6,7 @@ from flask import (
 
 from .. import telegram_bot_blueprint as bp
 from . import commands
+from .commands.common.names import CommandNames
 
 
 @bp.route("/webhook", methods=["POST"])
@@ -159,7 +160,11 @@ def entity_is_valid(entity: dict) -> bool:
     )
 
 
-def get_command(entities: list, message_text: str, default="/help") -> str:
+def get_command(
+    entities: list,
+    message_text: str,
+    default=CommandNames.HELP
+) -> str:
     """
     Extracts bot command from entities.
 
@@ -190,16 +195,16 @@ def get_command(entities: list, message_text: str, default="/help") -> str:
     return command
 
 
-def guess_command(message: dict, default="/help") -> str:
+def guess_command(message: dict, default=CommandNames.HELP) -> str:
     """
     Tries to guess which command user assumed based on message.
     """
     command = default
 
     if ("photo" in message):
-        command = "/upload_photo"
+        command = CommandNames.UPLOAD_PHOTO
     elif ("document" in message):
-        command = "/upload_file"
+        command = CommandNames.UPLOAD_FILE
 
     return command
 
@@ -209,15 +214,15 @@ def route_command(command: str) -> None:
     Routes command to specific handler.
     """
     routes = {
-        "/start": commands.help_handler,
-        "/help": commands.help_handler,
-        "/about": commands.about_handler,
-        "/settings": commands.settings_handler,
-        "/yandex_disk_authorization": commands.yd_auth_handler,
-        "/yandex_disk_revoke": commands.yd_revoke_handler,
-        "/upload_photo": commands.upload_photo_handler,
-        "/upload_file": commands.upload_file_handler,
-        "/create_folder": commands.create_folder_handler
+        CommandNames.START: commands.help_handler,
+        CommandNames.HELP: commands.help_handler,
+        CommandNames.ABOUT: commands.about_handler,
+        CommandNames.SETTINGS: commands.settings_handler,
+        CommandNames.YD_AUTH: commands.yd_auth_handler,
+        CommandNames.YD_REVOKE: commands.yd_revoke_handler,
+        CommandNames.UPLOAD_PHOTO: commands.upload_photo_handler,
+        CommandNames.UPLOAD_FILE: commands.upload_file_handler,
+        CommandNames.CREATE_FOLDER: commands.create_folder_handler
     }
     method = routes.get(command, commands.unknown_handler)
 

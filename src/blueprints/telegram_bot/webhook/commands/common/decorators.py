@@ -13,6 +13,7 @@ from ......db.models import (
     ChatType
 )
 from .responses import cancel_command
+from .names import CommandNames
 
 
 def register_guest(func):
@@ -99,7 +100,7 @@ def yd_access_token_required(func):
             (user.yandex_disk_token is None) or
             (not user.yandex_disk_token.have_access_token())
         ):
-            return g.route_to("/yandex_disk_authorization")
+            return g.route_to(CommandNames.YD_AUTH)
 
         return func(*args, **kwargs)
 

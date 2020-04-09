@@ -19,6 +19,7 @@ from .common.responses import (
     request_private_chat,
     cancel_command
 )
+from .common.names import CommandNames
 
 
 @register_guest
@@ -54,7 +55,7 @@ def handle():
                         "You already gave me access to your Yandex.Disk."
                         "\n"
                         "If you want to revoke access, then do that with "
-                        "/yandex_disk_revoke"
+                        f"{CommandNames.YD_REVOKE}"
                     )
                 )
 
@@ -86,7 +87,7 @@ def handle():
                         f"{current_timezone}."
                         "\n\n"
                         "If it wasn't you, you can detach this access with "
-                        "/yandex_disk_revoke"
+                        f"{CommandNames.YD_REVOKE}"
                     )
                 )
 
