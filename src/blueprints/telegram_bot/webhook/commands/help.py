@@ -23,7 +23,7 @@ def handle():
         "\n"
         f'By default "<code>{yd_upload_default_folder}</code>" folder is used.'
         "\n"
-        f"/{CommandNames.UPLOAD_PHOTO.value} — uploads a photo. "
+        f"{CommandNames.UPLOAD_PHOTO.value} — uploads a photo. "
         "Original name will be not saved, quality of photo will be decreased. "
         "Send photo(s) with this command."
         "\n"
