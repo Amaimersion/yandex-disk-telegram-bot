@@ -211,6 +211,8 @@ def guess_command(message: dict, default=CommandNames.HELP) -> str:
         command = CommandNames.UPLOAD_AUDIO
     elif ("video" in message):
         command = CommandNames.UPLOAD_VIDEO
+    elif ("voice" in message):
+        command = CommandNames.UPLOAD_VOICE
 
     return command
 
@@ -233,6 +235,7 @@ def route_command(command: Union[str, CommandNames]) -> None:
         CommandNames.UPLOAD_FILE.value: commands.upload_file_handler,
         CommandNames.UPLOAD_AUDIO.value: commands.upload_audio_handler,
         CommandNames.UPLOAD_VIDEO.value: commands.upload_video_handler,
+        CommandNames.UPLOAD_VOICE.value: commands.upload_voice_handler,
         CommandNames.CREATE_FOLDER.value: commands.create_folder_handler
     }
     method = routes.get(command, commands.unknown_handler)
