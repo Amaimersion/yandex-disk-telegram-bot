@@ -15,4 +15,5 @@ class CommandNames(Enum):
     UPLOAD_PHOTO = "/upload_photo"
     UPLOAD_FILE = "/upload_file"
     UPLOAD_AUDIO = "/upload_audio"
+    UPLOAD_VIDEO = "/upload_video"
     CREATE_FOLDER = "/create_folder"
