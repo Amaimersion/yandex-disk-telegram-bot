@@ -95,6 +95,7 @@ def handle():
 
         return telegram.send_message(
             chat_id=chat.telegram_id,
+            reply_to_message_id=message["message_id"],
             text=error_text
         )
     except YandexAPIExceededNumberOfStatusChecksError:
@@ -105,6 +106,7 @@ def handle():
 
         return telegram.send_message(
             chat_id=chat.telegram_id,
+            reply_to_message_id=message["message_id"],
             text=error_text
         )
     except (YandexAPIRequestError, Exception) as error:
