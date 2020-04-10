@@ -34,7 +34,7 @@ def handle():
         return abort_command(chat.telegram_id)
 
     try:
-        file = telegram.send_chat_action(
+        telegram.send_chat_action(
             chat_id=chat.telegram_id,
             action="upload_audio"
         )
