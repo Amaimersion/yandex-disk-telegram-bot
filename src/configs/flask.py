@@ -20,6 +20,10 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Flask-Executor
+    EXECUTOR_TYPE = "thread"
+    EXECUTOR_MAX_WORKERS = None  # auto pick
+
     # Telegram API
     # stop waiting for a Telegram response
     # after a given number of seconds

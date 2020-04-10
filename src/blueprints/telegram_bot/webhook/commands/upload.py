@@ -4,6 +4,7 @@ from typing import Union
 from flask import g, current_app
 
 from .....api import telegram
+from .....concurrent import executor
 from .common.decorators import (
     yd_access_token_required,
     get_db_data
@@ -121,51 +122,54 @@ class AttachmentHandler(metaclass=ABCMeta):
             file["file_path"]
         )
 
-        try:
-            for status in upload_file_with_url(
-                access_token=user_access_token,
-                folder_path=folder_path,
-                file_name=file_name,
-                download_url=download_url
-            ):
-                telegram.send_message(
-                    chat_id=chat.telegram_id,
-                    text=f"Status: {status}"
+        def long_task():
+            try:
+                for status in upload_file_with_url(
+                    access_token=user_access_token,
+                    folder_path=folder_path,
+                    file_name=file_name,
+                    download_url=download_url
+                ):
+                    telegram.send_message(
+                        chat_id=chat.telegram_id,
+                        text=f"Status: {status}"
+                    )
+            except YandexAPICreateFolderError as error:
+                error_text = str(error) or (
+                    "I can't create default upload folder "
+                    "due to an unknown Yandex error."
                 )
-        except YandexAPICreateFolderError as error:
-            error_text = str(error) or (
-                "I can't create default upload folder "
-                "due to an unknown Yandex error."
-            )
 
-            return telegram.send_message(
-                chat_id=chat.telegram_id,
-                text=error_text
-            )
-        except YandexAPIUploadFileError as error:
-            error_text = str(error) or (
-                "I can't upload this due to an unknown Yandex error."
-            )
+                return telegram.send_message(
+                    chat_id=chat.telegram_id,
+                    text=error_text
+                )
+            except YandexAPIUploadFileError as error:
+                error_text = str(error) or (
+                    "I can't upload this due to an unknown Yandex error."
+                )
 
-            return telegram.send_message(
-                chat_id=chat.telegram_id,
-                reply_to_message_id=message["message_id"],
-                text=error_text
-            )
-        except YandexAPIExceededNumberOfStatusChecksError:
-            error_text = (
-                "I can't track operation status of this anymore. "
-                "Perform manual checking."
-            )
+                return telegram.send_message(
+                    chat_id=chat.telegram_id,
+                    reply_to_message_id=message["message_id"],
+                    text=error_text
+                )
+            except YandexAPIExceededNumberOfStatusChecksError:
+                error_text = (
+                    "I can't track operation status of this anymore. "
+                    "Perform manual checking."
+                )
 
-            return telegram.send_message(
-                chat_id=chat.telegram_id,
-                reply_to_message_id=message["message_id"],
-                text=error_text
-            )
-        except (YandexAPIRequestError, Exception) as error:
-            print(error)
-            return cancel_command(chat.telegram_id)
+                return telegram.send_message(
+                    chat_id=chat.telegram_id,
+                    reply_to_message_id=message["message_id"],
+                    text=error_text
+                )
+            except (YandexAPIRequestError, Exception) as error:
+                print(error)
+                return cancel_command(chat.telegram_id)
+
+        executor.submit(long_task)
 
 
 class PhotoHandler(AttachmentHandler):
