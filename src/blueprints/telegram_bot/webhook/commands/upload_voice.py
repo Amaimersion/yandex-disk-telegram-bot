@@ -57,7 +57,7 @@ def handle():
     folder_path = current_app.config[
         "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
     ]
-    file_name = file["file_unique_id"]
+    file_name = create_file_name(voice, file)
     download_url = telegram.create_file_download_url(
         file["file_path"]
     )
@@ -127,3 +127,17 @@ def get_voice(message: dict) -> dict:
     :returns: User Telegram voice.
     """
     return message["voice"]
+
+
+def create_file_name(voice: dict, file: dict) -> str:
+    """
+    :returns: File name of voice.
+    """
+    name = file["file_unique_id"]
+
+    if ("mime_type" in voice):
+        types = voice["mime_type"].split("/")
+        extension = types[1]
+        name = f"{name}.{extension}"
+
+    return name
