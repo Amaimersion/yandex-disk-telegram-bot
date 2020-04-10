@@ -27,7 +27,12 @@
 
 ## Features
 
-Nothing here yet.
+- uploading of photos;
+- uploading of files;
+- uploading of audio;
+- uploading of video;
+- uploading of voice;
+- creating of folders.
 
 
 ## Requirements
