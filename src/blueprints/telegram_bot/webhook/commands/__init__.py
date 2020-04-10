@@ -4,9 +4,9 @@ from .about import handle as about_handler
 from .settings import handle as settings_handler
 from .yd_auth import handle as yd_auth_handler
 from .yd_revoke import handle as yd_revoke_handler
-from .upload_photo import handle as upload_photo_handler
-from .upload_file import handle as upload_file_handler
-from .upload_audio import handle as upload_audio_handler
-from .upload_video import handle as upload_video_handler
-from .upload_voice import handle as upload_voice_handler
+from .upload import photo_handler as upload_photo_handler
+from .upload import file_handler as upload_file_handler
+from .upload import audio_handler as upload_audio_handler
+from .upload import video_handler as upload_video_handler
+from .upload import voice_handler as upload_voice_handler
 from .create_folder import handle as create_folder_handler
