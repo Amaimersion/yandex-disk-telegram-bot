@@ -37,7 +37,7 @@ def handle():
         "Send audio file(s) with this command."
         "\n"
         f"{CommandNames.UPLOAD_VIDEO.value} — uploads a video. "
-        "Original name will be not saved. "
+        "Original name will be not saved, original type may be changed. "
         "Send video file(s) with this command."
         "\n"
         f"{CommandNames.UPLOAD_VOICE.value} — uploads a voice. "

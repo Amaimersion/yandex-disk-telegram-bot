@@ -57,7 +57,7 @@ def handle():
     folder_path = current_app.config[
         "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
     ]
-    file_name = file["file_unique_id"]
+    file_name = create_file_name(video, file)
     download_url = telegram.create_file_download_url(
         file["file_path"]
     )
@@ -127,3 +127,17 @@ def get_video(message: dict) -> dict:
     :returns: User Telegram video.
     """
     return message["video"]
+
+
+def create_file_name(video: dict, file: dict) -> str:
+    """
+    :returns: File name of video.
+    """
+    name = file["file_unique_id"]
+
+    if ("mime_type" in video):
+        types = video["mime_type"].split("/")
+        extension = types[1]
+        name = f"{name}.{extension}"
+
+    return name
