@@ -18,7 +18,11 @@ syslog = True
 sendfile = True
 bind = "unix:/tmp/nginx-gunicorn.socket"
 keepalive = 15
-# it is I/O bound app
+"""
+It is I/O bound app, so, we will use “pseudo-threads” (`gevent`).
+`threads` setting is only for `gthread` worker.
+`worker_connections` setting is only for either `eventlet` or `gevent` workers.
+"""
 worker_class = "gevent"
 workers = multiprocessing.cpu_count() * 2 + 1
 workers = (2 if (IS_DEVELOPMENT and workers > 2) else workers)
