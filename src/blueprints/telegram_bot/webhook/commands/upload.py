@@ -4,7 +4,6 @@ from typing import Union
 from flask import g, current_app
 
 from .....api import telegram
-from .....concurrent import executor
 from .common.decorators import (
     yd_access_token_required,
     get_db_data
@@ -169,7 +168,7 @@ class AttachmentHandler(metaclass=ABCMeta):
                 print(error)
                 return cancel_command(chat.telegram_id)
 
-        executor.submit(long_task)
+        long_task()
 
 
 class PhotoHandler(AttachmentHandler):

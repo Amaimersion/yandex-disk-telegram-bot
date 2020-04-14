@@ -9,7 +9,6 @@ entrypoints==0.3
 Faker==4.0.2
 flake8==3.7.9
 Flask==1.1.1
-Flask-Executor==0.9.3
 Flask-Migrate==2.5.3
 Flask-SQLAlchemy==2.4.1
 gevent==1.4.0

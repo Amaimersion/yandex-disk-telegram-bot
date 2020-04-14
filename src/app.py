@@ -9,7 +9,6 @@ from flask import Flask, redirect, url_for
 from .configs.flask import config as Config
 from .db import db, migrate
 from .blueprints import telegram_bot_blueprint
-from .concurrent import executor
 
 
 def create_app(config_name: str = None) -> Flask:
@@ -22,7 +21,6 @@ def create_app(config_name: str = None) -> Flask:
     configure_db(app)
     configure_blueprints(app)
     configure_redirects(app)
-    configure_executor(app)
 
     return app
 
@@ -69,10 +67,3 @@ def configure_redirects(app: Flask):
                 filename="favicon.ico"
             )
         )
-
-
-def configure_executor(app: Flask):
-    """
-    Configures "Flask-Executor" extension.
-    """
-    executor.init_app(app)
