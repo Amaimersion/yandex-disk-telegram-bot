@@ -93,9 +93,7 @@ flask db upgrade
 
 5. Run this to see more actions:
 
-```python
-python manage.py --help
-```
+`python manage.py --help`
 
 6. If needed, perform [integration with external API's](#integration-with-external-apis).
 
