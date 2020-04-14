@@ -110,13 +110,15 @@ python manage.py --help
 
 2. [Set a webhook](https://core.telegram.org/bots/api#setwebhook):
 ```shell
-./scripts/telegram/set_webhook.sh <TELEGRAM_BOT_TOKEN> <SERVER_URL>
+./scripts/telegram/set_webhook.sh <TELEGRAM_BOT_TOKEN> <SERVER_URL> <MAX_CONNECTIONS>
 ```
 
 Russian users may need a proxy:
 ```shell
-./scripts/telegram/set_webhook.sh <TELEGRAM_BOT_TOKEN> <SERVER_URL> "--proxy <PROXY>"
+./scripts/telegram/set_webhook.sh <TELEGRAM_BOT_TOKEN> <SERVER_URL> <MAX_CONNECTIONS> "--proxy <PROXY>"
 ```
+
+For parameter `MAX_CONNECTIONS` it is recommended to use maxium number of simultaneous connections to the selected database. For example, "Heroku Postgres" extension at "Hobby Dev" plan have connection limit of 20. So, you should use `20` as value for key `MAX_CONNECTIONS` in order to avoid possible problems with `too many connections` error.
 
 From Telegram documentation:
 > If you'd like to make sure that the Webhook request comes from Telegram, we recommend using a secret path in the URL, e.g. `https://www.example.com/<token>`. Since nobody else knows your bot‘s token, you can be pretty sure it’s us.
