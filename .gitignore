@@ -1,0 +1,16 @@
+# Files
+*.pyc
+*.log
+**/temp.*
+*.sqlite
+*.sqlite-journal
+
+# Folders
+__pycache__
+*.egg-info
+venv
+**/temp
+
+# Secrets
+instance
+.env

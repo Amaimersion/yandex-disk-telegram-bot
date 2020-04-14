@@ -1,0 +1,19 @@
+{% macro css_file(file) %}
+  <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename=file) }}"
+  >
+{% endmacro %}
+
+
+{% macro js_file(file, load="defer") %}
+  <script
+    {% if load == "defer" %}
+      defer
+    {% elif load == "async" %}
+      async
+    {% endif %}
+
+    src="{{ url_for('static', filename=file) }}"
+  ></script>
+{% endmacro %}

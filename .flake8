@@ -1,0 +1,8 @@
+[flake8]
+ignore = F401, W504
+exclude =
+    # Folders
+    __pycache__
+    venv
+    # Files
+    *.pyc
