@@ -11,6 +11,12 @@ load_dotenv()
 
 
 class Config:
+    """
+    Notes for configuration:
+    - keep in mind that Heroku have 30 seconds as request timeout.
+    So, if your configuration can exceed 30 seconds, then request
+    will be terminated by Heroku.
+    """
     # Flask
     DEBUG = False
     TESTING = False
