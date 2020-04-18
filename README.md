@@ -20,6 +20,7 @@
   - [Server](#server)
   - [Database](#database)
 - [Deployment](#deployment)
+  - [Before](#before)
   - [Heroku](#heroku)
 - [Contribution](#contribution)
 - [License](#license)
@@ -162,6 +163,10 @@ Development and testing databases will be located at `src/development.sqlite` an
 ## Deployment
 
 Regardless of any platform you choose for hosting, it is recommend to manually configure number of workers, number of workers connections and number of threads for both `gunicorn` and `nginx`.
+
+### Before
+
+It is recommend to run linters with `./scripts/linters/all.sh` before deployment and resolve all errors and warnings.
 
 ### Heroku
 
