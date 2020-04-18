@@ -240,7 +240,7 @@ def handle_success():
                 f"on {current_date} at {current_time} {current_timezone}."
                 "\n\n"
                 "If it wasn't you, you can detach this access with "
-                "/yandex_disk_revoke"
+                "/revoke_access"
             )
         )
 
