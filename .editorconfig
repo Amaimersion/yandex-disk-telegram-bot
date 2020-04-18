@@ -8,5 +8,5 @@ charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
 
-[*.{html,css,md,sh,conf}]
+[*.{html,css,md,sh,conf,ini}]
 indent_size = 2
