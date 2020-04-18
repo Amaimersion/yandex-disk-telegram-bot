@@ -1,7 +1,7 @@
 {
     "name": "Yandex.Disk Telegram Bot",
     "short_name": "YD Telegram Bot",
-    "description": "Integration of Yandex.Disk right into Telegram.",
+    "description": "Integration of Yandex.Disk into Telegram.",
     "categories": [
         "utilities"
     ],
