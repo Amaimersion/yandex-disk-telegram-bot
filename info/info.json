@@ -46,11 +46,11 @@
             "description": "Create a folder using OS path"
         },
         {
-            "command": "yandex_disk_authorization",
+            "command": "grant_access",
             "description": "Grant me an access to your Yandex.Disk"
         },
         {
-            "command": "yandex_disk_revoke",
+            "command": "revoke_access",
             "description": "Revoke my access to your Yandex.Disk"
         }
     ]
