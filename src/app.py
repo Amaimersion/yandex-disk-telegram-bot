@@ -64,6 +64,6 @@ def configure_redirects(app: Flask):
         return redirect(
             url_for(
                 "static",
-                filename="favicon.ico"
+                filename="favicons/favicon.ico"
             )
         )
