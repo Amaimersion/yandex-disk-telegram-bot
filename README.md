@@ -3,7 +3,7 @@
 </h1>
 
 <p align="center">
-  A bot for Telegram that integrates Yandex.Disk right into Telegram.
+  A Telegram bot that integrates Yandex.Disk into Telegram.
 </p>
 
 
@@ -28,11 +28,11 @@
 
 ## Features
 
-- uploading of photos;
-- uploading of files;
-- uploading of audio;
-- uploading of video;
-- uploading of voice;
+- uploading of photos.
+- uploading of files.
+- uploading of audio.
+- uploading of video.
+- uploading of voice.
 - creating of folders.
 
 
@@ -43,15 +43,15 @@
 - [venv](https://docs.python.org/3/library/venv.html)
 - [git](https://git-scm.com/)
 - [curl](https://curl.haxx.se/) (optional)
-- [nginx](https://nginx.org/) (optional)
+- [nginx 1.16+](https://nginx.org/) (optional)
 - [postgreSQL 10+](https://www.postgresql.org/) (optional)
-- [heroku](https://www.heroku.com/) (optional)
+- [heroku 7.39+](https://www.heroku.com/) (optional)
 
-It is expected that all of the above software is available as a global variable: `python3`, [`python3 -m pip`](https://github.com/pypa/pip/issues/5599#issuecomment-597042338), `python3 -m venv`, `git`, `curl`, `nginx`, `psql`, `heroku`.
+It is expected that all of the above software is available as a global variable: `python3`, `python3 -m pip`, `python3 -m venv`, `git`, `curl`, `nginx`, `psql`, `heroku`. See [this](https://github.com/pypa/pip/issues/5599#issuecomment-597042338) why you should use such syntax: `python3 -m <module>`.
 
-If you want to host this server somewhere, then you need install additional software. See your host installation guide.
+All subsequent instructions is for Unix-like systems, primarily for Linux. You may need to make some changes on your own if you work on non-Linux operating system.
 
-All subsequent instructions is for Unix systems (primarily for Linux). You may need to make some changes on your own if you work on Windows.
+If you want to host this server somewhere outside of Heroku, then you may need to install additional software. See your host installation guide.
 
 
 ## Installation
@@ -77,7 +77,7 @@ After that step we will use `python` instead of `python3` and `pip` instead of `
 - edit executable paths in `.vscode/settings.json`
 - edit names in `./scripts` files
 
-You may also want to upgrade `pip`, because [there can be](https://github.com/pypa/pip/issues/5221) an old version (9.0.1) instead of new one. Run `pip install --upgrade pip`.
+You probably need to upgrade `pip`, because [you may have](https://github.com/pypa/pip/issues/5221) an old version (9.0.1) instead of new one. Run `pip install --upgrade pip`.
 
 3. Install requirements.
 
@@ -96,9 +96,11 @@ flask db upgrade
 
 `python manage.py --help`
 
-6. If needed, perform [integration with external API's](#integration-with-external-apis).
+That's all you need for development. If you want create production-ready server, then:
 
-7. See [Local usage](#local-usage) or [Deployment](#deployment).
+1. Perform [integration with external API's](#integration-with-external-apis).
+
+2. See [Local usage](#local-usage) or [Deployment](#deployment).
 
 
 ## Integration with external API's
@@ -108,6 +110,7 @@ flask db upgrade
 1. Register your bot in chat with [@BotFather](http://t.me/BotFather) and get API token.
 
 2. [Set a webhook](https://core.telegram.org/bots/api#setwebhook):
+
 ```shell
 ./scripts/telegram/set_webhook.sh <TELEGRAM_BOT_TOKEN> <SERVER_URL> <MAX_CONNECTIONS>
 ```
@@ -117,22 +120,20 @@ Russian users may need a proxy:
 ./scripts/telegram/set_webhook.sh <TELEGRAM_BOT_TOKEN> <SERVER_URL> <MAX_CONNECTIONS> "--proxy <PROXY>"
 ```
 
-For parameter `MAX_CONNECTIONS` it is recommended to use maxium number of simultaneous connections to the selected database. For example, "Heroku Postgres" extension at "Hobby Dev" plan have connection limit of 20. So, you should use `20` as value for key `MAX_CONNECTIONS` in order to avoid possible problems with `too many connections` error.
+For parameter `MAX_CONNECTIONS` it is recommended to use maxium number of simultaneous connections to the selected database. For example, "Heroku Postgres" extension at "Hobby Dev" plan have connection limit of 20. So, you should use `20` as value for `MAX_CONNECTIONS` parameter in order to avoid possible `Too many connections` error.
 
 From Telegram documentation:
 > If you'd like to make sure that the Webhook request comes from Telegram, we recommend using a secret path in the URL, e.g. `https://www.example.com/<token>`. Since nobody else knows your bot‘s token, you can be pretty sure it’s us.
 
-So, instead of `/telegram_bot/webhook` you can use something like this `/telegram_bot/webhook_fd1k3Bfa01WQl5S`.
+So, instead of `/telegram_bot/webhook` you can use something like this: `/telegram_bot/webhook_fd1k3Bfa01WQl5S`.
 
 ### Yandex.Disk
 
-1. Register your app in [Yandex](https://yandex.ru/dev/oauth/).
+1. Register your app in [Yandex](https://yandex.ru/dev/oauth/). Most likely it will take a while for Yandex moderators to check your app.
 
-2. Most likely it will take a while for Yandex moderators to check your app.
+2. Get your app ID and password at special Yandex page for your app.
 
-3. Get your app ID and password at special Yandex page for your app.
-
-4. At special Yandex page for your app find "Callback URI" settings and add this URI: `https://<your site>/telegram_bot_yandex_disk_auth`.
+3. At special Yandex page for your app find "Callback URI" setting and add this URI: `https://<your site>/telegram_bot/yandex_disk_authorization`.
 
 
 ## Local usage
@@ -151,38 +152,41 @@ Usually you will want to run both `gunicorn` and `nginx`. To do so run scripts i
 
 Run `./scripts/server/stop_nginx.sh` in order to stop nginx.
 
-nginx uses simple configuration from `./src/configs/nginx.conf`. You can ignore this and use any configuration for nginx that is appropriate to you. However, it is recommend to use exact configuration as in current version for `flask` and `gunicorn`. Instead, make PR if you think that something is wrong with these two configurations.
+nginx uses simple configuration from `./src/configs/nginx.conf`. You can ignore this and use any configuration for nginx that is appropriate to you. However, it is recommended to use exact configurations as in app for both `flask` and `gunicorn`. If you think these configurations is not right, then make PR instead.
 
 ### Database
 
-In both development and testing environments `SQLite` is used. For production `PostgreSQL` is recommended, but you can use any of [supported databases](https://docs.sqlalchemy.org/en/13/core/engines.html#supported-databases). App already configured for both `SQLite` and `PostgreSQL`, for another databases you may have to install additional Python packages.
+In both development and testing environments `SQLite` is used. For production `PostgreSQL` is recommended, but you can use any of [supported databases](https://docs.sqlalchemy.org/en/13/core/engines.html#supported-databases). App already configured for both `SQLite` and `PostgreSQL`, for another database you may have to install additional Python packages.
 
 Development and testing databases will be located at `src/development.sqlite` and `src/testing.sqlite` respectively.
 
 
 ## Deployment
 
-Regardless of any platform you choose for hosting, it is recommend to manually configure number of workers, number of workers connections and number of threads for both `gunicorn` and `nginx`.
+Regardless of any platform you choose for hosting, it is recommended to manually configure number of workers, number of workers connections and number of threads for both `gunicorn` and `nginx`.
 
 ### Before
 
-It is recommend to run linters with `./scripts/linters/all.sh` before deployment and resolve all errors and warnings.
+It is recommended to run linters with `./scripts/linters/all.sh` before deployment and resolve all errors and warnings.
 
 ### Heroku
 
 1. If you don't have [Heroku](https://heroku.com/) installed, then it is a time to do that.
 
 2. If you don't have Heroku remote, then add it:
+
 - for existing app:
 ```git
 git remote add heroku <URL>
 ```
+
 - for new app:
 ```
 heroku create
 ```
 
 3. We need both python and nginx build packs. Python build pack should be added automatically, but we will do it manually. For nginx build pack you can use whatever you want: [official one](https://github.com/heroku/heroku-buildpack-nginx), [my own one](https://github.com/Amaimersion/heroku-buildpack-nginx-for-yandex-disk-telegram-bot) or create your own one. In case of not using my own nginx build pack don't forget about compatibility (config paths, environment variables names, etc.).
+
 ```
 heroku buildpacks:set heroku/python
 heroku buildpacks:add https://github.com/Amaimersion/heroku-buildpack-nginx-for-yandex-disk-telegram-bot.git
@@ -197,6 +201,7 @@ heroku addons:create heroku-postgresql:hobby-dev
 Later you can view the DB content by using `heroku pg:psql`.
 
 5. Switch to new branch special for Heroku (don't ever push it!):
+
 ```git
 git checkout -b heroku
 ```
@@ -204,17 +209,20 @@ git checkout -b heroku
 6. Make sure `.env` file is created and filled. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
 
 7. Add changes for pushing to Heroku:
+
 - if you edited files on heroku branch:
 ```git
 git add .
 git commit -m <message>
 ```
+
 - if you want push changes from another branch:
 ```git
 git merge <another branch> -m <message>
 ```
 
 8. Upload files to Heroku:
+
 ```git
 git push heroku heroku:master
 ```
