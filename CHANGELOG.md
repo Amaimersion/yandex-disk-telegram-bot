@@ -8,6 +8,8 @@
 
 ### Changed
 
+- Title.
+- Description.
 - Logo.
 - Favicon.
 
