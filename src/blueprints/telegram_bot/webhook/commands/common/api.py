@@ -3,7 +3,7 @@ from typing import Generator
 
 from flask import current_app
 
-from ......api import yandex
+from src.api import yandex
 
 
 class YandexAPIRequestError(Exception):

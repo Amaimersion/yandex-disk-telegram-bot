@@ -1,6 +1,6 @@
 from flask import g, current_app
 
-from .....api import telegram
+from src.api import telegram
 from .common.names import CommandNames
 
 

@@ -6,7 +6,7 @@ from flask import (
     make_response
 )
 
-from .. import telegram_bot_blueprint as bp
+from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 from . import commands
 from .commands.common.names import CommandNames
 

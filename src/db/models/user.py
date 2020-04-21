@@ -2,8 +2,8 @@ from enum import IntEnum, unique
 
 from sqlalchemy.sql import func
 
-from ...localization import SupportedLanguages
-from .. import db
+from src.localization import SupportedLanguages
+from src.db import db
 
 
 @unique

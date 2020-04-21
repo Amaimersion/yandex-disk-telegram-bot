@@ -1,6 +1,6 @@
 from flask import g
 
-from .....api import telegram
+from src.api import telegram
 from .common.decorators import register_guest, get_db_data
 from .common.responses import request_private_chat
 

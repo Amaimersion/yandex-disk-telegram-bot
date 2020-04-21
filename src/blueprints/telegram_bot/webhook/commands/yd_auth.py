@@ -6,11 +6,11 @@ from datetime import datetime, timezone
 from flask import g, current_app
 import jwt
 
-from .....db import (
+from src.db import (
     db,
     YandexDiskToken
 )
-from .....api import telegram, yandex
+from src.api import telegram, yandex
 from .common.decorators import (
     register_guest,
     get_db_data

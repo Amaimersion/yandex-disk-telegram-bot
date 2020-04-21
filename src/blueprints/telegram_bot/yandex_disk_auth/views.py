@@ -9,9 +9,9 @@ from flask import (
 )
 import jwt
 
-from ....db import db, UserQuery, ChatQuery
-from ....api import yandex, telegram
-from .. import telegram_bot_blueprint as bp
+from src.db import db, UserQuery, ChatQuery
+from src.api import yandex, telegram
+from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 
 
 TEMPLATES = {

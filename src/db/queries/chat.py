@@ -1,7 +1,7 @@
 from typing import List, Union, NewType
 
-from .. import Chat
-from ..models import ChatType
+from src.db import Chat
+from src.db.models import ChatType
 
 
 ChatOrNone = NewType("ChatOrNone", Union[Chat, None])

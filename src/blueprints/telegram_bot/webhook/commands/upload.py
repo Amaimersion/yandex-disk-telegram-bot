@@ -3,7 +3,7 @@ from typing import Union
 
 from flask import g, current_app
 
-from .....api import telegram
+from src.api import telegram
 from .common.decorators import (
     yd_access_token_required,
     get_db_data

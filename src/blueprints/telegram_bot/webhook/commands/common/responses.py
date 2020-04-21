@@ -1,4 +1,4 @@
-from ......api import telegram
+from src.api import telegram
 
 
 def abort_command(chat_telegram_id: int) -> None:

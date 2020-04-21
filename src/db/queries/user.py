@@ -2,7 +2,7 @@ from typing import List, Union, NewType
 
 from sqlalchemy.sql.expression import func
 
-from .. import User, YandexDiskToken
+from src.db import User, YandexDiskToken
 
 
 UserOrNone = NewType("UserOrNone", Union[User, None])
