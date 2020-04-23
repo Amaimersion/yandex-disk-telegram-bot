@@ -3,6 +3,6 @@ from .methods import (
     get_file,
     send_chat_action
 )
-from .request import (
+from .requests import (
     create_file_download_url
 )

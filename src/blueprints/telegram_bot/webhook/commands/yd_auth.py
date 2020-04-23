@@ -185,7 +185,7 @@ def refresh_access_token(yd_token) -> bool:
         yandex_response = yandex.get_access_token(
             grant_type="refresh_token",
             refresh_token=refresh_token
-        )
+        )["content"]
     except Exception as e:
         print(e)
         return False

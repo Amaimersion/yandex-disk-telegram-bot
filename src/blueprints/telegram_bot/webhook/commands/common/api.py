@@ -85,7 +85,7 @@ def create_folder(access_token: str, folder_name: str) -> int:
         except Exception as e:
             raise YandexAPIRequestError(e)
 
-        last_status_code = response["HTTP_STATUS_CODE"]
+        last_status_code = response["status_code"]
 
         if (
             (last_status_code == 201) or
@@ -139,7 +139,7 @@ def upload_file_with_url(
             access_token,
             url=download_url,
             path=full_path
-        )
+        )["content"]
     except Exception as e:
         raise YandexAPIRequestError(e)
 
@@ -172,7 +172,7 @@ def upload_file_with_url(
             result = yandex.make_link_request(
                 data=operation_status_link,
                 user_token=access_token
-            )
+            )["content"]
         except Exception as e:
             raise YandexAPIRequestError(e)
 

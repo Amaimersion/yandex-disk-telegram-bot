@@ -107,7 +107,7 @@ class AttachmentHandler(metaclass=ABCMeta):
         try:
             file = telegram.get_file(
                 file_id=attachment["file_id"]
-            )
+            )["content"]
         except Exception as error:
             print(error)
             return cancel_command(chat.telegram_id)
@@ -139,31 +139,37 @@ class AttachmentHandler(metaclass=ABCMeta):
                     "due to an unknown Yandex error."
                 )
 
-                return telegram.send_message(
+                telegram.send_message(
                     chat_id=chat.telegram_id,
                     text=error_text
                 )
+
+                return
             except YandexAPIUploadFileError as error:
                 error_text = str(error) or (
                     "I can't upload this due to an unknown Yandex error."
                 )
 
-                return telegram.send_message(
+                telegram.send_message(
                     chat_id=chat.telegram_id,
                     reply_to_message_id=message["message_id"],
                     text=error_text
                 )
+
+                return
             except YandexAPIExceededNumberOfStatusChecksError:
                 error_text = (
                     "I can't track operation status of this anymore. "
                     "Perform manual checking."
                 )
 
-                return telegram.send_message(
+                telegram.send_message(
                     chat_id=chat.telegram_id,
                     reply_to_message_id=message["message_id"],
                     text=error_text
                 )
+
+                return
             except (YandexAPIRequestError, Exception) as error:
                 print(error)
                 return cancel_command(chat.telegram_id)

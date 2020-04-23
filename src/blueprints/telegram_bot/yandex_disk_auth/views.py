@@ -189,7 +189,7 @@ def handle_success():
         yandex_response = yandex.get_access_token(
             grant_type="authorization_code",
             code=code
-        )
+        )["content"]
     except Exception:
         return render_template(
             TEMPLATES["error"],

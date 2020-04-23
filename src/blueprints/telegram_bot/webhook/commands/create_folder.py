@@ -47,10 +47,12 @@ def handle():
         if hasattr(e, "message"):
             error_text = e.message
 
-        return telegram.send_message(
+        telegram.send_message(
             chat_id=chat.telegram_id,
             text=error_text
         )
+
+        return
 
     text = None
 
