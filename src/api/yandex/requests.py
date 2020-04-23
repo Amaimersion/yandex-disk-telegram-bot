@@ -64,7 +64,7 @@ def make_disk_request(
     http_method: str,
     api_method: str,
     data: dict,
-    token: str
+    user_token: str
 ):
     """
     Makes HTTP request to Yandex.Disk.
@@ -75,7 +75,7 @@ def make_disk_request(
     :param http_method: Name of HTTP method for request.
     :param api_method: Name of API method in URL.
     :param data: JSON data to send.
-    :param token: OAuth token to access the API.
+    :param user_token: User OAuth token to access the API.
     """
     url = create_disk_url(api_method)
     timeout = current_app.config["YANDEX_DISK_API_TIMEOUT"]
@@ -87,13 +87,13 @@ def make_disk_request(
         url=url,
         params=data,
         timeout=timeout,
-        auth=HTTPOAuthAuth(token),
+        auth=HTTPOAuthAuth(user_token),
         allow_redirects=False,
         verify=True
     )
 
 
-def make_link_request(data: dict, token: str):
+def make_link_request(data: dict, user_token: str):
     """
     https://yandex.ru/dev/disk/api/reference/response-objects-docpage/#link
 
@@ -101,7 +101,7 @@ def make_link_request(data: dict, token: str):
     - see `api/request.py` documentation for more.
 
     :param data: Data of link to handle.
-    :param token: OAuth token to access the API.
+    :param user_token: User OAuth token to access the API.
 
     :raises NotImplementedError: If link requires templating.
     """
@@ -118,7 +118,7 @@ def make_link_request(data: dict, token: str):
         method=method,
         url=url,
         timeout=timeout,
-        auth=HTTPOAuthAuth(token),
+        auth=HTTPOAuthAuth(user_token),
         allow_redirects=False,
         verify=True
     )

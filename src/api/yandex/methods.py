@@ -23,11 +23,11 @@ def upload_file_with_url(user_token: str, **kwargs):
         http_method="POST",
         api_method="resources/upload",
         data=kwargs,
-        token=user_token
+        user_token=user_token
     )
 
 
-def create_folder(user_token, **kwargs) -> dict:
+def create_folder(user_token: str, **kwargs):
     """
     https://yandex.ru/dev/disk/api/reference/create-folder-docpage
 
@@ -37,5 +37,5 @@ def create_folder(user_token, **kwargs) -> dict:
         http_method="PUT",
         api_method="resources",
         data=kwargs,
-        token=user_token
+        user_token=user_token
     )
