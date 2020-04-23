@@ -11,3 +11,10 @@ from .yandex_disk_token import (
     DataCorruptedError,
     InvalidTokenError
 )
+
+
+__all__ = [
+    "User",
+    "Chat",
+    "YandexDiskToken"
+]

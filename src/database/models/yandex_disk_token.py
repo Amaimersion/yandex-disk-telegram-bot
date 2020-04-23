@@ -1,4 +1,3 @@
-import os
 from typing import Union
 
 from flask import current_app
@@ -101,7 +100,7 @@ class YandexDiskToken(db.Model):
         return setattr(self, key, value)
 
     @staticmethod
-    def create_fake(user):
+    def create_fake(user) -> dict:
         """
         Creates fake Yandex.Disk token.
 
@@ -212,8 +211,10 @@ class YandexDiskToken(db.Model):
         """
         Returns decrypted access token.
 
-        :raises DataCorruptedError: Data in DB is corrupted.
-        :raises InvalidTokenError: Encrypted token is invalid or expired.
+        :raises DataCorruptedError:
+        Data in DB is corrupted.
+        :raises InvalidTokenError:
+        Encrypted token is invalid or expired.
         """
         return self._get_token(
             token_attribute_name="_access_token",
@@ -233,8 +234,10 @@ class YandexDiskToken(db.Model):
         """
         Returns decrypted refresh token.
 
-        :raises DataCorruptedError: Data in DB is corrupted.
-        :raises InvalidTokenError: Encrypted token is invalid.
+        :raises DataCorruptedError:
+        Data in DB is corrupted.
+        :raises InvalidTokenError:
+        Encrypted token is invalid.
         """
         return self._get_token(
             token_attribute_name="_refresh_token"
@@ -253,8 +256,10 @@ class YandexDiskToken(db.Model):
         """
         Returns decrypted insert token.
 
-        :raises DataCorruptedError: Data in DB is corrupted.
-        :raises InvalidTokenError: Encrypted token is invalid or expired.
+        :raises DataCorruptedError:
+        Data in DB is corrupted.
+        :raises InvalidTokenError:
+        Encrypted token is invalid or expired.
         """
         return self._get_token(
             token_attribute_name="_insert_token",
@@ -292,7 +297,7 @@ class YandexDiskToken(db.Model):
         """
         Clears all data that belongs to access token.
 
-        Perform a commit in order to save changes!
+        - perform a commit in order to save changes!
         """
         self.access_token_type = null()
 
@@ -305,7 +310,7 @@ class YandexDiskToken(db.Model):
         """
         Clears all data that belongs to refresh token.
 
-        Perform a commit in order to save changes!
+        - perform a commit in order to save changes!
         """
         return self._clear_token(
             token_attribute_name="_refresh_token"
@@ -315,7 +320,7 @@ class YandexDiskToken(db.Model):
         """
         Clears all data that belongs to insert token.
 
-        Perform a commit in order to save changes!
+        - perform a commit in order to save changes!
         """
         return self._clear_token(
             token_attribute_name="_insert_token",
@@ -326,7 +331,7 @@ class YandexDiskToken(db.Model):
         """
         Clears all data that belongs to any kind of token.
 
-        Perform a commit in order to save changes!
+        - perform a commit in order to save changes!
         """
         self.clear_access_token()
         self.clear_refresh_token()
@@ -336,7 +341,8 @@ class YandexDiskToken(db.Model):
         """
         Sets encrypted token.
 
-        :param token_attribute_name: Name of token attribute in class.
+        :param token_attribute_name:
+        Name of token attribute in class.
         :param value: Value to set.
         """
         fernet = Fernet(current_app.secret_key.encode())
@@ -394,9 +400,11 @@ class YandexDiskToken(db.Model):
 
     def _have_token(self, **kwargs) -> bool:
         """
-        :param token_attribute_name: Name of token attribute in class.
+        :param token_attribute_name:
+        Name of token attribute in class.
 
-        :returns: `True` if token contains any value, `False` otherwise.
+        :returns:
+        `True` if token contains any value, `False` otherwise.
         """
         token_attribute_name = kwargs["token_attribute_name"]
         value = self[token_attribute_name]
@@ -410,9 +418,10 @@ class YandexDiskToken(db.Model):
         """
         Clears token data.
 
-        Perform a commit in order to save changes!
+        - perform a commit in order to save changes!
 
-        :param token_attribute_name: Name of token attribute in class.
+        :param token_attribute_name:
+        Name of token attribute in class.
         :param expires_attribute_name:
         Optional. Token lifetime in seconds.
         If specified, expiration date will be cleared.

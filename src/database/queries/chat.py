@@ -11,7 +11,7 @@ def delete_all_chats() -> int:
     """
     Deletes all chats from a table.
 
-    You have to commit DB changes!
+    - you have to commit DB changes!
 
     :returns: Count of deleted chats.
     """

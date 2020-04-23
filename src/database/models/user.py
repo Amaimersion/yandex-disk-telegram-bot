@@ -2,8 +2,8 @@ from enum import IntEnum, unique
 
 from sqlalchemy.sql import func
 
-from src.localization import SupportedLanguages
 from src.database import db
+from src.localization import SupportedLanguages
 
 
 @unique
@@ -15,9 +15,10 @@ class UserGroup(IntEnum):
     i.e., greater number means higher access (more rights).
     """
     INVALID = 0
-    USER = 1
-    TESTER = 2
-    ADMIN = 3
+    BANNED = 1
+    USER = 2
+    TESTER = 3
+    ADMIN = 4
 
 
 class User(db.Model):

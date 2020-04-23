@@ -15,9 +15,9 @@ class ChatType(IntEnum):
     CHANNEL = 4
 
     @staticmethod
-    def get(type_name: str):
+    def get(type_name: str) -> int:
         """
-        Return type by name.
+        Return type by Telegram name.
         """
         type_name = type_name.lower()
         types = {

@@ -38,7 +38,7 @@ def get_user_by_telegram_id(telegram_id: int) -> UserOrNone:
 
 def exists(telegram_id: int) -> bool:
     """
-    Checks if user is exists in DB.
+    Checks if user exists in DB.
     """
     return (get_user_by_telegram_id(telegram_id) is not None)
 
@@ -88,7 +88,7 @@ def delete_all_users() -> int:
     """
     Deletes all users from a table.
 
-    You have to commit DB changes!
+    - you have to commit DB changes!
 
     :returns: Count of deleted users.
     """
