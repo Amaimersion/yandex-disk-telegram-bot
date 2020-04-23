@@ -22,7 +22,8 @@
 
 ### Changed
 
-- Decrease size of slug on Heroku by removing unused files and folders.
+- Decreased size of slug on Heroku by removing unused files and folders.
+- Decreased number of seconds for Yandex.OAuth request timeout.
 
 
 # 1.0.0 (April 15, 2020)
