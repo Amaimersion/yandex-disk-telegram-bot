@@ -1,4 +1,4 @@
-from src.db import YandexDiskToken
+from src.database import YandexDiskToken
 
 
 def delete_all_yd_tokens() -> int:

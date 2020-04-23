@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from flask import g
 
-from src.db import db
+from src.database import db
 from src.api import telegram
 from .common.decorators import get_db_data
 from .common.names import CommandNames

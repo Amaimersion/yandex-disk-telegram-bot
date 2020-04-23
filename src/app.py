@@ -11,7 +11,7 @@ from flask import (
 )
 
 from .configs import flask_config
-from .db import db, migrate
+from .database import db, migrate
 from .blueprints import telegram_bot_blueprint
 
 

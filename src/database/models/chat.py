@@ -1,6 +1,6 @@
 from enum import IntEnum, unique
 
-from src.db import db
+from src.database import db
 
 
 @unique

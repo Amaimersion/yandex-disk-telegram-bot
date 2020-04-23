@@ -4,7 +4,7 @@ import click
 from sqlalchemy.exc import IntegrityError
 
 from src.app import create_app
-from src.db import (
+from src.database import (
     db,
     User,
     Chat,

@@ -2,14 +2,14 @@ from functools import wraps
 
 from flask import g
 
-from src.db import (
+from src.database import (
     db,
     User,
     UserQuery,
     Chat,
     ChatQuery
 )
-from src.db.models import (
+from src.database.models import (
     ChatType
 )
 from .responses import cancel_command

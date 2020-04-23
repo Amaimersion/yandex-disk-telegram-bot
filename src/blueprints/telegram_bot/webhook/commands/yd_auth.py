@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from flask import g, current_app
 import jwt
 
-from src.db import (
+from src.database import (
     db,
     YandexDiskToken
 )
