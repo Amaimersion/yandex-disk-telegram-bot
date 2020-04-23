@@ -12,17 +12,17 @@ load_dotenv()
 
 class Config:
     """
-    Notes for configuration:
-    - keep in mind that Heroku have 30 seconds as request timeout.
-    So, if your configuration can exceed 30 seconds, then request
-    will be terminated by Heroku.
+    Notes:
+    - keep in mind that Heroku have 30 seconds request timeout.
+    So, if your configuration value can exceed 30 seconds, then
+    request will be terminated by Heroku.
     """
     # Flask
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
-    # SQLAlchemy
+    # Flask SQLAlchemy
     SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -31,10 +31,10 @@ class Config:
     # after a given number of seconds
     TELEGRAM_API_TIMEOUT = 5
 
-    # Yandex Oauth API
+    # Yandex OAuth API
     # stop waiting for a Yandex response
     # after a given number of seconds
-    YANDEX_OAUTH_API_TIMEOUT = 30
+    YANDEX_OAUTH_API_TIMEOUT = 15
 
     # Yandex.Disk API
     # stop waiting for a Yandex response
@@ -54,8 +54,8 @@ class Config:
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS = 5
     # interval in seconds between checks of operation status.
     # It is blocks request until check ending!
-    # So, if max. attempts is 5 and interval is 10,
-    # then request will be blocked maxium for (5 * 10) seconds.
+    # For example, if max. attempts is 5 and interval is 2,
+    # then request will be blocked maximum for (5 * 2) seconds.
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 2
     # in this folder files will be uploaded by default
     # if user not specified custom folder.
@@ -63,7 +63,7 @@ class Config:
 
     # Project
     # name of app that will be used in HTML and so on
-    PROJECT_APP_NAME = "Yandex.Disk Bot"
+    PROJECT_APP_NAME = "Yandex.Disk Telegram Bot"
 
 
 class ProductionConfig(Config):
