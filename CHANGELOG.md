@@ -4,6 +4,7 @@
 
 ### Added
 
+- Privacy Policy and Terms & Conditions.
 - Favicons for different platforms.
 
 ### Changed

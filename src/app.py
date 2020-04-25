@@ -12,7 +12,10 @@ from flask import (
 
 from .configs import flask_config
 from .database import db, migrate
-from .blueprints import telegram_bot_blueprint
+from .blueprints import (
+    telegram_bot_blueprint,
+    legal_blueprint
+)
 
 
 def create_app(config_name: str = None) -> Flask:
@@ -56,6 +59,10 @@ def configure_blueprints(app: Flask) -> None:
     app.register_blueprint(
         telegram_bot_blueprint,
         url_prefix="/telegram_bot"
+    )
+    app.register_blueprint(
+        legal_blueprint,
+        url_prefix="/legal"
     )
 
 
