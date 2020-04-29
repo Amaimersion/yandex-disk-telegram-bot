@@ -136,13 +136,14 @@ def handle():
     insert_token_lifetime = int(
         yd_token.insert_token_expires_in / 60
     )
+    open_link_button_text = "Grant access"
 
     telegram.send_message(
         chat_id=private_chat.telegram_id,
         parse_mode="HTML",
         disable_web_page_preview=True,
         text=(
-            'Open special link by pressing on "Grant access" '
+            f'Open special link by pressing on "{open_link_button_text}" '
             "button and grant me access to your Yandex.Disk."
             "\n\n"
             "<b>IMPORTANT: don't give this link to anyone, "
@@ -171,7 +172,7 @@ def handle():
         reply_markup={"inline_keyboard": [
             [
                 {
-                    "text": "Grant access",
+                    "text": open_link_button_text,
                     "url": yandex_oauth_url
                 }
             ]
