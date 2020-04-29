@@ -27,6 +27,7 @@
 
 - Big refactoring of everything.
 - File structure.
+- Upgrade `gevent` to 1.5.0.
 
 ### Added
 
