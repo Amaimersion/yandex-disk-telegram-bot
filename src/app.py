@@ -16,6 +16,9 @@ from .blueprints import (
     telegram_bot_blueprint,
     legal_blueprint
 )
+from .blueprints.utils import (
+    absolute_url_for
+)
 
 
 def create_app(config_name: str = None) -> Flask:
@@ -73,7 +76,7 @@ def configure_redirects(app: Flask) -> None:
     @app.route("/favicon.ico")
     def favicon():
         return redirect(
-            url_for(
+            absolute_url_for(
                 "static",
                 filename="favicons/favicon.ico"
             )

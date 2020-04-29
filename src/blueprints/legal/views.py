@@ -1,12 +1,13 @@
 from flask import redirect, url_for
 
+from src.blueprints.utils import absolute_url_for
 from src.blueprints.legal import legal_blueprint as bp
 
 
 @bp.route("/privacy-policy")
 def privacy_policy():
     return redirect(
-        url_for(
+        absolute_url_for(
             "static",
             filename="legal/privacy_policy.txt"
         )
@@ -16,7 +17,7 @@ def privacy_policy():
 @bp.route("/terms-and-conditions")
 def terms_and_conditions():
     return redirect(
-        url_for(
+        absolute_url_for(
             "static",
             filename="legal/terms_and_conditions.txt"
         )
