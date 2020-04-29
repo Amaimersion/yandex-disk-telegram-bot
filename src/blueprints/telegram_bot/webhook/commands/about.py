@@ -18,7 +18,7 @@ def handle():
             "\n"
             f"{current_app.config['PROJECT_URL_FOR_CODE']}"
         ),
-        reply_markup=[
+        reply_markup={"inline_keyboard": [
             [
                 {
                     "text": "Post an issue",
@@ -43,5 +43,5 @@ def handle():
                     "url": url_for("legal.terms_and_conditions")
                 }
             ]
-        ]
+        ]}
     )

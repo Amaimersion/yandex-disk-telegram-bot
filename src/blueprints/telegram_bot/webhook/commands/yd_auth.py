@@ -168,14 +168,14 @@ def handle():
             f'<a href="{url_for("legal.privacy_policy")}">Privacy Policy</a> and ' # noqa
             f'<a href="{url_for("legal.terms_and_conditions")}">Terms And Conditions</a>. ' # noqa
         ),
-        reply_markup=[
+        reply_markup={"inline_keyboard": [
             [
                 {
                     "text": "Grant access",
                     "url": yandex_oauth_url
                 }
             ]
-        ]
+        ]}
     )
 
 
