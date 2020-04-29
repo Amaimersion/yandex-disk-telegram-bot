@@ -75,6 +75,7 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     USE_X_SENDFILE = True
+    SERVER_NAME = os.getenv("SERVER_NAME")
     PREFERRED_URL_SCHEME = "https"
 
 

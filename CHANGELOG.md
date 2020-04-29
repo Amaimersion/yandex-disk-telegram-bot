@@ -28,6 +28,10 @@
 - Big refactoring of everything.
 - File structure.
 
+### Added
+
+- `SERVER_NAME` environment variable.
+
 ### Changed
 
 - Decreased size of slug on Heroku by removing unused files and folders.

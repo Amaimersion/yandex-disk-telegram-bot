@@ -200,15 +200,30 @@ heroku addons:create heroku-postgresql:hobby-dev
 
 Later you can view the DB content by using `heroku pg:psql`.
 
-5. Switch to new branch special for Heroku (don't ever push it!):
+5. Set required environment variables:
+
+```
+heroku config:set SERVER_NAME=<your host without scheme>
+```
+
+You may also want to set recommended environment variables:
+
+```
+heroku config:set NGINX_WORKERS=<value>
+heroku config:set NGINX_WORKER_CONNECTIONS=<value>
+heroku config:set GUNICORN_WORKERS=<value>
+heroku config:set GUNICORN_WORKER_CONNECTIONS=<value>
+```
+
+6. Switch to new branch special for Heroku (don't ever push it!):
 
 ```git
 git checkout -b heroku
 ```
 
-6. Make sure `.env` file is created and filled. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
+7. Make sure `.env` file is created and filled. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
 
-7. Add changes for pushing to Heroku:
+8. Add changes for pushing to Heroku:
 
 - if you edited files on heroku branch:
 ```git
@@ -221,13 +236,13 @@ git commit -m <message>
 git merge <another branch> -m <message>
 ```
 
-8. Upload files to Heroku:
+9. Upload files to Heroku:
 
 ```git
 git push heroku heroku:master
 ```
 
-You should do № 7 and № 8 every time you want to push changes.
+You should do № 8 and № 9 every time you want to push changes.
 
 
 ## Contribution
