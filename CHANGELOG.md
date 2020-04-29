@@ -21,6 +21,10 @@
 - Favicon.
 - Button with URL instead of plain text with URL in `/grant_access` command.
 
+### Fixed
+
+- A bug when sometimes "I can't track operation status of this anymore. Perform manual checking." message could appear even if operation was completed.
+
 ## Project
 
 ### Improved

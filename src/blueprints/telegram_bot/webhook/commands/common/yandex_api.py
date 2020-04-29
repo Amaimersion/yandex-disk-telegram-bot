@@ -189,6 +189,7 @@ def upload_file_with_url(
         attempt += 1
 
     is_error = is_error_yandex_response(operation_status)
+    is_completed = yandex_operation_is_completed(operation_status)
 
     if (is_error):
         raise YandexAPIUploadFileError(
@@ -196,7 +197,10 @@ def upload_file_with_url(
                 operation_status
             )
         )
-    elif (attempt >= max_attempts):
+    elif (
+        (attempt >= max_attempts) and
+        not is_completed
+    ):
         raise YandexAPIExceededNumberOfStatusChecksError()
 
 
