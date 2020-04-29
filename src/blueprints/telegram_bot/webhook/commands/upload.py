@@ -206,7 +206,9 @@ class AttachmentHandler(metaclass=ABCMeta):
         will be updated with new text.
         """
         if (self.sended_message is None):
+            incoming_message = g.telegram_message
             result = telegram.send_message(
+                reply_to_message_id=incoming_message.id,
                 chat_id=chat_id,
                 text=text
             )
@@ -214,11 +216,11 @@ class AttachmentHandler(metaclass=ABCMeta):
                 result["content"]
             )
         else:
-            telegram.edit_message_text(
-                chat_id=chat_id,
-                message_id=self.sended_message.message_id,
-                text=text
-            )
+            if (text != self.sended_message.get_text()):
+                telegram.edit_message_text(
+                    message_id=self.sended_message.message_id,
+                    text=text
+                )
 
 
 class PhotoHandler(AttachmentHandler):
