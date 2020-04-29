@@ -16,8 +16,6 @@ def handle():
             "you to interact with Yandex.Disk through Telegram."
             "\n\n"
             f"Written by {current_app.config['PROJECT_AUTHOR']}"
-            "\n"
-            f"{current_app.config['PROJECT_URL_FOR_CODE']}"
         ),
         reply_markup={"inline_keyboard": [
             [
@@ -35,6 +33,10 @@ def handle():
                 }
             ],
             [
+                {
+                    "text": "Source code",
+                    "url": current_app.config['PROJECT_URL_FOR_CODE']
+                },
                 {
                     "text": "Privacy Policy",
                     "url": absolute_url_for("legal.privacy_policy")
