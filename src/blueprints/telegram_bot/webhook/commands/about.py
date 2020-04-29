@@ -26,7 +26,7 @@ def handle():
             ],
             [
                 {
-                    "text": "Post an issue",
+                    "text": "Report a problem",
                     "url": current_app.config["PROJECT_URL_FOR_ISSUE"]
                 },
                 {
