@@ -150,40 +150,28 @@ class AttachmentHandler(metaclass=ABCMeta):
                     file_name=file_name,
                     download_url=download_url
                 ):
-                    self.send_message(
-                        chat.telegram_id,
-                        f"Status: {status}"
-                    )
+                    self.send_message(f"Status: {status}")
             except YandexAPICreateFolderError as error:
                 error_text = str(error) or (
                     "I can't create default upload folder "
                     "due to an unknown Yandex error."
                 )
 
-                return self.send_message(
-                    chat.telegram_id,
-                    error_text
-                )
+                return self.send_message(error_text)
             except YandexAPIUploadFileError as error:
                 error_text = str(error) or (
                     "I can't upload this due "
                     "to an unknown Yandex error."
                 )
 
-                return self.send_message(
-                    chat.telegram_id,
-                    error_text
-                )
+                return self.send_message(error_text)
             except YandexAPIExceededNumberOfStatusChecksError:
                 error_text = (
                     "I can't track operation status of "
                     "this anymore. Perform manual checking."
                 )
 
-                return self.send_message(
-                    chat.telegram_id,
-                    error_text
-                )
+                return self.send_message(error_text)
             except (YandexAPIRequestError, Exception) as error:
                 print(error)
                 sended_message_id = None
@@ -198,29 +186,30 @@ class AttachmentHandler(metaclass=ABCMeta):
 
         long_task()
 
-    def send_message(self, chat_id: int, text: str) -> None:
+    def send_message(self, text: str) -> None:
         """
         Sends message to Telegram user.
 
         - if message already was sent, then sent message
         will be updated with new text.
         """
+        incoming_message = g.telegram_message
+        chat = g.db_chat
+
         if (self.sended_message is None):
-            incoming_message = g.telegram_message
             result = telegram.send_message(
-                reply_to_message_id=incoming_message.id,
-                chat_id=chat_id,
+                reply_to_message_id=incoming_message.message_id,
+                chat_id=chat.telegram_id,
                 text=text
             )
             self.sended_message = telegram_interface.Message(
                 result["content"]
             )
-        else:
-            if (text != self.sended_message.get_text()):
-                telegram.edit_message_text(
-                    message_id=self.sended_message.message_id,
-                    text=text
-                )
+        elif (text != self.sended_message.get_text()):
+            telegram.edit_message_text(
+                message_id=self.sended_message.message_id,
+                text=text
+            )
 
 
 class PhotoHandler(AttachmentHandler):
