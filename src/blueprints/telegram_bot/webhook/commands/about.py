@@ -20,6 +20,12 @@ def handle():
         reply_markup={"inline_keyboard": [
             [
                 {
+                    "text": "Source code",
+                    "url": current_app.config['PROJECT_URL_FOR_CODE']
+                }
+            ],
+            [
+                {
                     "text": "Post an issue",
                     "url": current_app.config["PROJECT_URL_FOR_ISSUE"]
                 },
@@ -33,10 +39,6 @@ def handle():
                 }
             ],
             [
-                {
-                    "text": "Source code",
-                    "url": current_app.config['PROJECT_URL_FOR_CODE']
-                },
                 {
                     "text": "Privacy Policy",
                     "url": absolute_url_for("legal.privacy_policy")
