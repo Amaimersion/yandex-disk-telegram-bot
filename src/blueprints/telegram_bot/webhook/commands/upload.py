@@ -208,6 +208,7 @@ class AttachmentHandler(metaclass=ABCMeta):
         elif (text != self.sended_message.get_text()):
             telegram.edit_message_text(
                 message_id=self.sended_message.message_id,
+                chat_id=chat.telegram_id,
                 text=text
             )
 
