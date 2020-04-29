@@ -145,7 +145,7 @@ class AttachmentHandler(metaclass=ABCMeta):
         def long_task():
             try:
                 for status in upload_file_with_url(
-                    access_token=user_access_token,
+                    user_access_token=user_access_token,
                     folder_path=folder_path,
                     file_name=file_name,
                     download_url=download_url
