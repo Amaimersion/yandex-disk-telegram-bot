@@ -56,6 +56,7 @@ def handle():
             "You successfully revoked my access to your Yandex.Disk "
             f"on {date} at {time} {timezone}."
             "\n\n"
-            "Don't forget to do that at https://passport.yandex.ru/profile"
+            "Don't forget to do that in your "
+            '<a href="https://passport.yandex.ru/profile">Yandex Profile</a>.'
         )
     )
