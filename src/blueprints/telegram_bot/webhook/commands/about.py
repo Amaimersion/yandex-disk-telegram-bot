@@ -1,6 +1,4 @@
-from os import environ
-
-from flask import g, url_for
+from flask import g, url_for, current_app
 
 from src.api import telegram
 
@@ -16,23 +14,23 @@ def handle():
             "I'm free and open-source bot that allows "
             "you to interact with Yandex.Disk through Telegram."
             "\n\n"
-            f"Written by {environ['PROJECT_AUTHOR']}"
+            f"Written by {current_app.config['PROJECT_AUTHOR']}"
             "\n"
-            f"{environ['PROJECT_URL_FOR_CODE']}"
+            f"{current_app.config['PROJECT_URL_FOR_CODE']}"
         ),
         reply_markup=[
             [
                 {
                     "text": "Post an issue",
-                    "url": environ["PROJECT_URL_FOR_ISSUE"]
+                    "url": current_app.config["PROJECT_URL_FOR_ISSUE"]
                 },
                 {
                     "text": "Request a feature",
-                    "url": environ["PROJECT_URL_FOR_REQUEST"]
+                    "url": current_app.config["PROJECT_URL_FOR_REQUEST"]
                 },
                 {
                     "text": "Ask a question",
-                    "url": environ["PROJECT_URL_FOR_QUESTION"]
+                    "url": current_app.config["PROJECT_URL_FOR_QUESTION"]
                 }
             ],
             [

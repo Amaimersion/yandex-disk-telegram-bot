@@ -1,4 +1,3 @@
-from os import environ
 import secrets
 
 from flask import (
@@ -160,7 +159,7 @@ def handle():
             f"{CommandsNames.YD_REVOKE.value} or in your "
             '<a href="https://passport.yandex.ru/profile">Yandex Profile</a>. '
             "By the way, i'm "
-            f'<a href="{environ["PROJECT_URL_FOR_CODE"]}">open-source</a> '
+            f'<a href="{current_app.config["PROJECT_URL_FOR_CODE"]}">open-source</a> ' # noqa
             "and you can make sure that your data will be safe. "
             "You can even create your own bot with my functionality if using "
             "me makes you feel uncomfortable (:"
