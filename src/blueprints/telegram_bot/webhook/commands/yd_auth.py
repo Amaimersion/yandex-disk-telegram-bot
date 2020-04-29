@@ -12,9 +12,7 @@ from src.database import (
 )
 from src.api import telegram, yandex
 from src.blueprints.utils import (
-    absolute_url_for
-)
-from src.blueprints.telegram_bot.utils import (
+    absolute_url_for,
     get_current_datetime
 )
 from .common.decorators import (

@@ -2,7 +2,7 @@ from flask import g
 
 from src.database import db
 from src.api import telegram
-from src.blueprints.telegram_bot.utils import get_current_datetime
+from src.blueprints.utils import get_current_datetime
 from .common.decorators import get_db_data
 from .common.responses import request_private_chat
 from . import CommandsNames
