@@ -48,7 +48,7 @@ def handle():
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"
-        f"{CommandsNames.YD_AUTH.value} — give me an access to your Yandex.Disk"
+        f"{CommandsNames.YD_AUTH.value} — grant me access to your Yandex.Disk"
         "\n"
         f"{CommandsNames.YD_REVOKE.value} — revoke my access to your Yandex.Disk"
         "\n\n"
