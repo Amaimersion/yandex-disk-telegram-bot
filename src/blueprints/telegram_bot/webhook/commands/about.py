@@ -1,6 +1,7 @@
-from flask import g, url_for, current_app
+from flask import g, current_app
 
 from src.api import telegram
+from src.blueprints.utils import absolute_url_for
 
 
 def handle():
@@ -36,11 +37,11 @@ def handle():
             [
                 {
                     "text": "Privacy Policy",
-                    "url": url_for("legal.privacy_policy", _external=True)
+                    "url": absolute_url_for("legal.privacy_policy")
                 },
                 {
                     "text": "Terms And Conditions",
-                    "url": url_for("legal.terms_and_conditions", _external=True) # noqa
+                    "url": absolute_url_for("legal.terms_and_conditions")
                 }
             ]
         ]}
