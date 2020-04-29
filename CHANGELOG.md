@@ -2,10 +2,16 @@
 
 ## Telegram Bot
 
+### Improved
+
+- Text of most bot responses.
+- When uploading, bot will update single message instead of sending new one every time with operation status.
+
 ### Added
 
 - Privacy Policy and Terms & Conditions.
 - Favicons for different platforms.
+- Buttons with useful links in `/help` command.
 
 ### Changed
 
@@ -13,6 +19,7 @@
 - Description.
 - Logo.
 - Favicon.
+- Button with URL instead of plain text with URL in `/grant_access` command.
 
 ## Project
 

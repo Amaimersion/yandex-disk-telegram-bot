@@ -2,7 +2,7 @@ from enum import Enum, unique
 
 
 @unique
-class CommandNames(Enum):
+class CommandsNames(Enum):
     """
     Commands supported by bot.
     """

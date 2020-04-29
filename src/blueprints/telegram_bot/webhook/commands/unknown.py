@@ -1,6 +1,7 @@
 from flask import g
 
 from src.api import telegram
+from . import CommandsNames
 
 
 def handle():
@@ -8,9 +9,9 @@ def handle():
     Handles unknown command.
     """
     telegram.send_message(
-        chat_id=g.incoming_chat["id"],
+        chat_id=g.telegram_chat.id,
         text=(
-            "I can't understand this command. "
-            "See command list or type /help"
+            "I don't know this command. "
+            f"See commands list or type {CommandsNames.HELP.value}"
         )
     )

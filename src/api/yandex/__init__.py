@@ -4,5 +4,6 @@ from .methods import (
     create_folder
 )
 from .requests import (
-    make_link_request
+    make_link_request,
+    create_user_oauth_url
 )

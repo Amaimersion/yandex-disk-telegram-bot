@@ -26,3 +26,12 @@ def send_chat_action(**kwargs):
     - see `api/request.py` documentation for more.
     """
     return make_request("sendChatAction", kwargs)
+
+
+def edit_message_text(**kwargs):
+    """
+    https://core.telegram.org/bots/api/#editmessagetext
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_request("editMessageText", kwargs)

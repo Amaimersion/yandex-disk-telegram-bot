@@ -1,4 +1,5 @@
 from os import environ
+import base64
 
 from requests.auth import HTTPBasicAuth
 from flask import current_app
@@ -10,15 +11,36 @@ from src.api.request import (
 from src.api.auth import HTTPOAuthAuth
 
 
-def create_oauth_url(method_name: str) -> str:
+def create_bot_oauth_url(method_name: str) -> str:
     """
-    Creates Yandex OAuth URL for request.
+    Creates Yandex OAuth URL for bot request.
 
     :param method_name: Name of API method in URL.
     """
     return create_url(
         "https://oauth.yandex.ru",
         method_name
+    )
+
+
+def create_user_oauth_url(state: str) -> str:
+    """
+    Creates Yandex OAuth URL for user request.
+
+    - https://yandex.ru/dev/oauth/doc/dg/concepts/about-docpage/
+
+    :param state: `state` parameter. Will be encoded with base64.
+    """
+    client_id = environ["YANDEX_OAUTH_API_APP_ID"]
+    state = base64.urlsafe_b64encode(
+        state.encode()
+    ).decode()
+
+    return (
+        "https://oauth.yandex.ru/authorize?"
+        "response_type=code"
+        f"&client_id={client_id}"
+        f"&state={state}"
     )
 
 
@@ -43,7 +65,7 @@ def make_oauth_request(method_name: str, data: dict):
     :param method_name: Name of API method in URL.
     :param data: Data to send.
     """
-    url = create_oauth_url(method_name)
+    url = create_bot_oauth_url(method_name)
     timeout = current_app.config["YANDEX_OAUTH_API_TIMEOUT"]
     id = environ["YANDEX_OAUTH_API_APP_ID"]
     password = environ["YANDEX_OAUTH_API_APP_PASSWORD"]

@@ -1,7 +1,9 @@
+# flake8: noqa
+
 from flask import g, current_app
 
 from src.api import telegram
-from .common.names import CommandNames
+from . import CommandsNames
 
 
 def handle():
@@ -13,58 +15,58 @@ def handle():
     ]
 
     text = (
-        "I can help you to interact with Yandex.Disk."
-        "\n\n"
-        "Send me some data (images, files, etc.) and "
-        "i think i will handle this. "
-        "Moreover, you can control me by sending these commands:"
+        "You can control me by sending these commands:"
         "\n\n"
         "<b>Yandex.Disk</b>"
         "\n"
-        f'By default "<code>{yd_upload_default_folder}</code>" folder is used.'
+        f'For uploading "{to_code(yd_upload_default_folder)}" folder is used by default.'
         "\n"
-        f"{CommandNames.UPLOAD_PHOTO.value} — upload a photo. "
+        f"{CommandsNames.UPLOAD_PHOTO.value} — upload a photo. "
         "Original name will be not saved, quality of photo will be decreased. "
-        "Send photo(s) with this command."
+        "You can send photo without this command."
         "\n"
-        f"{CommandNames.UPLOAD_FILE.value} — upload a file. "
+        f"{CommandsNames.UPLOAD_FILE.value} — upload a file. "
         "Original name will be saved. "
         "For photos, original quality will be saved. "
-        "Send file(s) with this command."
+        "You can send file without this command."
         "\n"
-        f"{CommandNames.UPLOAD_AUDIO.value} — upload an audio. "
+        f"{CommandsNames.UPLOAD_AUDIO.value} — upload an audio. "
         "Original name will be saved, original type may be changed. "
-        "Send audio file(s) with this command."
+        "You can send audio file without this command."
         "\n"
-        f"{CommandNames.UPLOAD_VIDEO.value} — upload a video. "
+        f"{CommandsNames.UPLOAD_VIDEO.value} — upload a video. "
         "Original name will be not saved, original type may be changed. "
-        "Send video file(s) with this command."
+        "You can send video file without this command."
         "\n"
-        f"{CommandNames.UPLOAD_VOICE.value} — upload a voice. "
-        "Send voice file(s) with this command."
+        f"{CommandsNames.UPLOAD_VOICE.value} — upload a voice. "
+        "You can send voice file without this command."
         "\n"
-        f"{CommandNames.CREATE_FOLDER.value}— create a folder. "
-        "Send folder name with this command. "
+        f"{CommandsNames.CREATE_FOLDER.value}— create a folder. "
+        "Send folder name to create with this command. "
         "Folder name should starts from root, "
-        'nested folders should be separated with "<code>/</code>" character.'
+        f'nested folders should be separated with "{to_code("/")}" character.'
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"
-        f"{CommandNames.YD_AUTH.value} — give me an access to your Yandex.Disk"
+        f"{CommandsNames.YD_AUTH.value} — give me an access to your Yandex.Disk"
         "\n"
-        f"{CommandNames.YD_REVOKE.value} — revoke my access to your Yandex.Disk" # noqa
+        f"{CommandsNames.YD_REVOKE.value} — revoke my access to your Yandex.Disk"
         "\n\n"
         "<b>Settings</b>"
         "\n"
-        f"{CommandNames.SETTINGS.value} — full list of settings"
+        f"{CommandsNames.SETTINGS.value} — edit your settings"
         "\n\n"
         "<b>Information</b>"
         "\n"
-        f"{CommandNames.ABOUT.value} — read about me"
+        f"{CommandsNames.ABOUT.value} — read about me"
     )
 
     telegram.send_message(
-        chat_id=g.incoming_chat["id"],
+        chat_id=g.telegram_chat.id,
         parse_mode="HTML",
         text=text
     )
+
+
+def to_code(text: str) -> str:
+    return f"<code>{text}</code>"

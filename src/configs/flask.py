@@ -64,6 +64,11 @@ class Config:
     # Project
     # name of app that will be used in HTML and so on
     PROJECT_APP_NAME = "Yandex.Disk Telegram Bot"
+    PROJECT_AUTHOR = "Sergey Kuznetsov"
+    PROJECT_URL_FOR_CODE = "https://github.com/Amaimersion/yandex-disk-telegram-bot" # noqa
+    PROJECT_URL_FOR_ISSUE = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=bug-report.md" # noqa
+    PROJECT_URL_FOR_REQUEST = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=feature-request.md" # noqa
+    PROJECT_URL_FOR_QUESTION = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=question.md" # noqa
 
 
 class ProductionConfig(Config):

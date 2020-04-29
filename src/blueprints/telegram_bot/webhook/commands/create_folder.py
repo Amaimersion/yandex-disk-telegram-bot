@@ -8,12 +8,12 @@ from .common.decorators import (
     yd_access_token_required,
     get_db_data
 )
-from .common.api import (
+from .common.yandex_api import (
     create_folder,
     YandexAPICreateFolderError,
     YandexAPIRequestError
 )
-from .common.names import CommandNames
+from . import CommandsNames
 
 
 @yd_access_token_required
@@ -22,30 +22,30 @@ def handle():
     """
     Handles `/create_folder` command.
     """
-    message = g.incoming_message
+    message = g.telegram_message
     user = g.db_user
-    chat = g.db_incoming_chat
+    chat = g.db_chat
     access_token = user.yandex_disk_token.get_access_token()
-    message_text = get_text(message)
-    message_folder_name = message_text.replace(
-        CommandNames.CREATE_FOLDER.value,
+    message_text = message.get_text()
+    folder_name = message_text.replace(
+        CommandsNames.CREATE_FOLDER.value,
         ""
     ).strip()
     last_status_code = None
 
     try:
         last_status_code = create_folder(
-            access_token=access_token,
-            folder_name=message_folder_name
+            user_access_token=access_token,
+            folder_name=folder_name
         )
-    except YandexAPIRequestError as e:
-        print(e)
+    except YandexAPIRequestError as error:
+        print(error)
         return cancel_command(chat.telegram_id)
-    except YandexAPICreateFolderError as e:
-        error_text = "Yandex.Disk Error"
-
-        if hasattr(e, "message"):
-            error_text = e.message
+    except YandexAPICreateFolderError as error:
+        error_text = (
+            str(error) or
+            "Unknown Yandex.Disk error"
+        )
 
         telegram.send_message(
             chat_id=chat.telegram_id,
@@ -66,15 +66,4 @@ def handle():
     telegram.send_message(
         chat_id=chat.telegram_id,
         text=text
-    )
-
-
-def get_text(message: dict) -> str:
-    """
-    Extracts text from a message.
-    """
-    return (
-        message.get("text") or
-        message.get("caption") or
-        ""
     )

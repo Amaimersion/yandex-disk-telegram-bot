@@ -12,35 +12,36 @@ from src.database import (
 from src.database.models import (
     ChatType
 )
+from src.localization import SupportedLanguages
 from .responses import cancel_command
-from .names import CommandNames
+from .names import CommandsNames
 
 
 def register_guest(func):
     """
-    Checks if incoming user exists in DB.
-    If not, then that user will be created and saved.
+    If incoming Telegram user doesn't exists in DB,
+    then that user will be created and saved.
 
-    Rows will be created in next tables: `users`, `chats`.
+    - rows will be created in next tables: `users`, `chats`
     """
-    # TODO: check if user came from different chat,
-    # then also register that chat in db.
-
     @wraps(func)
     def wrapper(*args, **kwargs):
-        incoming_user = g.incoming_user
-        incoming_chat = g.incoming_chat
+        tg_user = g.telegram_user
+        tg_chat = g.telegram_chat
 
-        if (UserQuery.exists(incoming_user["id"])):
+        # TODO: check if user came from different chat,
+        # then also register that chat in db.
+        if (UserQuery.exists(tg_user.id)):
             return func(*args, **kwargs)
 
         new_user = User(
-            telegram_id=incoming_user["id"],
-            is_bot=incoming_user.get("is_bot", False)
+            telegram_id=tg_user.id,
+            is_bot=tg_user.is_bot,
+            language=SupportedLanguages.get(tg_user.language_code)
         )
         Chat(
-            telegram_id=incoming_chat["id"],
-            type=ChatType.get(incoming_chat["type"]),
+            telegram_id=tg_chat.id,
+            type=ChatType.get(tg_chat.type),
             user=new_user
         )
 
@@ -50,7 +51,7 @@ def register_guest(func):
             db.session.commit()
         except Exception as e:
             print(e)
-            return cancel_command(incoming_chat["id"])
+            return cancel_command(tg_chat.id)
 
         return func(*args, **kwargs)
 
@@ -59,20 +60,20 @@ def register_guest(func):
 
 def get_db_data(func):
     """
-    Gets data from DB based on `g.incoming_user` and
-    `g.incoming_chat`. Data can be `None` if incoming
+    Gets data from DB based on `g.telegram_user` and
+    `g.telegram_chat`. Data can be `None` if incoming
     data not exists in DB.
 
-    DB data will be available as: `g.db_user`, `g.db_incoming_chat`,
-    `g.db_private_chat`.
+    DB data will be available as: `g.db_user`,
+    `g.db_chat`, `g.db_private_chat`.
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
         g.db_user = UserQuery.get_user_by_telegram_id(
-            g.incoming_user["id"]
+            g.telegram_user.id
         )
-        g.db_incoming_chat = ChatQuery.get_chat_by_telegram_id(
-            g.incoming_chat["id"]
+        g.db_chat = ChatQuery.get_chat_by_telegram_id(
+            g.telegram_chat.id
         )
         g.db_private_chat = ChatQuery.get_private_chat(
             g.db_user.id
@@ -86,21 +87,22 @@ def get_db_data(func):
 def yd_access_token_required(func):
     """
     Checks if incoming user have Yandex.Disk access token.
-    If not, then that user will be redirected to another command
-    for getting Y.D. token.
+    If not, then that user will be redirected to another
+    command for getting Y.D. token.
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
         user = UserQuery.get_user_by_telegram_id(
-            g.incoming_user["id"]
+            g.telegram_user.id
         )
 
+        # TODO: check if token is expired
         if (
             (user is None) or
             (user.yandex_disk_token is None) or
             (not user.yandex_disk_token.have_access_token())
         ):
-            return g.route_to(CommandNames.YD_AUTH)
+            return g.route_to(CommandsNames.YD_AUTH)
 
         return func(*args, **kwargs)
 

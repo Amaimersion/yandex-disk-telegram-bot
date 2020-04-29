@@ -1,5 +1,3 @@
-from typing import Union
-
 from flask import (
     request,
     g,
@@ -7,8 +5,7 @@ from flask import (
 )
 
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
-from . import commands
-from .commands.common.names import CommandNames
+from . import commands, telegram_interface
 
 
 @bp.route("/webhook", methods=["POST"])
@@ -16,211 +13,50 @@ def webhook():
     """
     Handles Webhook POST request from Telegram server.
 
-    For Webhook we always should return 200 to indicate
+    - for Webhook we always should return 200 to indicate
     that we successfully got an update, otherwise Telegram
     will flood the server. So, not use `abort()` or anything.
     """
-    data = request.get_json(
+    raw_data = request.get_json(
         force=True,
         silent=True,
         cache=False
     )
 
-    if (data is None):
-        return error_response()
+    if (raw_data is None):
+        return make_error_response()
 
-    if (not data_is_valid(data)):
-        return error_response()
+    telegram_request = telegram_interface.Request(raw_data)
 
-    message = get_message(data)
+    if not (telegram_request.is_valid()):
+        return make_error_response()
 
-    if (not message_is_valid(message)):
-        return error_response()
+    message = telegram_request.get_message()
 
+    if not (message.is_valid()):
+        return make_error_response()
+
+    g.telegram_message = message
+    g.telegram_user = message.get_user()
+    g.telegram_chat = message.get_chat()
     g.route_to = route_command
-    g.incoming_message = message
-    g.incoming_user = message["from"]
-    g.incoming_chat = message["chat"]
 
-    entities = get_entities(message)
-    message_text = get_text(message)
-    command = None
+    command = message.get_bot_command("")
 
-    if (message_text):
-        command = get_command(entities, message_text)
-    else:
-        command = guess_command(message)
+    if not (command):
+        command = message.guess_bot_command()
 
     route_command(command)
 
-    return success_response()
+    return make_success_response()
 
 
-def data_is_valid(data: dict) -> bool:
-    """
-    Checks submitted data for correctness.
-    """
-    return (
-        isinstance(
-            data.get("update_id"),
-            int
-        ) and
-        (
-            isinstance(
-                data.get("message"),
-                dict
-            ) or
-            isinstance(
-                data.get("edited_message"),
-                dict
-            )
-        )
-    )
-
-
-def get_message(data: dict) -> dict:
-    """
-    Extracts user message from submitted data.
-    """
-    return (
-        data.get("message") or
-        data.get("edited_message")
-    )
-
-
-def message_is_valid(message: dict) -> bool:
-    """
-    Checks extracted message for correctness.
-    """
-    return (
-        isinstance(
-            message.get("message_id"),
-            int
-        ) and
-        isinstance(
-            message.get("from"),
-            dict
-        ) and
-        isinstance(
-            message["from"].get("id"),
-            int
-        ) and
-        isinstance(
-            message.get("chat"),
-            dict
-        ) and
-        isinstance(
-            message["chat"].get("id"),
-            int
-        ) and
-        isinstance(
-            message["chat"].get("type"),
-            str
-        )
-    )
-
-
-def get_text(message: dict) -> str:
-    """
-    Extracts text from a message.
-    """
-    return (
-        message.get("text") or
-        message.get("caption") or
-        ""
-    )
-
-
-def get_entities(message: dict) -> list:
-    """
-    Extracts entities from a message.
-    """
-    return (
-        message.get("entities") or
-        message.get("caption_entities") or
-        []
-    )
-
-
-def entity_is_valid(entity: dict) -> bool:
-    """
-    Checks single entity for correctness.
-    """
-    return (
-        isinstance(
-            entity.get("type"),
-            str
-        ) and
-        isinstance(
-            entity.get("offset"),
-            int
-        ) and
-        isinstance(
-            entity.get("length"),
-            int
-        )
-    )
-
-
-def get_command(
-    entities: list,
-    message_text: str,
-    default=CommandNames.HELP
-) -> str:
-    """
-    Extracts bot command from entities.
-
-    Note: first command will be returned, even if the list
-    contains more than one command.
-
-    :param entities: Message entities.
-    :param message_text: Message text.
-    :param default: Default command which will be returned if
-    in message no any bot commands.
-    """
-    command = default
-
-    for entity in entities:
-        if (not entity_is_valid(entity)):
-            continue
-
-        if (not entity["type"] == "bot_command"):
-            continue
-
-        offset = entity["offset"]
-        length = entity["length"]
-        command = message_text[offset:offset + length]
-
-        # ignore next commands
-        break
-
-    return command
-
-
-def guess_command(message: dict, default=CommandNames.HELP) -> str:
-    """
-    Tries to guess which command user assumed based on message.
-    """
-    command = default
-
-    if ("photo" in message):
-        command = CommandNames.UPLOAD_PHOTO
-    elif ("document" in message):
-        command = CommandNames.UPLOAD_FILE
-    elif ("audio" in message):
-        command = CommandNames.UPLOAD_AUDIO
-    elif ("video" in message):
-        command = CommandNames.UPLOAD_VIDEO
-    elif ("voice" in message):
-        command = CommandNames.UPLOAD_VOICE
-
-    return command
-
-
-def route_command(command: Union[str, CommandNames]) -> None:
+def route_command(command: str) -> None:
     """
     Routes command to specific handler.
     """
+    CommandNames = commands.CommandsNames
+
     if (isinstance(command, CommandNames)):
         command = command.value
 
@@ -243,7 +79,7 @@ def route_command(command: Union[str, CommandNames]) -> None:
     method()
 
 
-def error_response():
+def make_error_response():
     """
     Creates error response for Telegram Webhook.
     """
@@ -256,7 +92,7 @@ def error_response():
     ))
 
 
-def success_response():
+def make_success_response():
     """
     Creates success response for Telegram Webhook.
     """

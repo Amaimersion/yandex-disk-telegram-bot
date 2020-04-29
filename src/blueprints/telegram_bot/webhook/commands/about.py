@@ -1,4 +1,6 @@
-from flask import g
+from os import environ
+
+from flask import g, url_for
 
 from src.api import telegram
 
@@ -8,14 +10,40 @@ def handle():
     Handles `/about` command.
     """
     telegram.send_message(
-        chat_id=g.incoming_chat["id"],
+        chat_id=g.telegram_chat.id,
         disable_web_page_preview=True,
         text=(
             "I'm free and open-source bot that allows "
             "you to interact with Yandex.Disk through Telegram."
             "\n\n"
-            "Written by Sergey Kuznetsov"
+            f"Written by {environ['PROJECT_AUTHOR']}"
             "\n"
-            "https://github.com/Amaimersion/yandex-disk-telegram-bot"
-        )
+            f"{environ['PROJECT_URL_FOR_CODE']}"
+        ),
+        reply_markup=[
+            [
+                {
+                    "text": "Post an issue",
+                    "url": environ["PROJECT_URL_FOR_ISSUE"]
+                },
+                {
+                    "text": "Request a feature",
+                    "url": environ["PROJECT_URL_FOR_REQUEST"]
+                },
+                {
+                    "text": "Ask a question",
+                    "url": environ["PROJECT_URL_FOR_QUESTION"]
+                }
+            ],
+            [
+                {
+                    "text": "Privacy Policy",
+                    "url": url_for("legal.privacy_policy")
+                },
+                {
+                    "text": "Terms And Conditions",
+                    "url": url_for("legal.terms_and_conditions")
+                }
+            ]
+        ]
     )

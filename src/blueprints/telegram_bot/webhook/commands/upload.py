@@ -4,6 +4,7 @@ from typing import Union
 from flask import g, current_app
 
 from src.api import telegram
+from src.blueprints.telegram_bot.webhook import telegram_interface
 from .common.decorators import (
     yd_access_token_required,
     get_db_data
@@ -12,7 +13,7 @@ from .common.responses import (
     abort_command,
     cancel_command
 )
-from .common.api import (
+from .common.yandex_api import (
     upload_file_with_url,
     YandexAPIRequestError,
     YandexAPICreateFolderError,
@@ -25,6 +26,15 @@ class AttachmentHandler(metaclass=ABCMeta):
     """
     Handles uploading of attachment of Telegram message.
     """
+    def __init__(self) -> None:
+        # Sended message to Telegram user.
+        # This message will be updated, rather
+        # than sending new message every time
+        self.sended_message: Union[
+            telegram_interface.Message,
+            None
+        ] = None
+
     @staticmethod
     @abstractmethod
     def handle() -> None:
@@ -43,7 +53,10 @@ class AttachmentHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def message_is_valid(self, message: dict) -> bool:
+    def message_is_valid(
+        self,
+        message: telegram_interface.Message
+    ) -> bool:
         """
         :param message: Incoming Telegram message.
 
@@ -52,7 +65,10 @@ class AttachmentHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_attachment(self, message: dict) -> Union[dict, None]:
+    def get_attachment(
+        self,
+        message: telegram_interface.Message
+    ) -> Union[dict, None]:
         """
         :param message: Incoming Telegram message.
 
@@ -65,11 +81,15 @@ class AttachmentHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def create_file_name(self, attachment: dict, file: dict) -> str:
+    def create_file_name(
+        self,
+        attachment: dict,
+        file: dict
+    ) -> str:
         """
         :param attachment: Not `None` value from `self.get_attachment()`.
-        :param file: Representation of this attachment as a file on Telegram
-        servers. See https://core.telegram.org/bots/api/#file
+        :param file: Representation of this attachment as a file on
+        Telegram servers. See https://core.telegram.org/bots/api/#file
 
         :returns: Name of file which will be uploaded.
         """
@@ -81,11 +101,11 @@ class AttachmentHandler(metaclass=ABCMeta):
         """
         Uploads an attachment.
         """
-        message = g.incoming_message
+        message = g.telegram_message
         user = g.db_user
-        chat = g.db_incoming_chat
+        chat = g.db_chat
 
-        if (not self.message_is_valid(message)):
+        if not (self.message_is_valid(message)):
             return abort_command(chat.telegram_id)
 
         attachment = self.get_attachment(message)
@@ -102,16 +122,17 @@ class AttachmentHandler(metaclass=ABCMeta):
             print(error)
             return cancel_command(chat.telegram_id)
 
-        file = None
+        result = None
 
         try:
-            file = telegram.get_file(
+            result = telegram.get_file(
                 file_id=attachment["file_id"]
-            )["content"]
+            )
         except Exception as error:
             print(error)
             return cancel_command(chat.telegram_id)
 
+        file = result["content"]
         user_access_token = user.yandex_disk_token.get_access_token()
         folder_path = current_app.config[
             "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
@@ -129,9 +150,9 @@ class AttachmentHandler(metaclass=ABCMeta):
                     file_name=file_name,
                     download_url=download_url
                 ):
-                    telegram.send_message(
-                        chat_id=chat.telegram_id,
-                        text=f"Status: {status}"
+                    self.send_message(
+                        chat.telegram_id,
+                        f"Status: {status}"
                     )
             except YandexAPICreateFolderError as error:
                 error_text = str(error) or (
@@ -139,42 +160,65 @@ class AttachmentHandler(metaclass=ABCMeta):
                     "due to an unknown Yandex error."
                 )
 
-                telegram.send_message(
-                    chat_id=chat.telegram_id,
-                    text=error_text
+                return self.send_message(
+                    chat.telegram_id,
+                    error_text
                 )
-
-                return
             except YandexAPIUploadFileError as error:
                 error_text = str(error) or (
-                    "I can't upload this due to an unknown Yandex error."
+                    "I can't upload this due "
+                    "to an unknown Yandex error."
                 )
 
-                telegram.send_message(
-                    chat_id=chat.telegram_id,
-                    reply_to_message_id=message["message_id"],
-                    text=error_text
+                return self.send_message(
+                    chat.telegram_id,
+                    error_text
                 )
-
-                return
             except YandexAPIExceededNumberOfStatusChecksError:
                 error_text = (
-                    "I can't track operation status of this anymore. "
-                    "Perform manual checking."
+                    "I can't track operation status of "
+                    "this anymore. Perform manual checking."
                 )
 
-                telegram.send_message(
-                    chat_id=chat.telegram_id,
-                    reply_to_message_id=message["message_id"],
-                    text=error_text
+                return self.send_message(
+                    chat.telegram_id,
+                    error_text
                 )
-
-                return
             except (YandexAPIRequestError, Exception) as error:
                 print(error)
-                return cancel_command(chat.telegram_id)
+                sended_message_id = None
+
+                if (self.sended_message is not None):
+                    sended_message_id = self.sended_message.message_id
+
+                return cancel_command(
+                    chat.telegram_id,
+                    sended_message_id
+                )
 
         long_task()
+
+    def send_message(self, chat_id: int, text: str) -> None:
+        """
+        Sends message to Telegram user.
+
+        - if message already was sent, then sent message
+        will be updated with new text.
+        """
+        if (self.sended_message is None):
+            result = telegram.send_message(
+                chat_id=chat_id,
+                text=text
+            )
+            self.sended_message = telegram_interface.Message(
+                result["content"]
+            )
+        else:
+            telegram.edit_message_text(
+                chat_id=chat_id,
+                message_id=self.sended_message.message_id,
+                text=text
+            )
 
 
 class PhotoHandler(AttachmentHandler):
@@ -190,17 +234,20 @@ class PhotoHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_photo"
 
-    def message_is_valid(self, message):
+    def message_is_valid(self, message: telegram_interface.Message):
+        raw_data = message.raw_data
+
         return (
             isinstance(
-                message.get("photo"),
+                raw_data.get("photo"),
                 list
             ) and
-            len(message["photo"]) > 0
+            len(raw_data["photo"]) > 0
         )
 
-    def get_attachment(self, message):
-        photos = message["photo"]
+    def get_attachment(self, message: telegram_interface.Message):
+        raw_data = message.raw_data
+        photos = raw_data["photo"]
         biggest_photo = photos[0]
 
         for photo in photos[1:]:
@@ -226,16 +273,16 @@ class FileHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_document"
 
-    def message_is_valid(self, message):
+    def message_is_valid(self, message: telegram_interface.Message):
         return (
             isinstance(
-                message.get("document"),
+                message.raw_data.get("document"),
                 dict
             )
         )
 
-    def get_attachment(self, message):
-        return message["document"]
+    def get_attachment(self, message: telegram_interface.Message):
+        return message.raw_data["document"]
 
     def create_file_name(self, attachment, file):
         return (
@@ -257,16 +304,16 @@ class AudioHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_audio"
 
-    def message_is_valid(self, message):
+    def message_is_valid(self, message: telegram_interface.Message):
         return (
             isinstance(
-                message.get("audio"),
+                message.raw_data.get("audio"),
                 dict
             )
         )
 
-    def get_attachment(self, message):
-        return message["audio"]
+    def get_attachment(self, message: telegram_interface.Message):
+        return message.raw_data["audio"]
 
     def create_file_name(self, attachment, file):
         name = file["file_unique_id"]
@@ -298,16 +345,16 @@ class VideoHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_video"
 
-    def message_is_valid(self, message):
+    def message_is_valid(self, message: telegram_interface.Message):
         return (
             isinstance(
-                message.get("video"),
+                message.raw_data.get("video"),
                 dict
             )
         )
 
-    def get_attachment(self, message):
-        return message["video"]
+    def get_attachment(self, message: telegram_interface.Message):
+        return message.raw_data["video"]
 
     def create_file_name(self, attachment, file):
         name = file["file_unique_id"]
@@ -333,16 +380,16 @@ class VoiceHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_audio"
 
-    def message_is_valid(self, message):
+    def message_is_valid(self, message: telegram_interface.Message):
         return (
             isinstance(
-                message.get("voice"),
+                message.raw_data.get("voice"),
                 dict
             )
         )
 
-    def get_attachment(self, message):
-        return message["voice"]
+    def get_attachment(self, message: telegram_interface.Message):
+        return message.raw_data["voice"]
 
     def create_file_name(self, attachment, file):
         name = file["file_unique_id"]
@@ -355,8 +402,8 @@ class VoiceHandler(AttachmentHandler):
         return name
 
 
-photo_handler = PhotoHandler.handle
-file_handler = FileHandler.handle
-audio_handler = AudioHandler.handle
-video_handler = VideoHandler.handle
-voice_handler = VoiceHandler.handle
+handle_photo = PhotoHandler.handle
+handle_file = FileHandler.handle
+handle_audio = AudioHandler.handle
+handle_video = VideoHandler.handle
+handle_voice = VoiceHandler.handle

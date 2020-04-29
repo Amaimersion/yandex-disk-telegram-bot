@@ -53,7 +53,10 @@ class YandexAPIExceededNumberOfStatusChecksError(Exception):
     pass
 
 
-def create_folder(access_token: str, folder_name: str) -> int:
+def create_folder(
+    user_access_token: str,
+    folder_name: str
+) -> int:
     """
     Creates folder using Yandex API.
 
@@ -74,35 +77,36 @@ def create_folder(access_token: str, folder_name: str) -> int:
     allowed_errors = [409]
 
     for folder in folders:
-        response = None
+        result = None
         folder_path = f"{folder_path}/{folder}"
 
         try:
-            response = yandex.create_folder(
-                access_token,
+            result = yandex.create_folder(
+                user_access_token,
                 path=folder_path
             )
-        except Exception as e:
-            raise YandexAPIRequestError(e)
+        except Exception as error:
+            raise YandexAPIRequestError(error)
 
-        last_status_code = response["status_code"]
+        response = result["content"]
+        last_status_code = result["status_code"]
 
         if (
             (last_status_code == 201) or
-            (not is_error_yandex_response(response)) or
-            (last_status_code in allowed_errors)
+            (last_status_code in allowed_errors) or
+            (not is_error_yandex_response(response))
         ):
             continue
 
         raise YandexAPICreateFolderError(
-            create_yandex_error_text(response)
+            create_yandex_error_text(result)
         )
 
     return last_status_code
 
 
 def upload_file_with_url(
-    access_token: str,
+    user_access_token: str,
     folder_path: str,
     file_name: str,
     download_url: str
@@ -110,7 +114,7 @@ def upload_file_with_url(
     """
     Uploads a file to Yandex.Disk using file download url.
 
-    - before uploading creates a folder;
+    - before uploading creates a folder.
     - after uploading will monitor operation status according
     to app configuration. Because it is synchronous, it may
     take significant time to end this function!
@@ -126,23 +130,24 @@ def upload_file_with_url(
     :raises: YandexAPIExceededNumberOfStatusChecksError
     """
     create_folder(
-        access_token=access_token,
+        user_access_token=user_access_token,
         folder_name=folder_path
     )
 
     folders = [x for x in folder_path.split("/") if x]
     full_path = "/".join(folders + [file_name])
-    operation_status_link = None
+    response = None
 
     try:
-        operation_status_link = yandex.upload_file_with_url(
-            access_token,
+        response = yandex.upload_file_with_url(
+            user_access_token,
             url=download_url,
             path=full_path
-        )["content"]
-    except Exception as e:
-        raise YandexAPIRequestError(e)
+        )
+    except Exception as error:
+        raise YandexAPIRequestError(error)
 
+    operation_status_link = response["content"]
     is_error = is_error_yandex_response(operation_status_link)
 
     if (is_error):
@@ -152,7 +157,7 @@ def upload_file_with_url(
             )
         )
 
-    result = {}
+    operation_status = {}
     attempt = 0
     max_attempts = current_app.config[
         "YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS"
@@ -162,31 +167,33 @@ def upload_file_with_url(
     ]
 
     while not (
-        is_error_yandex_response(result) or
-        yandex_operation_is_completed(result) or
+        is_error_yandex_response(operation_status) or
+        yandex_operation_is_completed(operation_status) or
         attempt >= max_attempts
     ):
         sleep(interval)
 
         try:
-            result = yandex.make_link_request(
+            response = yandex.make_link_request(
                 data=operation_status_link,
-                user_token=access_token
-            )["content"]
-        except Exception as e:
-            raise YandexAPIRequestError(e)
+                user_token=user_access_token
+            )
+        except Exception as error:
+            raise YandexAPIRequestError(error)
 
-        if ("status" in result):
-            yield result["status"]
+        operation_status = response["content"]
+
+        if ("status" in operation_status):
+            yield operation_status["status"]
 
         attempt += 1
 
-    is_error = is_error_yandex_response(result)
+    is_error = is_error_yandex_response(operation_status)
 
     if (is_error):
         raise YandexAPIUploadFileError(
             create_yandex_error_text(
-                result
+                operation_status
             )
         )
     elif (attempt >= max_attempts):

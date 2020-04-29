@@ -30,7 +30,7 @@ def create_file_download_url(file_path: str) -> str:
     """
     Creates Telegram URL for downloading of file.
 
-    - contains sensitive information (bot token)!
+    - contains secret information (bot token)!
 
     :param file_path: `file_path` property of `File` object.
     """
