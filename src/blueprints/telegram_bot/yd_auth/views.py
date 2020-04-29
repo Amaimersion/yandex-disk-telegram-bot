@@ -15,8 +15,8 @@ from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 
 
 TEMPLATES = {
-    "error": "telegram_bot/yandex_disk_auth/error.html",
-    "success": "telegram_bot/yandex_disk_auth/success.html",
+    "error": "telegram_bot/yd_auth/error.html",
+    "success": "telegram_bot/yd_auth/success.html",
 }
 
 
