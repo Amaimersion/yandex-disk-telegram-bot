@@ -36,6 +36,7 @@
 
 - Decreased size of slug on Heroku by removing unused files and folders.
 - Decreased number of seconds for Yandex.OAuth request timeout.
+- Redirects and generated URL's always will be absolute URL's with `PREFERRED_URL_SCHEME + SERVER_NAME`.
 
 
 # 1.0.0 (April 15, 2020)
