@@ -165,8 +165,8 @@ def handle():
             "me makes you feel uncomfortable (:"
             "\n\n"
             "By using me, you accept "
-            f'<a href="{url_for("legal.privacy_policy")}">Privacy Policy</a> and ' # noqa
-            f'<a href="{url_for("legal.terms_and_conditions")}">Terms And Conditions</a>. ' # noqa
+            f'<a href="{url_for("legal.privacy_policy", _external=True)}">Privacy Policy</a> and ' # noqa
+            f'<a href="{url_for("legal.terms_and_conditions", _external=True)}">Terms And Conditions</a>. ' # noqa
         ),
         reply_markup={"inline_keyboard": [
             [

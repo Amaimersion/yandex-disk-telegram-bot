@@ -36,11 +36,11 @@ def handle():
             [
                 {
                     "text": "Privacy Policy",
-                    "url": url_for("legal.privacy_policy")
+                    "url": url_for("legal.privacy_policy", _external=True)
                 },
                 {
                     "text": "Terms And Conditions",
-                    "url": url_for("legal.terms_and_conditions")
+                    "url": url_for("legal.terms_and_conditions", _external=True) # noqa
                 }
             ]
         ]}
