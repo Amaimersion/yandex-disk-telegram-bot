@@ -174,15 +174,17 @@ class AttachmentHandler(metaclass=ABCMeta):
                 return self.send_message(error_text)
             except (YandexAPIRequestError, Exception) as error:
                 print(error)
-                sended_message_id = None
 
-                if (self.sended_message is not None):
-                    sended_message_id = self.sended_message.message_id
-
-                return cancel_command(
-                    chat.telegram_id,
-                    sended_message_id
-                )
+                if (self.sended_message is None):
+                    return cancel_command(
+                        chat.telegram_id,
+                        reply_to_message=message.message_id
+                    )
+                else:
+                    return cancel_command(
+                        chat.telegram_id,
+                        edit_message=self.sended_message.message_id
+                    )
 
         long_task()
 

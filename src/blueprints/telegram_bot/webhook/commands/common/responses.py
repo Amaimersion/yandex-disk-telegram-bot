@@ -3,14 +3,17 @@ from src.api import telegram
 
 def abort_command(
     chat_telegram_id: int,
-    message_telegram_id: int = None
+    edit_message: int = None,
+    reply_to_message: int = None
 ) -> None:
     """
     Aborts command execution due to invalid message data.
 
     - don't confuse with `cancel_command()`.
-    - if `message_telegram_id` specified, then
-    that message will be updated.
+    - if `edit_message` Telegram ID specified, then
+    that message will be edited.
+    - if `reply_to_message` Telegram ID specified, then
+    that message will be used for reply message.
     """
     text = (
         "I can't handle this because "
@@ -18,29 +21,38 @@ def abort_command(
         "for that command."
     )
 
-    if (message_telegram_id is None):
+    if (edit_message is not None):
+        telegram.edit_message_text(
+            chat_id=chat_telegram_id,
+            message_id=edit_message,
+            text=text
+        )
+    elif (reply_to_message is not None):
         telegram.send_message(
             chat_id=chat_telegram_id,
+            reply_to_message_id=reply_to_message,
             text=text
         )
     else:
-        telegram.edit_message_text(
+        telegram.send_message(
             chat_id=chat_telegram_id,
-            message_id=message_telegram_id,
             text=text
         )
 
 
 def cancel_command(
     chat_telegram_id: int,
-    message_telegram_id: int = None
+    edit_message: int = None,
+    reply_to_message: int = None
 ) -> None:
     """
     Cancels command execution due to internal server error.
 
     - don't confuse with `abort_command()`.
-    - if `message_telegram_id` specified, then
-    that message will be updated.
+    - if `edit_message` Telegram ID specified, then
+    that message will be edited.
+    - if `reply_to_message` Telegram ID specified, then
+    that message will be used for reply message.
     """
     text = (
         "At the moment i can't process this "
@@ -48,15 +60,21 @@ def cancel_command(
         "Try later please."
     )
 
-    if (message_telegram_id is None):
+    if (edit_message is not None):
+        telegram.edit_message_text(
+            chat_id=chat_telegram_id,
+            message_id=edit_message,
+            text=text
+        )
+    elif (reply_to_message is not None):
         telegram.send_message(
             chat_id=chat_telegram_id,
+            reply_to_message_id=reply_to_message,
             text=text
         )
     else:
-        telegram.edit_message_text(
+        telegram.send_message(
             chat_id=chat_telegram_id,
-            message_id=message_telegram_id,
             text=text
         )
 
