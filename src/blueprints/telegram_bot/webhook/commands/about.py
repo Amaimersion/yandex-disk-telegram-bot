@@ -44,7 +44,7 @@ def handle():
                     "url": absolute_url_for("legal.privacy_policy")
                 },
                 {
-                    "text": "Terms And Conditions",
+                    "text": "Terms of service",
                     "url": absolute_url_for("legal.terms_and_conditions")
                 }
             ]
