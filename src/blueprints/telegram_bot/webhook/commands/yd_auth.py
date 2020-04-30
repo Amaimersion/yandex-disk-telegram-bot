@@ -167,7 +167,7 @@ def handle():
             "\n\n"
             "By using me, you accept "
             f'<a href="{absolute_url_for("legal.privacy_policy")}">Privacy Policy</a> and ' # noqa
-            f'<a href="{absolute_url_for("legal.terms_and_conditions")}">Terms And Conditions</a>. ' # noqa
+            f'<a href="{absolute_url_for("legal.terms_and_conditions")}">Terms of service</a>. ' # noqa
         ),
         reply_markup={"inline_keyboard": [
             [
