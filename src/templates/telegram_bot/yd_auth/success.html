@@ -1,5 +1,12 @@
 {% extends "html5.html" %}
 
+{% import "macros.html" as macros %}
+
+
+{% block head %}
+  {{ macros.css_file("telegram_bot/yd_auth/common.css") }}
+{% endblock %}
+
 
 {% block title %}
   Successfully Authorized
@@ -13,7 +20,7 @@
     </h1>
 
     <p>
-      You've successfully authorized in {{ config["PROJECT_APP_NAME"] }}.
+      You've successfully granted an access to {{ config["PROJECT_APP_NAME"] }}.
     </p>
   </main>
 {% endblock %}

@@ -5,6 +5,8 @@
 ### Improved
 
 - Text of most bot responses.
+- Text of authorization HTML pages.
+- Style of authorization HTML pages.
 - When uploading, bot will update single message instead of sending new one every time with operation status.
 
 ### Added
@@ -12,6 +14,7 @@
 - Privacy Policy and Terms & Conditions.
 - Favicons for different platforms.
 - Buttons with useful links in `/help` command.
+- "Report a problem" link in error authorization HTML page.
 
 ### Changed
 
@@ -42,6 +45,7 @@
 - Decreased size of slug on Heroku by removing unused files and folders.
 - Decreased number of seconds for Yandex.OAuth request timeout.
 - Redirects and generated URL's always will be absolute URL's with `PREFERRED_URL_SCHEME + SERVER_NAME`.
+- If user refused to grant the access to Yandex.Disk, then user `insert_token` will be cleared after redirect.
 
 
 # 1.0.0 (April 15, 2020)

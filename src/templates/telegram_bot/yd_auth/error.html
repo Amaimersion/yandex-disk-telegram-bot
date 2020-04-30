@@ -1,5 +1,12 @@
 {% extends "html5.html" %}
 
+{% import "macros.html" as macros %}
+
+
+{% block head %}
+  {{ macros.css_file("telegram_bot/yd_auth/common.css") }}
+{% endblock %}
+
 
 {% block title %}
   Authorization Failed
@@ -20,25 +27,26 @@
       {% if error_description %}
         {{ error_description }}
       {% else %}
-        Authorization in {{ config["PROJECT_APP_NAME"] }} failed due to an unknown error.
+        Granting of access to {{ config["PROJECT_APP_NAME"] }} failed due to an unknown error.
       {% endif %}
     </p>
 
     {% if not error_title %}
-      <div>
-        Raw Error:
+      <div class="report-problem-container">
+        {% set issue_href = macros.href(
+            config['PROJECT_URL_FOR_ISSUE'],
+            "report a problem",
+            "_blank"
+          )
+        %}
 
-        <hr />
-
-        {% if raw_error_title %}
-          Title: {{ raw_error_title }}
-        {% endif %}
-
+        You may {{ issue_href | trim }}. Here is a data for debugging purposes:
         <br />
-
-        {% if raw_error_description %}
-          Description: {{ raw_error_description }}
-        {% endif %}
+        Title: {{ raw_error_title or "?" }}
+        <br />
+        Description: {{ raw_error_description or "?" }}
+        <br />
+        State: {{ raw_state or "?" }}
       </div>
     {% endif %}
   </main>

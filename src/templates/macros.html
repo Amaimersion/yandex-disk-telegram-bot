@@ -1,7 +1,7 @@
 {% macro css_file(file) %}
   <link
     rel="stylesheet"
-    href="{{ url_for('static', filename=file) }}"
+    href="{{ url_for('static', filename=('css/' + file)) }}"
   >
 {% endmacro %}
 
@@ -14,6 +14,20 @@
       async
     {% endif %}
 
-    src="{{ url_for('static', filename=file) }}"
+    src="{{ url_for('static', filename=('js/' + file)) }}"
   ></script>
+{% endmacro %}
+
+
+{% macro href(url, text, target="_self") %}
+  <a
+    href="{{ url }}"
+    target="{{ target }}"
+
+    {% if target == "_blank" %}
+      rel="noopener"
+    {% endif %}
+  >{{
+    text
+  }}</a>
 {% endmacro %}
