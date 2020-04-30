@@ -39,6 +39,7 @@
 ### Added
 
 - `SERVER_NAME` environment variable.
+- Google Analytics in authorization pages.
 
 ### Changed
 

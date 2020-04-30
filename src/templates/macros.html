@@ -19,6 +19,22 @@
 {% endmacro %}
 
 
+{% macro google_analytics() %}
+  {% set ua = config.get("GOOGLE_ANALYTICS_UA") %}
+
+  {% if ua %}
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ua }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag("js", new Date());
+
+      gtag("config", "{{ ua }}");
+    </script>
+  {% endif %}
+{% endmacro %}
+
+
 {% macro href(url, text, target="_self") %}
   <a
     href="{{ url }}"

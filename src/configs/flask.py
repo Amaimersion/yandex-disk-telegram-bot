@@ -70,6 +70,9 @@ class Config:
     # if user not specified custom folder.
     YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER = "Telegram Bot"
 
+    # Google Analytics
+    GOOGLE_ANALYTICS_UA = os.getenv("GOOGLE_ANALYTICS_UA")
+
 
 class ProductionConfig(Config):
     DEBUG = False
