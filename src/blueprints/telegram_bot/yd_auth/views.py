@@ -230,6 +230,7 @@ def create_error_response(
 
     return render_template(
         "telegram_bot/yd_auth/error.html",
+        error_code=error_code,
         error_title=error_info.get("title"),
         error_description=error_info.get("description"),
         raw_error_title=(raw_error_title or error_code),

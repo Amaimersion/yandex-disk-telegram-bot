@@ -23,13 +23,17 @@
   {% set ua = config.get("GOOGLE_ANALYTICS_UA") %}
 
   {% if ua %}
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ ua }}"></script>
-    <script>
+    <script defer src="https://www.googletagmanager.com/gtag/js?id={{ ua }}"></script>
+    <script defer>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
-      gtag("js", new Date());
 
-      gtag("config", "{{ ua }}");
+      gtag("js", new Date());
+      gtag("config", "{{ ua }}", {
+        page_title: document.title,
+        page_location: window.location.origin,
+        page_path: window.location.pathname
+      });
     </script>
   {% endif %}
 {% endmacro %}
