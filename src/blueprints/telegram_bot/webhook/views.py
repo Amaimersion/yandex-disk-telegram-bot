@@ -41,9 +41,9 @@ def webhook():
     g.telegram_chat = message.get_chat()
     g.route_to = route_command
 
-    command = message.get_bot_command("")
+    command = message.get_entity_value("bot_command")
 
-    if not (command):
+    if (command is None):
         command = message.guess_bot_command()
 
     route_command(command)

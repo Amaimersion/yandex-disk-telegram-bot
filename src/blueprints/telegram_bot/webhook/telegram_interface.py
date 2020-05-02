@@ -1,6 +1,7 @@
 from typing import (
     List,
-    Union
+    Union,
+    Any
 )
 
 from .commands import CommandsNames
@@ -73,6 +74,12 @@ class Entity:
         """
         return (self.type == "bot_command")
 
+    def is_url(self) -> bool:
+        """
+        :returns: Entity is an URL.
+        """
+        return (self.type == "url")
+
 
 class Message:
     """
@@ -144,34 +151,51 @@ class Message:
 
         return self.entities
 
-    def get_bot_command(self, default=CommandsNames.HELP) -> str:
+    def get_entity_value(
+        self,
+        entity_type: str,
+        default: Any = None
+    ) -> Any:
         """
-        Extracts bot command from a message.
+        Extracts value of single entity from a message.
 
-        - first command will be returned even if message
-        contains more than one command.
+        - first value will be returned, all others
+        will be ignored.
 
-        :param default: Default command which will be
-        returned if message don't contains any bot commands.
+        :param entity_type: Type of entity whose value
+        you want to extract. See
+        https://core.telegram.org/bots/api/#messageentity
+        :param default: Default value which will be
+        returned if no such entities in a message.
 
-        :returns: Bot command from a message.
+        :returns: First value or `default`.
+
+        :raises ValueError: If `entity_type` not supported.
         """
         text = self.get_text()
         entities = self.get_entities()
-        command = default
+        value = default
+        checkers = {
+            "bot_command": lambda entity: entity.is_bot_command(),
+            "url": lambda entity: entity.is_url()
+        }
+        is_valid = checkers.get(entity_type)
+
+        if (is_valid is None):
+            raise ValueError("Entity type not supported")
 
         for entity in entities:
-            if not (entity.is_bot_command()):
+            if not (is_valid(entity)):
                 continue
 
             offset = entity.offset
             length = entity.length
-            command = text[offset:offset + length]
+            value = text[offset:offset + length]
 
-            # ignore next commands
+            # next values will be ignores
             break
 
-        return command
+        return value
 
     def guess_bot_command(self, default=CommandsNames.HELP) -> str:
         """
