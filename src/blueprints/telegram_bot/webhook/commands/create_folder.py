@@ -2,7 +2,8 @@ from flask import g
 
 from src.api import telegram
 from .common.responses import (
-    cancel_command
+    cancel_command,
+    abort_command
 )
 from .common.decorators import (
     yd_access_token_required,
@@ -25,12 +26,16 @@ def handle():
     message = g.telegram_message
     user = g.db_user
     chat = g.db_chat
-    access_token = user.yandex_disk_token.get_access_token()
     message_text = message.get_text()
     folder_name = message_text.replace(
         CommandsNames.CREATE_FOLDER.value,
         ""
     ).strip()
+
+    if not (folder_name):
+        return abort_command(chat.telegram_id)
+
+    access_token = user.yandex_disk_token.get_access_token()
     last_status_code = None
 
     try:

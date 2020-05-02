@@ -27,6 +27,7 @@
 ### Fixed
 
 - A bug when sometimes "I can't track operation status of this anymore. Perform manual checking." message could appear even if operation was completed.
+- A bug when empty `/create_folder` was successfully handled.
 
 ## Project
 
