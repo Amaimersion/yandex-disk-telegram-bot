@@ -68,14 +68,15 @@ class AttachmentHandler(metaclass=ABCMeta):
     def get_attachment(
         self,
         message: telegram_interface.Message
-    ) -> Union[dict, None]:
+    ) -> Union[dict, str, None]:
         """
         :param message: Incoming Telegram message.
 
         :returns: Attachment of message (photo object,
         file object, audio object, etc.). If `None`,
-        uploading will be aborted. It must have `file_id` and
-        `file_unique_id` properties. See
+        uploading will be aborted. If `dict`, it must have `file_id`
+        and `file_unique_id` properties. If `str`, it is assumed
+        as direct file URL. See
         https://core.telegram.org/bots/api/#available-types
         """
         pass
@@ -83,13 +84,14 @@ class AttachmentHandler(metaclass=ABCMeta):
     @abstractmethod
     def create_file_name(
         self,
-        attachment: dict,
-        file: dict
+        attachment: Union[dict, str],
+        file: Union[dict, None]
     ) -> str:
         """
         :param attachment: Not `None` value from `self.get_attachment()`.
         :param file: Representation of this attachment as a file on
-        Telegram servers. See https://core.telegram.org/bots/api/#file
+        Telegram servers. If `attachment` is `str`, then this will
+        be equal `None`. See https://core.telegram.org/bots/api/#file
 
         :returns: Name of file which will be uploaded.
         """
@@ -122,25 +124,32 @@ class AttachmentHandler(metaclass=ABCMeta):
             print(error)
             return cancel_command(chat.telegram_id)
 
-        result = None
+        download_url = None
+        file = None
 
-        try:
-            result = telegram.get_file(
-                file_id=attachment["file_id"]
+        if (isinstance(attachment, str)):
+            download_url = attachment
+        else:
+            result = None
+
+            try:
+                result = telegram.get_file(
+                    file_id=attachment["file_id"]
+                )
+            except Exception as error:
+                print(error)
+                return cancel_command(chat.telegram_id)
+
+            file = result["content"]
+            download_url = telegram.create_file_download_url(
+                file["file_path"]
             )
-        except Exception as error:
-            print(error)
-            return cancel_command(chat.telegram_id)
 
-        file = result["content"]
+        file_name = self.create_file_name(attachment, file)
         user_access_token = user.yandex_disk_token.get_access_token()
         folder_path = current_app.config[
             "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
         ]
-        file_name = self.create_file_name(attachment, file)
-        download_url = telegram.create_file_download_url(
-            file["file_path"]
-        )
 
         def long_task():
             try:
@@ -396,8 +405,37 @@ class VoiceHandler(AttachmentHandler):
         return name
 
 
+class URLHandler(AttachmentHandler):
+    """
+    Handles uploading of direct URL to file.
+    """
+    @staticmethod
+    def handle():
+        handler = URLHandler()
+        handler.upload()
+
+    @property
+    def telegram_action(self):
+        return "upload_document"
+
+    def message_is_valid(self, message: telegram_interface.Message):
+        value = self.get_attachment(message)
+
+        return (
+            isinstance(value, str) and
+            len(value) > 0
+        )
+
+    def get_attachment(self, message: telegram_interface.Message):
+        return message.get_entity_value("url")
+
+    def create_file_name(self, attachment, file):
+        return attachment.split("/")[-1]
+
+
 handle_photo = PhotoHandler.handle
 handle_file = FileHandler.handle
 handle_audio = AudioHandler.handle
 handle_video = VideoHandler.handle
 handle_voice = VoiceHandler.handle
+handle_url = URLHandler.handle

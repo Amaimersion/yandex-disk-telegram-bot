@@ -30,6 +30,7 @@
 
 - uploading of photos.
 - uploading of files.
+- uploading of files using direct URL.
 - uploading of audio.
 - uploading of video.
 - uploading of voice.

@@ -42,6 +42,10 @@
             "description": "Upload a voice message"
         },
         {
+            "command": "upload_url",
+            "description": "Upload a file using direct URL"
+        },
+        {
             "command": "create_folder",
             "description": "Create a folder using OS path"
         },

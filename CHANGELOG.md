@@ -11,6 +11,7 @@
 
 ### Added
 
+- `/upload_url`: uploading of file using direct URL.
 - Privacy Policy and Terms & Conditions.
 - Favicons for different platforms.
 - Buttons with useful links in `/help` command.

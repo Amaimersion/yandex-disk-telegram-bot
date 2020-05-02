@@ -219,6 +219,8 @@ class Message:
             command = CommandsNames.UPLOAD_VIDEO
         elif ("voice" in self.raw_data):
             command = CommandsNames.UPLOAD_VOICE
+        elif (self.get_entity_value("url") is not None):
+            command = CommandsNames.UPLOAD_URL
 
         return command
 

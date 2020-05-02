@@ -10,4 +10,5 @@ from .upload import handle_file as upload_file_handler
 from .upload import handle_audio as upload_audio_handler
 from .upload import handle_video as upload_video_handler
 from .upload import handle_voice as upload_voice_handler
+from .upload import handle_url as upload_url_handler
 from .create_folder import handle as create_folder_handler
