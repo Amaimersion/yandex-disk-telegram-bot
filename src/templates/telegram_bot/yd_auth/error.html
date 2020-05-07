@@ -4,6 +4,7 @@
 
 
 {% block head %}
+  {{ macros.forbid_access_for_robots() }}
   {{ macros.css_file("telegram_bot/yd_auth/common.css") }}
   {{ macros.google_analytics() }}
   {{ macros.js_file("telegram_bot/yd_auth/analytics.js") }}

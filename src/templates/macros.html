@@ -51,3 +51,11 @@
     text
   }}</a>
 {% endmacro %}
+
+
+{% macro forbid_access_for_robots() %}
+  <meta
+    name="robots"
+    content="none, noarchive, noyaca"
+  />
+{% endmacro %}
