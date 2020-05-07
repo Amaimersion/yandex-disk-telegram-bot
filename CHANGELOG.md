@@ -42,6 +42,7 @@
 
 - `SERVER_NAME` environment variable.
 - Google Analytics in authorization pages.
+- Templates for issues and pull requests.
 
 ### Changed
 
