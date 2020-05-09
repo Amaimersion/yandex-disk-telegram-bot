@@ -1,39 +1,41 @@
-import requests
+from .requests import (
+    make_oauth_request,
+    make_disk_request
+)
 
-from .request import make_oauth_request, make_disk_request
-from .exceptions import YandexOauthAPIException
 
-
-def get_access_token(**kwargs) -> dict:
+def get_access_token(**kwargs):
     """
     https://yandex.ru/dev/oauth/doc/dg/reference/auto-code-client-docpage/#auto-code-client__get-token
+
+    - see `api/request.py` documentation for more.
     """
     return make_oauth_request("token", kwargs)
 
 
-def upload_file_with_url(user_token, **kwargs) -> dict:
+def upload_file_with_url(user_token: str, **kwargs):
     """
-    https://yandex.ru/dev/disk/api/reference/upload-ext-docpage/
+    https://yandex.ru/dev/disk/api/reference/upload-ext-docpage
 
-    - adds `HTTP_STATUS_CODE` key in response data.
+    - see `api/request.py` documentation for more.
     """
     return make_disk_request(
         http_method="POST",
         api_method="resources/upload",
         data=kwargs,
-        token=user_token
+        user_token=user_token
     )
 
 
-def create_folder(user_token, **kwargs) -> dict:
+def create_folder(user_token: str, **kwargs):
     """
-    https://yandex.ru/dev/disk/api/reference/create-folder-docpage/
+    https://yandex.ru/dev/disk/api/reference/create-folder-docpage
 
-    - adds `HTTP_STATUS_CODE` key in response data.
+    - see `api/request.py` documentation for more.
     """
     return make_disk_request(
         http_method="PUT",
         api_method="resources",
         data=kwargs,
-        token=user_token
+        user_token=user_token
     )

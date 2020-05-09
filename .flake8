@@ -4,5 +4,7 @@ exclude =
     # Folders
     __pycache__
     venv
+    migrations
+
     # Files
     *.pyc

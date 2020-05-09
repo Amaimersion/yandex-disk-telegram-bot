@@ -1,8 +1,9 @@
 from .methods import (
     send_message,
     get_file,
-    send_chat_action
+    send_chat_action,
+    edit_message_text
 )
-from .request import (
+from .requests import (
     create_file_download_url
 )

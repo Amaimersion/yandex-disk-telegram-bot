@@ -2,7 +2,7 @@ from enum import Enum, unique
 
 
 @unique
-class CommandNames(Enum):
+class CommandsNames(Enum):
     """
     Commands supported by bot.
     """
@@ -10,11 +10,12 @@ class CommandNames(Enum):
     HELP = "/help"
     ABOUT = "/about"
     SETTINGS = "/settings"
-    YD_AUTH = "/yandex_disk_authorization"
-    YD_REVOKE = "/yandex_disk_revoke"
+    YD_AUTH = "/grant_access"
+    YD_REVOKE = "/revoke_access"
     UPLOAD_PHOTO = "/upload_photo"
     UPLOAD_FILE = "/upload_file"
     UPLOAD_AUDIO = "/upload_audio"
     UPLOAD_VIDEO = "/upload_video"
     UPLOAD_VOICE = "/upload_voice"
+    UPLOAD_URL = "/upload_url"
     CREATE_FOLDER = "/create_folder"

@@ -4,7 +4,7 @@ import click
 from sqlalchemy.exc import IntegrityError
 
 from src.app import create_app
-from src.db import (
+from src.database import (
     db,
     User,
     Chat,
@@ -15,7 +15,7 @@ from src.db import (
 )
 
 
-app = create_app()
+app = create_app("development")
 
 
 class PossibleInfiniteLoopError(Exception):
@@ -26,10 +26,10 @@ class PossibleInfiniteLoopError(Exception):
     pass
 
 
-class InvalidTableError(Exception):
+class InvalidTableDataError(Exception):
     """
     Indicates that table in DB is invalid
-    (data is empty, some required data is NULL, etc,)
+    (data is empty, some required data is NULL, etc.)
     """
     pass
 
@@ -62,9 +62,9 @@ def cli():
     help="How many fakes should be added"
 )
 @with_app_context
-def add_fake_users(count):
+def add_fake_users(count: int) -> None:
     """
-    Add fake users in DB.
+    Adds fake users in DB.
     """
     i = 0
     error_count = 0
@@ -98,9 +98,9 @@ def add_fake_users(count):
     help="How many fakes should be added"
 )
 @with_app_context
-def add_fake_chats(count):
+def add_fake_chats(count: int) -> None:
     """
-    Add fake chats in DB.
+    Adds fake chats in DB.
     """
     i = 0
     error_count = 0
@@ -115,7 +115,7 @@ def add_fake_chats(count):
         user = UserQuery.get_random_user()
 
         if (user is None):
-            raise InvalidTableError(
+            raise InvalidTableDataError(
                 "Random user is none. Users table is empty?"
             )
 
@@ -141,9 +141,9 @@ def add_fake_chats(count):
     help="How many fakes should be added"
 )
 @with_app_context
-def add_fake_yd_tokens(count):
+def add_fake_yd_tokens(count: int) -> None:
     """
-    Add fake Yandex.Disk tokens in DB.
+    Adds fake Yandex.Disk tokens in DB.
     """
     free_users_count = UserQuery.get_users_without_yd_token_count()
 
@@ -188,7 +188,12 @@ def add_fake_yd_tokens(count):
     help="How many Y.D. token fakes should be added"
 )
 @click.pass_context
-def add_fake_data(context, users_count, chats_count, yd_tokens_count):
+def add_fake_data(
+    context: dict,
+    users_count: int,
+    chats_count: int,
+    yd_tokens_count: int
+) -> None:
     """
     Adds fake data in all DB tables.
     """
@@ -199,7 +204,7 @@ def add_fake_data(context, users_count, chats_count, yd_tokens_count):
 
 @cli.command()
 @with_app_context
-def clear_users():
+def clear_users() -> None:
     """
     Removes all users from a table.
     """
@@ -211,7 +216,7 @@ def clear_users():
 
 @cli.command()
 @with_app_context
-def clear_chats():
+def clear_chats() -> None:
     """
     Removes all chats from a table.
     """
@@ -223,7 +228,7 @@ def clear_chats():
 
 @cli.command()
 @with_app_context
-def clear_yd_tokens():
+def clear_yd_tokens() -> None:
     """
     Removes all Yandex.Disk tokens from a table.
     """
@@ -235,7 +240,7 @@ def clear_yd_tokens():
 
 @cli.command()
 @click.pass_context
-def clear_db(context):
+def clear_db(context: dict) -> None:
     """
     Removes all data from DB tables.
     """

@@ -1,8 +1,13 @@
 from flask import g
 
-from .....api import telegram
-from .common.decorators import register_guest, get_db_data
-from .common.responses import request_private_chat
+from src.api import telegram
+from .common.decorators import (
+    register_guest,
+    get_db_data
+)
+from .common.responses import (
+    request_private_chat
+)
 
 
 @register_guest
@@ -12,7 +17,7 @@ def handle():
     Handles `/settings` command.
     """
     user = g.db_user
-    incoming_chat = g.db_incoming_chat
+    incoming_chat = g.db_chat
     private_chat = g.db_private_chat
 
     if (private_chat is None):
@@ -31,7 +36,7 @@ def handle():
         f"{user.language.name}"
         "\n"
         "<b>Yandex.Disk Access:</b> "
-        f"{'Granted' if yd_access else 'Not Granted'}"
+        f"{'Given' if yd_access else 'Revoked'}"
     )
 
     telegram.send_message(

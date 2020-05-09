@@ -1,7 +1,7 @@
 {
     "name": "Yandex.Disk Bot",
-    "version": "1.0.0",
-    "description": "This bot integrates Yandex.Disk right into Telegram.",
+    "version": "1.1.0",
+    "description": "This bot integrates Yandex.Disk into Telegram.",
     "about": "Work with Yandex.Disk.",
     "telegram": "Ya_Disk_Bot",
     "commands": [
@@ -23,34 +23,38 @@
         },
         {
             "command": "upload_photo",
-            "description": "Upload a photo. Original name will be not saved, quality of photo will be decreased. Send photo(s) with this command"
+            "description": "Upload a photo with quality loss"
         },
         {
             "command": "upload_file",
-            "description": "Upload a file. Original name will be saved. For photos, original quality will be saved. Send file(s) with this command"
+            "description": "Upload a file with original state"
         },
         {
             "command": "upload_audio",
-            "description": "Upload an audio. Original name will be saved, original type may be changed. Send audio file(s) with this command"
+            "description": "Upload an audio with original quality"
         },
         {
             "command": "upload_video",
-            "description": "Upload a video. Original name will be not saved, original type may be changed. Send video file(s) with this command"
+            "description": "Upload a video with original quality"
         },
         {
             "command": "upload_voice",
-            "description": "Upload a voice. Send voice file(s) with this command"
+            "description": "Upload a voice message"
+        },
+        {
+            "command": "upload_url",
+            "description": "Upload a file using direct URL"
         },
         {
             "command": "create_folder",
-            "description": "Create a folder. Send folder name with this command. Folder name should starts from root, nested folders should be separated with backslash character"
+            "description": "Create a folder using OS path"
         },
         {
-            "command": "yandex_disk_authorization",
-            "description": "Give me an access to your Yandex.Disk"
+            "command": "grant_access",
+            "description": "Grant me an access to your Yandex.Disk"
         },
         {
-            "command": "yandex_disk_revoke",
+            "command": "revoke_access",
             "description": "Revoke my access to your Yandex.Disk"
         }
     ]

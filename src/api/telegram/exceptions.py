@@ -1,19 +1,14 @@
-class TelegramApiException(Exception):
+class TelegramBotApiException(Exception):
     """
-    Expected exception that occurred while handling Telegram API request.
-    """
-    pass
-
-
-class InvalidResponseFormatException(TelegramApiException):
-    """
-    Format of response differ from Telegram response.
+    Expected exception that occurred while
+    handling Telegram Bot API request.
     """
     pass
 
 
-class MethodExecutionFailedException(TelegramApiException):
+class RequestFailed(TelegramBotApiException):
     """
-    Telegram successfully called a method, but it failed to end.
+    Telegram indicates that some error occurred
+    because of something (see error message).
     """
     pass

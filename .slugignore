@@ -1,0 +1,12 @@
+# Files
+.editorconfig
+.env.example
+.flake8
+CHANGELOG.md
+LICENSE
+README.md
+
+# Folders
+.vscode
+info
+.github

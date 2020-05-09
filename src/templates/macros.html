@@ -1,7 +1,7 @@
 {% macro css_file(file) %}
   <link
     rel="stylesheet"
-    href="{{ url_for('static', filename=file) }}"
+    href="{{ url_for('static', filename=('css/' + file)) }}"
   >
 {% endmacro %}
 
@@ -14,6 +14,48 @@
       async
     {% endif %}
 
-    src="{{ url_for('static', filename=file) }}"
+    src="{{ url_for('static', filename=('js/' + file)) }}"
   ></script>
+{% endmacro %}
+
+
+{% macro google_analytics() %}
+  {% set ua = config.get("GOOGLE_ANALYTICS_UA") %}
+
+  {% if ua %}
+    <script defer src="https://www.googletagmanager.com/gtag/js?id={{ ua }}"></script>
+    <script defer>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+
+      gtag("js", new Date());
+      gtag("config", "{{ ua }}", {
+        page_title: document.title,
+        page_location: window.location.origin,
+        page_path: window.location.pathname
+      });
+    </script>
+  {% endif %}
+{% endmacro %}
+
+
+{% macro href(url, text, target="_self") %}
+  <a
+    href="{{ url }}"
+    target="{{ target }}"
+
+    {% if target == "_blank" %}
+      rel="noopener"
+    {% endif %}
+  >{{
+    text
+  }}</a>
+{% endmacro %}
+
+
+{% macro forbid_access_for_robots() %}
+  <meta
+    name="robots"
+    content="none, noarchive, noyaca"
+  />
 {% endmacro %}
