@@ -72,6 +72,12 @@ def configure_blueprints(app: Flask) -> None:
 def configure_redirects(app: Flask) -> None:
     """
     Configures redirects.
+
+    Note: all redirects to static content should be handled by
+    HTTP Reverse Proxy Server, not by WSGI HTTP Server.
+    We are keeping this redirect to static favicon only for
+    development builds where usually only Flask itself is used
+    (we want to see favicon at development stage - it is only the reason).
     """
     @app.route("/favicon.ico")
     def favicon():
