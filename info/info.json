@@ -1,6 +1,6 @@
 {
     "name": "Yandex.Disk Bot",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "This bot integrates Yandex.Disk into Telegram.",
     "about": "Work with Yandex.Disk.",
     "telegram": "Ya_Disk_Bot",
