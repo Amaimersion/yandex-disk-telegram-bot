@@ -8,6 +8,10 @@
 
 - Upgrade `python` to 3.8.2.
 
+## Changed
+
+- Redirect to favicon will be handled by nginx.
+
 
 # 1.1.0 (May 9, 2020)
 
