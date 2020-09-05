@@ -1,3 +1,14 @@
+# 1.2.0
+
+## Telegram Bot
+
+## Project
+
+## Improved
+
+- Upgrade `python` to 3.8.2.
+
+
 # 1.1.0 (May 9, 2020)
 
 ## Telegram Bot
