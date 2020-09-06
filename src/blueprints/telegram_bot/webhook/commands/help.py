@@ -13,9 +13,9 @@ def handle():
     yd_upload_default_folder = current_app.config[
         "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
     ]
-    file_size_limit_in_mb = current_app.config[
+    file_size_limit_in_mb = int(current_app.config[
         "TELEGRAM_API_MAX_FILE_SIZE"
-    ] / 1000 / 1000
+    ] / 1000 / 1000)
 
     text = (
         "You can control me by sending these commands:"
