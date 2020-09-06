@@ -3,7 +3,8 @@ from flask import g
 from src.api import telegram
 from .common.responses import (
     cancel_command,
-    abort_command
+    abort_command,
+    AbortReason
 )
 from .common.decorators import (
     yd_access_token_required,
@@ -33,7 +34,10 @@ def handle():
     ).strip()
 
     if not (folder_name):
-        return abort_command(chat.telegram_id)
+        return abort_command(
+            chat.telegram_id,
+            AbortReason.NO_SUITABLE_DATA
+        )
 
     access_token = user.yandex_disk_token.get_access_token()
     last_status_code = None

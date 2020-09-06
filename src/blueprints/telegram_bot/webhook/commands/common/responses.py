@@ -1,8 +1,20 @@
+from enum import IntEnum, unique
+
 from src.api import telegram
+
+
+@unique
+class AbortReason(IntEnum):
+    """
+    Reason for `abort_command`.
+    """
+    UNKNOWN = 1
+    NO_SUITABLE_DATA = 2
 
 
 def abort_command(
     chat_telegram_id: int,
+    reason: AbortReason,
     edit_message: int = None,
     reply_to_message: int = None
 ) -> None:
@@ -15,11 +27,17 @@ def abort_command(
     - if `reply_to_message` Telegram ID specified, then
     that message will be used for reply message.
     """
-    text = (
-        "I can't handle this because "
-        "you didn't send any suitable data "
-        "for that command."
-    )
+    texts = {
+        AbortReason.UNKNOWN: (
+            "I can't handle this because something is wrong."
+        ),
+        AbortReason.NO_SUITABLE_DATA: (
+            "I can't handle this because "
+            "you didn't send any suitable data "
+            "for that command."
+        )
+    }
+    text = texts[reason]
 
     if (edit_message is not None):
         telegram.edit_message_text(

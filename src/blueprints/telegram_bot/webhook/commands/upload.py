@@ -11,7 +11,8 @@ from .common.decorators import (
 )
 from .common.responses import (
     abort_command,
-    cancel_command
+    cancel_command,
+    AbortReason
 )
 from .common.yandex_api import (
     upload_file_with_url,
@@ -20,6 +21,23 @@ from .common.yandex_api import (
     YandexAPIUploadFileError,
     YandexAPIExceededNumberOfStatusChecksError
 )
+
+
+class MessageHealth:
+    """
+    Health status of Telegram message.
+    """
+    def __init__(
+        self,
+        ok: bool,
+        abort_reason: Union[AbortReason, None] = None
+    ) -> None:
+        """
+        :param ok: Message is valid for subsequent handling.
+        :param abort_reason: Reason of abort. `None` if `ok = True`.
+        """
+        self.ok = ok
+        self.abort_reason = None
 
 
 class AttachmentHandler(metaclass=ABCMeta):
@@ -53,14 +71,16 @@ class AttachmentHandler(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def message_is_valid(
+    def check_message_health(
         self,
         message: telegram_interface.Message
-    ) -> bool:
+    ) -> MessageHealth:
         """
         :param message: Incoming Telegram message.
 
-        :returns: Message is valid and should be handled.
+        :returns: See `MessageHealth` documentation.
+        Message will be handled by next operators only
+        in case of `ok = true`.
         """
         pass
 
@@ -106,14 +126,21 @@ class AttachmentHandler(metaclass=ABCMeta):
         message = g.telegram_message
         user = g.db_user
         chat = g.db_chat
+        message_health = self.check_message_health(message)
 
-        if not (self.message_is_valid(message)):
-            return abort_command(chat.telegram_id)
+        if not (message_health.ok):
+            return abort_command(
+                chat.telegram_id,
+                message_health.abort_reason or AbortReason.UNKNOWN
+            )
 
         attachment = self.get_attachment(message)
 
         if (attachment is None):
-            return abort_command(chat.telegram_id)
+            return abort_command(
+                chat.telegram_id,
+                AbortReason.NO_SUITABLE_DATA
+            )
 
         try:
             telegram.send_chat_action(
@@ -237,16 +264,21 @@ class PhotoHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_photo"
 
-    def message_is_valid(self, message: telegram_interface.Message):
+    def check_message_health(self, message: telegram_interface.Message):
+        health = MessageHealth(True)
         raw_data = message.raw_data
 
-        return (
+        if not (
             isinstance(
                 raw_data.get("photo"),
                 list
             ) and
             len(raw_data["photo"]) > 0
-        )
+        ):
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+
+        return health
 
     def get_attachment(self, message: telegram_interface.Message):
         raw_data = message.raw_data
@@ -276,16 +308,20 @@ class FileHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_document"
 
-    def message_is_valid(self, message: telegram_interface.Message):
-        return (
-            isinstance(
-                message.raw_data.get("document"),
-                dict
-            )
-        )
+    def check_message_health(self, message: telegram_interface.Message):
+        health = MessageHealth(True)
+        value = self.get_attachment(message)
+
+        if not (
+            isinstance(value, dict)
+        ):
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+
+        return health
 
     def get_attachment(self, message: telegram_interface.Message):
-        return message.raw_data["document"]
+        return message.raw_data.get("document")
 
     def create_file_name(self, attachment, file):
         return (
@@ -307,16 +343,20 @@ class AudioHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_audio"
 
-    def message_is_valid(self, message: telegram_interface.Message):
-        return (
-            isinstance(
-                message.raw_data.get("audio"),
-                dict
-            )
-        )
+    def check_message_health(self, message: telegram_interface.Message):
+        health = MessageHealth(True)
+        value = self.get_attachment(message)
+
+        if not (
+            isinstance(value, dict)
+        ):
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+
+        return health
 
     def get_attachment(self, message: telegram_interface.Message):
-        return message.raw_data["audio"]
+        return message.raw_data.get("audio")
 
     def create_file_name(self, attachment, file):
         name = file["file_unique_id"]
@@ -348,16 +388,20 @@ class VideoHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_video"
 
-    def message_is_valid(self, message: telegram_interface.Message):
-        return (
-            isinstance(
-                message.raw_data.get("video"),
-                dict
-            )
-        )
+    def check_message_health(self, message: telegram_interface.Message):
+        health = MessageHealth(True)
+        value = self.get_attachment(message)
+
+        if not (
+            isinstance(value, dict)
+        ):
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+
+        return health
 
     def get_attachment(self, message: telegram_interface.Message):
-        return message.raw_data["video"]
+        return message.raw_data.get("video")
 
     def create_file_name(self, attachment, file):
         name = file["file_unique_id"]
@@ -383,16 +427,20 @@ class VoiceHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_audio"
 
-    def message_is_valid(self, message: telegram_interface.Message):
-        return (
-            isinstance(
-                message.raw_data.get("voice"),
-                dict
-            )
-        )
+    def check_message_health(self, message: telegram_interface.Message):
+        health = MessageHealth(True)
+        value = self.get_attachment(message)
+
+        if not (
+            isinstance(value, dict)
+        ):
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+
+        return health
 
     def get_attachment(self, message: telegram_interface.Message):
-        return message.raw_data["voice"]
+        return message.raw_data.get("voice")
 
     def create_file_name(self, attachment, file):
         name = file["file_unique_id"]
@@ -418,13 +466,18 @@ class URLHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_document"
 
-    def message_is_valid(self, message: telegram_interface.Message):
+    def check_message_health(self, message: telegram_interface.Message):
+        health = MessageHealth(True)
         value = self.get_attachment(message)
 
-        return (
+        if not (
             isinstance(value, str) and
             len(value) > 0
-        )
+        ):
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+
+        return health
 
     def get_attachment(self, message: telegram_interface.Message):
         return message.get_entity_value("url")
