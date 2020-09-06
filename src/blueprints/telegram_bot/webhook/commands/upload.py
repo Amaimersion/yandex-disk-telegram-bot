@@ -128,6 +128,12 @@ class AttachmentHandler(metaclass=ABCMeta):
             health.ok = False
             health.abort_reason = AbortReason.NO_SUITABLE_DATA
         elif (
+            (type(value) in [str]) and
+            (len(value) == 0)
+        ):
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+        elif (
             isinstance(value, dict) and
             self.is_too_big_file(value)
         ):
@@ -348,10 +354,11 @@ class PhotoHandler(AttachmentHandler):
 
     @property
     def raw_data_type(self):
-        return list
+        # dict, not list, because we will select biggest photo
+        return dict
 
     def get_attachment(self, message: telegram_interface.Message):
-        photos = message.raw_data["photo"]
+        photos = message.raw_data.get(self.raw_data_key, [])
         biggest_photo = None
         biggest_pixels_count = -1
 
