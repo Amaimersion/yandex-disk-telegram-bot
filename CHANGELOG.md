@@ -4,11 +4,11 @@
 
 ## Project
 
-## Improved
+### Improved
 
 - Upgrade `python` to 3.8.2.
 
-## Changed
+### Changed
 
 - Redirect to favicon will be handled by nginx.
 
