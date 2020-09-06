@@ -2,6 +2,10 @@
 
 ## Telegram Bot
 
+### Added
+
+- Handling of files that exceed file size limit in 20 MB. At the moment the bot will asnwer with warning message, not trying to upload that file. [#3](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/3)
+
 ## Project
 
 ### Improved
@@ -11,6 +15,7 @@
 ### Changed
 
 - Redirect to favicon will be handled by nginx.
+- Biggest photo (from single photo file) will be selected based on total pixels count, not based on height.
 
 
 # 1.1.0 (May 9, 2020)

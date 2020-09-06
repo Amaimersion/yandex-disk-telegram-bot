@@ -1,5 +1,7 @@
 from enum import IntEnum, unique
 
+from flask import current_app
+
 from src.api import telegram
 
 
@@ -10,6 +12,7 @@ class AbortReason(IntEnum):
     """
     UNKNOWN = 1
     NO_SUITABLE_DATA = 2
+    EXCEED_FILE_SIZE_LIMIT = 3
 
 
 def abort_command(
@@ -35,6 +38,11 @@ def abort_command(
             "I can't handle this because "
             "you didn't send any suitable data "
             "for that command."
+        ),
+        AbortReason.EXCEED_FILE_SIZE_LIMIT: (
+            "I can't handle file of such a large size. "
+            "At the moment my limit is "
+            f"{current_app.config['TELEGRAM_API_MAX_FILE_SIZE'] / 1000 / 1000} MB." # noqa
         )
     }
     text = texts[reason]

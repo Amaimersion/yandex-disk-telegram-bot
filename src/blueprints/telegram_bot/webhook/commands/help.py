@@ -13,6 +13,9 @@ def handle():
     yd_upload_default_folder = current_app.config[
         "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
     ]
+    file_size_limit_in_mb = current_app.config[
+        "TELEGRAM_API_MAX_FILE_SIZE"
+    ] / 1000 / 1000
 
     text = (
         "You can control me by sending these commands:"
@@ -20,6 +23,8 @@ def handle():
         "<b>Yandex.Disk</b>"
         "\n"
         f'For uploading "{to_code(yd_upload_default_folder)}" folder is used by default.'
+        "\n"
+        f'Maximum size of every upload (except URL) is {file_size_limit_in_mb} MB.'
         "\n"
         f"{CommandsNames.UPLOAD_PHOTO.value} — upload a photo. "
         "Original name will be not saved, quality of photo will be decreased. "

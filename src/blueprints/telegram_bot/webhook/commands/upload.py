@@ -127,6 +127,12 @@ class AttachmentHandler(metaclass=ABCMeta):
         if not (isinstance(value, self.raw_data_type)):
             health.ok = False
             health.abort_reason = AbortReason.NO_SUITABLE_DATA
+        elif (
+            isinstance(value, dict) and
+            self.is_too_big_file(value)
+        ):
+            health.ok = False
+            health.abort_reason = AbortReason.EXCEED_FILE_SIZE_LIMIT
 
         return health
 
@@ -171,6 +177,23 @@ class AttachmentHandler(metaclass=ABCMeta):
             result = types[1]
 
         return result
+
+    def is_too_big_file(self, file: dict) -> bool:
+        """
+        Checks if size of file exceeds limit size of upload.
+
+        :param file: `dict` value from `self.get_attachment()`.
+
+        :returns: File size exceeds upload limit size.
+        Always `False` if file size is unknown.
+        """
+        limit = current_app.config["TELEGRAM_API_MAX_FILE_SIZE"]
+        size = limit
+
+        if ("file_size" in file):
+            size = file["file_size"]
+
+        return (size > limit)
 
     @yd_access_token_required
     @get_db_data
@@ -329,11 +352,18 @@ class PhotoHandler(AttachmentHandler):
 
     def get_attachment(self, message: telegram_interface.Message):
         photos = message.raw_data["photo"]
-        biggest_photo = photos[0]
+        biggest_photo = None
+        biggest_pixels_count = -1
 
-        for photo in photos[1:]:
-            if (photo["height"] > biggest_photo["height"]):
+        for photo in photos:
+            if (self.is_too_big_file(photo)):
+                continue
+
+            current_pixels_count = photo["width"] * photo["height"]
+
+            if (current_pixels_count > biggest_pixels_count):
                 biggest_photo = photo
+                biggest_pixels_count = current_pixels_count
 
         return biggest_photo
 

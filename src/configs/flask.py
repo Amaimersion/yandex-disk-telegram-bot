@@ -39,6 +39,10 @@ class Config:
     # stop waiting for a Telegram response
     # after a given number of seconds
     TELEGRAM_API_TIMEOUT = 5
+    # maximum file size in bytes that bot
+    # can handle by itself.
+    # It is Telegram limit, not bot
+    TELEGRAM_API_MAX_FILE_SIZE = 20 * 1000 * 1000
 
     # Yandex OAuth API
     # stop waiting for a Yandex response
