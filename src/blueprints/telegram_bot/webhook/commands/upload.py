@@ -43,6 +43,11 @@ class MessageHealth:
 class AttachmentHandler(metaclass=ABCMeta):
     """
     Handles uploading of attachment of Telegram message.
+
+    - most of attachments will be treated as files.
+    - some of the not abstract class functions are common
+    for most attachments. If you need specific logic in some
+    function, then override this function.
     """
     def __init__(self) -> None:
         # Sended message to Telegram user.
@@ -70,21 +75,25 @@ class AttachmentHandler(metaclass=ABCMeta):
         """
         pass
 
+    @property
     @abstractmethod
-    def check_message_health(
-        self,
-        message: telegram_interface.Message
-    ) -> MessageHealth:
+    def raw_data_key(self) -> str:
         """
-        :param message: Incoming Telegram message.
-
-        :returns: See `MessageHealth` documentation.
-        Message will be handled by next operators only
-        in case of `ok = true`.
+        :returns: Key in message, under this key
+        stored needed raw data. Example: 'audio'.
+        See https://core.telegram.org/bots/api#message
         """
         pass
 
+    @property
     @abstractmethod
+    def raw_data_type(self) -> type:
+        """
+        :returns: Expected type of raw data.
+        Example: 'dict'. `None` never should be returned!
+        """
+        pass
+
     def get_attachment(
         self,
         message: telegram_interface.Message
@@ -93,15 +102,34 @@ class AttachmentHandler(metaclass=ABCMeta):
         :param message: Incoming Telegram message.
 
         :returns: Attachment of message (photo object,
-        file object, audio object, etc.). If `None`,
-        uploading will be aborted. If `dict`, it must have `file_id`
-        and `file_unique_id` properties. If `str`, it is assumed
-        as direct file URL. See
-        https://core.telegram.org/bots/api/#available-types
+        file object, audio object, etc.). If `None`, then
+        uploading should be aborted. If `dict`, it will
+        have `file_id` and `file_unique_id` properties.
+        If `str`, it should be assumed as direct file URL.
+        See https://core.telegram.org/bots/api/#available-types
         """
-        pass
+        return message.raw_data.get(self.raw_data_key)
 
-    @abstractmethod
+    def check_message_health(
+        self,
+        message: telegram_interface.Message
+    ) -> MessageHealth:
+        """
+        :param message: Incoming Telegram message.
+
+        :returns: See `MessageHealth` documentation.
+        Message should be handled by next operators only
+        in case of `ok = true`.
+        """
+        health = MessageHealth(True)
+        value = self.get_attachment(message)
+
+        if not (isinstance(value, self.raw_data_type)):
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+
+        return health
+
     def create_file_name(
         self,
         attachment: Union[dict, str],
@@ -115,7 +143,34 @@ class AttachmentHandler(metaclass=ABCMeta):
 
         :returns: Name of file which will be uploaded.
         """
-        pass
+        name = (
+            attachment.get("file_name") or
+            file["file_unique_id"]
+        )
+        extension = ""
+
+        if (isinstance(attachment, dict)):
+            extension = self.get_mime_type(attachment)
+
+        if (extension):
+            name = f"{name}.{extension}"
+
+        return name
+
+    def get_mime_type(self, attachment: dict) -> str:
+        """
+        :param attachment: `dict` result from `self.get_attachment()`.
+
+        :returns: Empty string in case if `attachment` doesn't
+        have required key. Otherwise mime type of this attachment.
+        """
+        result = ""
+
+        if ("mime_type" in attachment):
+            types = attachment["mime_type"].split("/")
+            result = types[1]
+
+        return result
 
     @yd_access_token_required
     @get_db_data
@@ -264,25 +319,16 @@ class PhotoHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_photo"
 
-    def check_message_health(self, message: telegram_interface.Message):
-        health = MessageHealth(True)
-        raw_data = message.raw_data
+    @property
+    def raw_data_key(self):
+        return "photo"
 
-        if not (
-            isinstance(
-                raw_data.get("photo"),
-                list
-            ) and
-            len(raw_data["photo"]) > 0
-        ):
-            health.ok = False
-            health.abort_reason = AbortReason.NO_SUITABLE_DATA
-
-        return health
+    @property
+    def raw_data_type(self):
+        return list
 
     def get_attachment(self, message: telegram_interface.Message):
-        raw_data = message.raw_data
-        photos = raw_data["photo"]
+        photos = message.raw_data["photo"]
         biggest_photo = photos[0]
 
         for photo in photos[1:]:
@@ -290,9 +336,6 @@ class PhotoHandler(AttachmentHandler):
                 biggest_photo = photo
 
         return biggest_photo
-
-    def create_file_name(self, attachment, file):
-        return file["file_unique_id"]
 
 
 class FileHandler(AttachmentHandler):
@@ -308,26 +351,13 @@ class FileHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_document"
 
-    def check_message_health(self, message: telegram_interface.Message):
-        health = MessageHealth(True)
-        value = self.get_attachment(message)
+    @property
+    def raw_data_key(self):
+        return "document"
 
-        if not (
-            isinstance(value, dict)
-        ):
-            health.ok = False
-            health.abort_reason = AbortReason.NO_SUITABLE_DATA
-
-        return health
-
-    def get_attachment(self, message: telegram_interface.Message):
-        return message.raw_data.get("document")
-
-    def create_file_name(self, attachment, file):
-        return (
-            attachment.get("file_name") or
-            file["file_unique_id"]
-        )
+    @property
+    def raw_data_type(self):
+        return dict
 
 
 class AudioHandler(AttachmentHandler):
@@ -343,20 +373,13 @@ class AudioHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_audio"
 
-    def check_message_health(self, message: telegram_interface.Message):
-        health = MessageHealth(True)
-        value = self.get_attachment(message)
+    @property
+    def raw_data_key(self):
+        return "audio"
 
-        if not (
-            isinstance(value, dict)
-        ):
-            health.ok = False
-            health.abort_reason = AbortReason.NO_SUITABLE_DATA
-
-        return health
-
-    def get_attachment(self, message: telegram_interface.Message):
-        return message.raw_data.get("audio")
+    @property
+    def raw_data_type(self):
+        return dict
 
     def create_file_name(self, attachment, file):
         name = file["file_unique_id"]
@@ -367,9 +390,9 @@ class AudioHandler(AttachmentHandler):
         if ("performer" in attachment):
             name = f"{attachment['performer']} - {name}"
 
-        if ("mime_type" in attachment):
-            types = attachment["mime_type"].split("/")
-            extension = types[1]
+        extension = self.get_mime_type(attachment)
+
+        if (extension):
             name = f"{name}.{extension}"
 
         return name
@@ -388,30 +411,13 @@ class VideoHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_video"
 
-    def check_message_health(self, message: telegram_interface.Message):
-        health = MessageHealth(True)
-        value = self.get_attachment(message)
+    @property
+    def raw_data_key(self):
+        return "video"
 
-        if not (
-            isinstance(value, dict)
-        ):
-            health.ok = False
-            health.abort_reason = AbortReason.NO_SUITABLE_DATA
-
-        return health
-
-    def get_attachment(self, message: telegram_interface.Message):
-        return message.raw_data.get("video")
-
-    def create_file_name(self, attachment, file):
-        name = file["file_unique_id"]
-
-        if ("mime_type" in attachment):
-            types = attachment["mime_type"].split("/")
-            extension = types[1]
-            name = f"{name}.{extension}"
-
-        return name
+    @property
+    def raw_data_type(self):
+        return dict
 
 
 class VoiceHandler(AttachmentHandler):
@@ -427,30 +433,13 @@ class VoiceHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_audio"
 
-    def check_message_health(self, message: telegram_interface.Message):
-        health = MessageHealth(True)
-        value = self.get_attachment(message)
+    @property
+    def raw_data_key(self):
+        return "voice"
 
-        if not (
-            isinstance(value, dict)
-        ):
-            health.ok = False
-            health.abort_reason = AbortReason.NO_SUITABLE_DATA
-
-        return health
-
-    def get_attachment(self, message: telegram_interface.Message):
-        return message.raw_data.get("voice")
-
-    def create_file_name(self, attachment, file):
-        name = file["file_unique_id"]
-
-        if ("mime_type" in attachment):
-            types = attachment["mime_type"].split("/")
-            extension = types[1]
-            name = f"{name}.{extension}"
-
-        return name
+    @property
+    def raw_data_type(self):
+        return dict
 
 
 class URLHandler(AttachmentHandler):
@@ -466,21 +455,16 @@ class URLHandler(AttachmentHandler):
     def telegram_action(self):
         return "upload_document"
 
-    def check_message_health(self, message: telegram_interface.Message):
-        health = MessageHealth(True)
-        value = self.get_attachment(message)
+    @property
+    def raw_data_key(self):
+        return "url"
 
-        if not (
-            isinstance(value, str) and
-            len(value) > 0
-        ):
-            health.ok = False
-            health.abort_reason = AbortReason.NO_SUITABLE_DATA
-
-        return health
+    @property
+    def raw_data_type(self):
+        return str
 
     def get_attachment(self, message: telegram_interface.Message):
-        return message.get_entity_value("url")
+        return message.get_entity_value(self.raw_data_key)
 
     def create_file_name(self, attachment, file):
         return attachment.split("/")[-1]
