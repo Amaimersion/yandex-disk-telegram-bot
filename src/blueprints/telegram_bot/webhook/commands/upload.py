@@ -155,14 +155,11 @@ class AttachmentHandler(metaclass=ABCMeta):
 
         :returns: Name of file which will be uploaded.
         """
-        name = (
-            attachment.get("file_name") or
-            file["file_unique_id"]
-        )
-        extension = ""
+        if (isinstance(attachment, str)):
+            return attachment
 
-        if (isinstance(attachment, dict)):
-            extension = self.get_mime_type(attachment)
+        name = attachment.get("file_name") or file["file_unique_id"]
+        extension = self.get_mime_type(attachment)
 
         if (extension):
             name = f"{name}.{extension}"
