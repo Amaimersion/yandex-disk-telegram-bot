@@ -41,8 +41,13 @@ class Config:
     TELEGRAM_API_TIMEOUT = 5
     # maximum file size in bytes that bot
     # can handle by itself.
-    # It is Telegram limit, not bot
-    TELEGRAM_API_MAX_FILE_SIZE = 20 * 1000 * 1000
+    # It is Telegram limit, not bot.
+    # Binary system should be used, not decimal.
+    # For example, MebiBytes (M = 1024 * 1024),
+    # not MegaBytes (MB = 1000 * 1000).
+    # In Linux you can use `truncate -s 20480K test.txt`
+    # to create exactly 20M file
+    TELEGRAM_API_MAX_FILE_SIZE = 20 * 1024 * 1024
 
     # Yandex OAuth API
     # stop waiting for a Yandex response

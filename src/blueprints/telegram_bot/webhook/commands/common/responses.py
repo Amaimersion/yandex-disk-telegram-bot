@@ -42,7 +42,7 @@ def abort_command(
         AbortReason.EXCEED_FILE_SIZE_LIMIT: (
             "I can't handle file of such a large size. "
             "At the moment my limit is "
-            f"{current_app.config['TELEGRAM_API_MAX_FILE_SIZE'] / 1000 / 1000} MB." # noqa
+            f"{current_app.config['TELEGRAM_API_MAX_FILE_SIZE'] / 1024 / 1024} MB." # noqa
         )
     }
     text = texts[reason]

@@ -15,7 +15,7 @@ def handle():
     ]
     file_size_limit_in_mb = int(current_app.config[
         "TELEGRAM_API_MAX_FILE_SIZE"
-    ] / 1000 / 1000)
+    ] / 1024 / 1024)
 
     text = (
         "You can control me by sending these commands:"
