@@ -393,6 +393,10 @@ class FileHandler(AttachmentHandler):
     def raw_data_type(self):
         return dict
 
+    def get_mime_type(self, attachment):
+        # file name already contains type
+        return ""
+
 
 class AudioHandler(AttachmentHandler):
     """
