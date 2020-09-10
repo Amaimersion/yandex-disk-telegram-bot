@@ -73,7 +73,8 @@ def route_command(command: str) -> None:
         CommandNames.UPLOAD_VIDEO.value: commands.upload_video_handler,
         CommandNames.UPLOAD_VOICE.value: commands.upload_voice_handler,
         CommandNames.UPLOAD_URL.value: commands.upload_url_handler,
-        CommandNames.CREATE_FOLDER.value: commands.create_folder_handler
+        CommandNames.CREATE_FOLDER.value: commands.create_folder_handler,
+        CommandNames.PUBLISH.value: commands.publish_handler
     }
     method = routes.get(command, commands.unknown_handler)
 

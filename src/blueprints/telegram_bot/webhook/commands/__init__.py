@@ -12,3 +12,4 @@ from .upload import handle_video as upload_video_handler
 from .upload import handle_voice as upload_voice_handler
 from .upload import handle_url as upload_url_handler
 from .create_folder import handle as create_folder_handler
+from .publish import handle as publish_handler

@@ -34,6 +34,7 @@
 - uploading of audio.
 - uploading of video.
 - uploading of voice.
+- publishing of files or folders.
 - creating of folders.
 
 

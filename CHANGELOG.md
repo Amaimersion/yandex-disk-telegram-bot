@@ -4,6 +4,7 @@
 
 ### Added
 
+- `/publish`: publishing of files or folders.
 - Handling of files that exceed file size limit in 20 MB. At the moment the bot will asnwer with warning message, not trying to upload that file. [#3](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/3)
 
 ## Project

@@ -41,6 +41,15 @@ class YandexAPIUploadFileError(Exception):
     pass
 
 
+class YandexAPIPublishItemError(Exception):
+    """
+    Unable to pubish an item from Yandex.Disk.
+
+    - may contain human-readable error message.
+    """
+    pass
+
+
 class YandexAPIExceededNumberOfStatusChecksError(Exception):
     """
     There was too much attempts to check status
@@ -103,6 +112,35 @@ def create_folder(
         )
 
     return last_status_code
+
+
+def publish_item(
+    user_access_token: str,
+    absolute_item_path: str
+) -> None:
+    """
+    Publish an item that already exists on Yandex.Disk.
+
+    :raises: YandexAPIRequestError
+    :raises: YandexAPIPublishItemError
+    """
+    try:
+        response = yandex.publish(
+            user_access_token,
+            path=absolute_item_path
+        )
+    except Exception as error:
+        raise YandexAPIRequestError(error)
+
+    response = response["content"]
+    is_error = is_error_yandex_response(response)
+
+    if (is_error):
+        raise YandexAPIPublishItemError(
+            create_yandex_error_text(
+                response
+            )
+        )
 
 
 def upload_file_with_url(

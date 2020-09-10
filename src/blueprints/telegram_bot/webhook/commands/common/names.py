@@ -19,3 +19,4 @@ class CommandsNames(Enum):
     UPLOAD_VOICE = "/upload_voice"
     UPLOAD_URL = "/upload_url"
     CREATE_FOLDER = "/create_folder"
+    PUBLISH = "/publish"

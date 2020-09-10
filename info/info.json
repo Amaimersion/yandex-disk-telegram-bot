@@ -46,6 +46,10 @@
             "description": "Upload a file using direct URL"
         },
         {
+            "command": "publish",
+            "description": "Publish a file or folder using OS path"
+        },
+        {
             "command": "create_folder",
             "description": "Create a folder using OS path"
         },

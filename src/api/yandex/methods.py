@@ -39,3 +39,17 @@ def create_folder(user_token: str, **kwargs):
         data=kwargs,
         user_token=user_token
     )
+
+
+def publish(user_token: str, **kwargs):
+    """
+    https://yandex.ru/dev/disk/api/reference/publish-docpage/
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_disk_request(
+        http_method="PUT",
+        api_method="resources/publish",
+        data=kwargs,
+        user_token=user_token
+    )
