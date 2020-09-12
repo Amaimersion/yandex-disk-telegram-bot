@@ -242,6 +242,34 @@ def upload_file_with_url(
         raise YandexAPIExceededNumberOfStatusChecksError()
 
 
+def get_disk_info(user_access_token: str) -> dict:
+    """
+    See for interface:
+    - https://yandex.ru/dev/disk/api/reference/capacity-docpage/
+    - https://dev.yandex.net/disk-polygon/#!/v147disk
+
+    :returns: Information about user Yandex.Disk.
+
+    :raises: YandexAPIRequestError
+    """
+    try:
+        response = yandex.get_disk_info(user_access_token)
+    except Exception as error:
+        raise YandexAPIRequestError(error)
+
+    response = response["content"]
+    is_error = is_error_yandex_response(response)
+
+    if (is_error):
+        raise YandexAPIUploadFileError(
+            create_yandex_error_text(
+                response
+            )
+        )
+
+    return response
+
+
 def is_error_yandex_response(data: dict) -> bool:
     """
     :returns: Yandex response contains error or not.

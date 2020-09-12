@@ -36,6 +36,7 @@
 - uploading of voice.
 - publishing of files or folders.
 - creating of folders.
+- getting of information about the disk.
 
 
 ## Requirements

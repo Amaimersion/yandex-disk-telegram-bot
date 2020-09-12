@@ -43,30 +43,48 @@ def create_file_download_url(file_path: str) -> str:
     )
 
 
-def make_request(method_name: str, data: dict) -> dict:
+def make_request(
+    method_name: str,
+    data: dict,
+    files: dict = None
+) -> dict:
     """
     Makes HTTP request to Telegram Bot API.
 
     - see `api/request.py` documentation for more.
 
     :param method_name: Name of API method in URL.
-    :param data: JSON data to send.
+    :param data: JSON data to send. It will be sent as
+    `application/json` payload.
+    :param files: Files data to send. If specified, then
+    `data` will be sent as query string. Files will be sent
+    as `multipart/form-data` payload. See `files` for more -
+    https://requests.readthedocs.io/en/latest/api/#requests.request
 
     :raises TelegramBotApiException:
     See `telegram/exceptions.py` documentation for more.
     """
     url = create_bot_url(method_name)
     timeout = current_app.config["TELEGRAM_API_TIMEOUT"]
+    payload = {
+        "json": data
+    }
+
+    if files:
+        payload = {
+            "files": files,
+            "params": data
+        }
+
     result = request(
         content_type="json",
         method="POST",
         url=url,
-        json=data,
         timeout=timeout,
         allow_redirects=False,
-        verify=True
+        verify=True,
+        **payload
     )
-
     ok = result["content"]["ok"]
 
     if not ok:

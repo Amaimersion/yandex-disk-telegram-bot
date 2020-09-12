@@ -35,3 +35,19 @@ def edit_message_text(**kwargs):
     - see `api/request.py` documentation for more.
     """
     return make_request("editMessageText", kwargs)
+
+
+def send_photo(**kwargs):
+    """
+    https://core.telegram.org/bots/api#sendphoto
+
+    - see `api/request.py` documentation for more.
+    - specify `photo` as tuple from `files` in
+    https://requests.readthedocs.io/en/latest/api/#requests.request
+    """
+    key = "photo"
+    files = {
+        key: kwargs.pop(key)
+    }
+
+    return make_request("sendPhoto", data=kwargs, files=files)

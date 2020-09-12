@@ -54,6 +54,10 @@
             "description": "Create a folder using OS path"
         },
         {
+            "command": "space",
+            "description": "Information about remaining space"
+        },
+        {
             "command": "grant_access",
             "description": "Grant me an access to your Yandex.Disk"
         },

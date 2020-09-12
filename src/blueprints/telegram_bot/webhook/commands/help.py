@@ -58,6 +58,8 @@ def handle():
         "Send folder name to create with this command. "
         "Folder name should starts from root, "
         f'nested folders should be separated with "{to_code("/")}" character.'
+        "\n"
+        f"{CommandsNames.SPACE.value} — get information about remaining Yandex.Disk space. "
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"

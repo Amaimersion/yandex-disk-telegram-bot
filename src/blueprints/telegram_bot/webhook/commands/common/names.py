@@ -20,3 +20,4 @@ class CommandsNames(Enum):
     UPLOAD_URL = "/upload_url"
     CREATE_FOLDER = "/create_folder"
     PUBLISH = "/publish"
+    SPACE = "/space"
