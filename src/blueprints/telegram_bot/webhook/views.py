@@ -75,6 +75,7 @@ def route_command(command: str) -> None:
         CommandNames.UPLOAD_URL.value: commands.upload_url_handler,
         CommandNames.CREATE_FOLDER.value: commands.create_folder_handler,
         CommandNames.PUBLISH.value: commands.publish_handler,
+        CommandNames.UNPUBLISH.value: commands.unpublish_handler,
         CommandNames.SPACE.value: commands.space_handler
     }
     method = routes.get(command, commands.unknown_handler)

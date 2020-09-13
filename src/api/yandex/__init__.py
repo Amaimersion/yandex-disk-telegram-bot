@@ -3,6 +3,7 @@ from .methods import (
     upload_file_with_url,
     create_folder,
     publish,
+    unpublish,
     get_disk_info
 )
 from .requests import (

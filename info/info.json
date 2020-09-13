@@ -50,6 +50,10 @@
             "description": "Publish a file or folder using OS path"
         },
         {
+            "command": "unpublish",
+            "description": "Unpublish a file or folder using OS path"
+        },
+        {
             "command": "create_folder",
             "description": "Create a folder using OS path"
         },

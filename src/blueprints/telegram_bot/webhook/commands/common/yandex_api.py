@@ -50,6 +50,15 @@ class YandexAPIPublishItemError(Exception):
     pass
 
 
+class YandexAPIUnpublishItemError(Exception):
+    """
+    Unable to unpublish an item from Yandex.Disk.
+
+    - may contain human-readable error message.
+    """
+    pass
+
+
 class YandexAPIExceededNumberOfStatusChecksError(Exception):
     """
     There was too much attempts to check status
@@ -137,6 +146,35 @@ def publish_item(
 
     if (is_error):
         raise YandexAPIPublishItemError(
+            create_yandex_error_text(
+                response
+            )
+        )
+
+
+def unpublish_item(
+    user_access_token: str,
+    absolute_item_path: str
+) -> None:
+    """
+    Unpublish an item that already exists on Yandex.Disk.
+
+    :raises: YandexAPIRequestError
+    :raises: YandexAPIUnpublishItemError
+    """
+    try:
+        response = yandex.unpublish(
+            user_access_token,
+            path=absolute_item_path
+        )
+    except Exception as error:
+        raise YandexAPIRequestError(error)
+
+    response = response["content"]
+    is_error = is_error_yandex_response(response)
+
+    if (is_error):
+        raise YandexAPIUnpublishItemError(
             create_yandex_error_text(
                 response
             )

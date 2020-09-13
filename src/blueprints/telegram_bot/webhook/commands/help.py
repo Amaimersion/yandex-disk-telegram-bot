@@ -54,6 +54,10 @@ def handle():
         "Send full name of item to publish with this command. "
         f'Example: {to_code(f"/{yd_upload_default_folder}/files/photo.jpeg")}'
         "\n"
+        f"{CommandsNames.UNPUBLISH.value} — unpublish a file or folder that already exists. "
+        "Send full name of item to unpublish with this command. "
+        f'Example: {to_code(f"/{yd_upload_default_folder}/files/photo.jpeg")}'
+        "\n"
         f"{CommandsNames.CREATE_FOLDER.value} — create a folder. "
         "Send folder name to create with this command. "
         "Folder name should starts from root, "

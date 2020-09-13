@@ -55,6 +55,20 @@ def publish(user_token: str, **kwargs):
     )
 
 
+def unpublish(user_token: str, **kwargs):
+    """
+    https://yandex.ru/dev/disk/api/reference/publish-docpage/
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_disk_request(
+        http_method="PUT",
+        api_method="resources/unpublish",
+        data=kwargs,
+        user_token=user_token
+    )
+
+
 def get_disk_info(user_token: str, **kwargs):
     """
     https://yandex.ru/dev/disk/api/reference/capacity-docpage/
