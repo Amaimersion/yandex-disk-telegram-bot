@@ -31,6 +31,7 @@ def create_app(config_name: str = None) -> Flask:
     configure_db(app)
     configure_blueprints(app)
     configure_redirects(app)
+    configure_error_handlers(app)
 
     return app
 
@@ -86,4 +87,23 @@ def configure_redirects(app: Flask) -> None:
                 "static",
                 filename="favicons/favicon.ico"
             )
+        )
+
+
+def configure_error_handlers(app: Flask) -> None:
+    """
+    Configures error handlers.
+    """
+    @app.errorhandler(404)
+    def not_found(error):
+        """
+        We will redirect all requests rather than send "Not Found"
+        error, because we using web pages only for exceptional cases.
+        It is expected that all interaction with user should go
+        through Telegram when possible.
+        """
+        return redirect(
+            location=app.config["PROJECT_URL_FOR_BOT"],
+            # temporary, in case if some routes will be added in future
+            code=302
         )

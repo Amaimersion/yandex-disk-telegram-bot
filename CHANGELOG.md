@@ -15,6 +15,10 @@
 
 - Upgrade `python` to 3.8.2.
 
+### Added
+
+- Web Site: 302 (redirect to Telegram) will be returned instead of 404 (not found page).
+
 ### Changed
 
 - Redirect to favicon will be handled by nginx.

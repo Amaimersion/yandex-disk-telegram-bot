@@ -25,6 +25,7 @@ class Config:
     PROJECT_URL_FOR_ISSUE = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=bug_report.md" # noqa
     PROJECT_URL_FOR_REQUEST = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=feature_request.md" # noqa
     PROJECT_URL_FOR_QUESTION = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=question.md" # noqa
+    PROJECT_URL_FOR_BOT = "https://t.me/Ya_Disk_Bot"
 
     # Flask
     DEBUG = False
