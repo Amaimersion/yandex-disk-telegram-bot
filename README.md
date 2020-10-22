@@ -28,12 +28,12 @@
 
 ## Features
 
-- uploading of photos.
-- uploading of files.
+- uploading of photos (limit is 20 MB).
+- uploading of files (limit is 20 MB).
 - uploading of files using direct URL.
-- uploading of audio.
-- uploading of video.
-- uploading of voice.
+- uploading of audio (limit is 20 MB).
+- uploading of video (limit is 20 MB).
+- uploading of voice (limit is 20 MB).
 - publishing and unpublishing of files or folders.
 - creating of folders.
 - getting of information about the disk.
