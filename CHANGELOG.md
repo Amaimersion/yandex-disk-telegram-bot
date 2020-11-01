@@ -14,6 +14,7 @@
 ### Improved
 
 - Upgrade `python` to 3.8.2.
+- All requirements upgraded to latest version.
 
 ### Added
 
