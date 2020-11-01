@@ -7,7 +7,25 @@ import os
 from dotenv import load_dotenv
 
 
-load_dotenv()
+def load_env():
+    config_name = os.getenv("CONFIG_NAME")
+    file_names = {
+        "production": ".env.production",
+        "development": ".env.development",
+        "testing": ".env.testing"
+    }
+    file_name = file_names.get(config_name)
+
+    if (file_name is None):
+        raise Exception(
+            "Unable to map configuration name "
+            "and .env.* files"
+        )
+
+    load_dotenv(file_name)
+
+
+load_env()
 
 
 class Config:
@@ -33,7 +51,10 @@ class Config:
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
     # Flask SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL",
+        "sqlite:///temp.sqlite"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Telegram API
@@ -95,16 +116,12 @@ class ProductionConfig(Config):
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
-    SECRET_KEY = "q8bjscr0sLmAf50gXRFaIghoS7BvDd4Afxo2RjT3r3E="
-    SQLALCHEMY_DATABASE_URI = "sqlite:///development.sqlite"
     SQLALCHEMY_ECHO = "debug"
 
 
 class TestingConfig(Config):
     DEBUG = False
     TESTING = True
-    SECRET_KEY = "ReHdIY8zGRQUJRTgxo_zeKiv3MjIU-OYBD66GlW9ZKw="
-    SQLALCHEMY_DATABASE_URI = "sqlite:///testing.sqlite"
 
 
 config = {

@@ -224,7 +224,7 @@ heroku config:set GUNICORN_WORKER_CONNECTIONS=<value>
 git checkout -b heroku
 ```
 
-7. Make sure `.env` file is created and filled. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
+7. Make sure `.env.production` file is created and filled. Remove it from `.gitignore`. Don't forget: don't ever push it anywhere but Heroku.
 
 8. Add changes for pushing to Heroku:
 
