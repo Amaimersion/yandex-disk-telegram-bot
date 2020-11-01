@@ -18,7 +18,7 @@
 
 ### Added
 
-- Web Site: 302 (redirect to Telegram) will be returned instead of 404 (not found page).
+- Web Site: 302 (redirect to Telegram) will be returned instead of 404 (not found page), but only in production mode.
 
 ### Changed
 

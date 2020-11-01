@@ -7,7 +7,8 @@ import os
 from flask import (
     Flask,
     redirect,
-    url_for
+    url_for,
+    current_app
 )
 
 from .configs import flask_config
@@ -94,16 +95,17 @@ def configure_error_handlers(app: Flask) -> None:
     """
     Configures error handlers.
     """
-    @app.errorhandler(404)
-    def not_found(error):
-        """
-        We will redirect all requests rather than send "Not Found"
-        error, because we using web pages only for exceptional cases.
-        It is expected that all interaction with user should go
-        through Telegram when possible.
-        """
-        return redirect(
-            location=app.config["PROJECT_URL_FOR_BOT"],
-            # temporary, in case if some routes will be added in future
-            code=302
-        )
+    if not app.config["DEBUG"]:
+        @app.errorhandler(404)
+        def not_found(error):
+            """
+            We will redirect all requests rather than send "Not Found"
+            error, because we using web pages only for exceptional cases.
+            It is expected that all interaction with user should go
+            through Telegram when possible.
+            """
+            return redirect(
+                location=app.config["PROJECT_URL_FOR_BOT"],
+                # temporary, in case if some routes will be added in future
+                code=302
+            )
