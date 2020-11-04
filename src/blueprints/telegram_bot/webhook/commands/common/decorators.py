@@ -102,7 +102,7 @@ def yd_access_token_required(func):
             (user.yandex_disk_token is None) or
             (not user.yandex_disk_token.have_access_token())
         ):
-            return g.route_to(CommandsNames.YD_AUTH)
+            return g.direct_dispatch(CommandsNames.YD_AUTH)()
 
         return func(*args, **kwargs)
 

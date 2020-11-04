@@ -4,8 +4,6 @@ from typing import (
     Any
 )
 
-from .commands import CommandsNames
-
 
 class User:
     """
@@ -196,33 +194,6 @@ class Message:
             break
 
         return value
-
-    def guess_bot_command(self, default=CommandsNames.HELP) -> str:
-        """
-        Tries to guess which bot command
-        user assumed based on a message.
-
-        :param default: Default command which will be
-        returned if unable to guess.
-
-        :returns: Guessed bot command based on a message.
-        """
-        command = default
-
-        if ("photo" in self.raw_data):
-            command = CommandsNames.UPLOAD_PHOTO
-        elif ("document" in self.raw_data):
-            command = CommandsNames.UPLOAD_FILE
-        elif ("audio" in self.raw_data):
-            command = CommandsNames.UPLOAD_AUDIO
-        elif ("video" in self.raw_data):
-            command = CommandsNames.UPLOAD_VIDEO
-        elif ("voice" in self.raw_data):
-            command = CommandsNames.UPLOAD_VOICE
-        elif (self.get_entity_value("url") is not None):
-            command = CommandsNames.UPLOAD_URL
-
-        return command
 
 
 class Request:
