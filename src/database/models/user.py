@@ -3,7 +3,7 @@ from enum import IntEnum, unique
 from sqlalchemy.sql import func
 
 from src.database import db
-from src.localization import SupportedLanguages
+from src.localization import SupportedLanguage
 
 
 @unique
@@ -55,8 +55,8 @@ class User(db.Model):
         comment="User is bot in Telegram"
     )
     language = db.Column(
-        db.Enum(SupportedLanguages),
-        default=SupportedLanguages.EN,
+        db.Enum(SupportedLanguage),
+        default=SupportedLanguage.EN,
         nullable=False,
         comment="Preferred language of user"
     )
@@ -112,7 +112,7 @@ class User(db.Model):
             step=1
         )
         result.is_bot = (fake.pyint() % 121 == 0)
-        result.language = fake.random_element(list(SupportedLanguages))
+        result.language = fake.random_element(list(SupportedLanguage))
         result.group = (
             fake.random_element(list(UserGroup)) if (
                 random_number % 20 == 0

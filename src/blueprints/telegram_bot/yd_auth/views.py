@@ -18,7 +18,7 @@ from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 from src.blueprints.utils import (
     get_current_datetime
 )
-from src.blueprints.telegram_bot.webhook.commands import CommandsNames
+from src.blueprints.telegram_bot.webhook.commands import CommandName
 from .exceptions import (
     InvalidCredentials,
     LinkExpired,
@@ -152,7 +152,7 @@ def handle_success():
                 f"on {date} at {time} {timezone}."
                 "\n\n"
                 "If it wasn't you, then detach this access with "
-                f"{CommandsNames.YD_REVOKE.value}"
+                f"{CommandName.YD_REVOKE.value}"
             )
         )
 

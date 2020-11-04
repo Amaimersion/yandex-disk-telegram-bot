@@ -23,7 +23,7 @@ from .common.responses import (
     request_private_chat,
     cancel_command
 )
-from . import CommandsNames
+from . import CommandName
 
 
 @register_guest
@@ -61,7 +61,7 @@ def handle():
                     "You already grant me access to your Yandex.Disk."
                     "\n"
                     "You can revoke my access with "
-                    f"{CommandsNames.YD_REVOKE.value}"
+                    f"{CommandName.YD_REVOKE.value}"
                 )
             )
 
@@ -91,7 +91,7 @@ def handle():
                     f"on {date} at {time} {timezone}."
                     "\n\n"
                     "If it wasn't you, you can detach this access with "
-                    f"{CommandsNames.YD_REVOKE.value}"
+                    f"{CommandName.YD_REVOKE.value}"
                 )
             )
 
@@ -157,7 +157,7 @@ def handle():
             "\n"
             "Yes! I'm getting access only to your Yandex.Disk, "
             "not to your account. You can revoke my access at any time with "
-            f"{CommandsNames.YD_REVOKE.value} or in your "
+            f"{CommandName.YD_REVOKE.value} or in your "
             '<a href="https://passport.yandex.ru/profile">Yandex Profile</a>. '
             "By the way, i'm "
             f'<a href="{current_app.config["PROJECT_URL_FOR_CODE"]}">open-source</a> ' # noqa

@@ -2,9 +2,9 @@ from enum import IntEnum, unique
 
 
 @unique
-class SupportedLanguages(IntEnum):
+class SupportedLanguage(IntEnum):
     """
-    Languages supported by app.
+    Language supported by the app.
     """
     EN = 1
 
@@ -18,9 +18,9 @@ class SupportedLanguages(IntEnum):
         """
         ietf_tag = ietf_tag.lower()
         languages = {
-            "en": SupportedLanguages.EN,
-            "en-us": SupportedLanguages.EN,
-            "en-gb": SupportedLanguages.EN
+            "en": SupportedLanguage.EN,
+            "en-us": SupportedLanguage.EN,
+            "en-gb": SupportedLanguage.EN
         }
 
-        return languages.get(ietf_tag, SupportedLanguages.EN)
+        return languages.get(ietf_tag, SupportedLanguage.EN)

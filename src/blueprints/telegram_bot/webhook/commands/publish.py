@@ -15,7 +15,7 @@ from .common.yandex_api import (
     YandexAPIPublishItemError,
     YandexAPIRequestError
 )
-from . import CommandsNames
+from . import CommandName
 
 
 @yd_access_token_required
@@ -29,7 +29,7 @@ def handle():
     chat = g.db_chat
     message_text = message.get_text()
     path = message_text.replace(
-        CommandsNames.PUBLISH.value,
+        CommandName.PUBLISH.value,
         ""
     ).strip()
 

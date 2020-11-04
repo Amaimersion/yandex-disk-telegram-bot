@@ -15,7 +15,7 @@ from .common.yandex_api import (
     YandexAPICreateFolderError,
     YandexAPIRequestError
 )
-from . import CommandsNames
+from . import CommandName
 
 
 @yd_access_token_required
@@ -29,7 +29,7 @@ def handle():
     chat = g.db_chat
     message_text = message.get_text()
     folder_name = message_text.replace(
-        CommandsNames.CREATE_FOLDER.value,
+        CommandName.CREATE_FOLDER.value,
         ""
     ).strip()
 

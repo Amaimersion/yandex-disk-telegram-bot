@@ -19,7 +19,7 @@ from .common.yandex_api import (
     get_disk_info,
     YandexAPIRequestError
 )
-from . import CommandsNames
+from . import CommandName
 
 
 @yd_access_token_required

@@ -1,7 +1,7 @@
 from typing import Union, Callable
 
 from . import commands
-from .commands import CommandsNames
+from .commands import CommandName
 from .telegram_interface import (
     Message as TelegramMessage
 )
@@ -41,7 +41,7 @@ def dispatch(message: TelegramMessage) -> Callable:
 
 
 def direct_dispatch(
-    command: Union[CommandsNames, str],
+    command: Union[CommandName, str],
     fallback: Callable = commands.unknown_handler
 ) -> Callable:
     """
@@ -59,26 +59,26 @@ def direct_dispatch(
     It is guaranteed that some callable handler will be returned.
     It is handler for incoming command and you should call this.
     """
-    if isinstance(command, CommandsNames):
+    if isinstance(command, CommandName):
         command = command.value
 
     routes = {
-        CommandsNames.START.value: commands.help_handler,
-        CommandsNames.HELP.value: commands.help_handler,
-        CommandsNames.ABOUT.value: commands.about_handler,
-        CommandsNames.SETTINGS.value: commands.settings_handler,
-        CommandsNames.YD_AUTH.value: commands.yd_auth_handler,
-        CommandsNames.YD_REVOKE.value: commands.yd_revoke_handler,
-        CommandsNames.UPLOAD_PHOTO.value: commands.upload_photo_handler,
-        CommandsNames.UPLOAD_FILE.value: commands.upload_file_handler,
-        CommandsNames.UPLOAD_AUDIO.value: commands.upload_audio_handler,
-        CommandsNames.UPLOAD_VIDEO.value: commands.upload_video_handler,
-        CommandsNames.UPLOAD_VOICE.value: commands.upload_voice_handler,
-        CommandsNames.UPLOAD_URL.value: commands.upload_url_handler,
-        CommandsNames.CREATE_FOLDER.value: commands.create_folder_handler,
-        CommandsNames.PUBLISH.value: commands.publish_handler,
-        CommandsNames.UNPUBLISH.value: commands.unpublish_handler,
-        CommandsNames.SPACE.value: commands.space_handler
+        CommandName.START.value: commands.help_handler,
+        CommandName.HELP.value: commands.help_handler,
+        CommandName.ABOUT.value: commands.about_handler,
+        CommandName.SETTINGS.value: commands.settings_handler,
+        CommandName.YD_AUTH.value: commands.yd_auth_handler,
+        CommandName.YD_REVOKE.value: commands.yd_revoke_handler,
+        CommandName.UPLOAD_PHOTO.value: commands.upload_photo_handler,
+        CommandName.UPLOAD_FILE.value: commands.upload_file_handler,
+        CommandName.UPLOAD_AUDIO.value: commands.upload_audio_handler,
+        CommandName.UPLOAD_VIDEO.value: commands.upload_video_handler,
+        CommandName.UPLOAD_VOICE.value: commands.upload_voice_handler,
+        CommandName.UPLOAD_URL.value: commands.upload_url_handler,
+        CommandName.CREATE_FOLDER.value: commands.create_folder_handler,
+        CommandName.PUBLISH.value: commands.publish_handler,
+        CommandName.UNPUBLISH.value: commands.unpublish_handler,
+        CommandName.SPACE.value: commands.space_handler
     }
     handler = routes.get(command, fallback)
 
@@ -90,8 +90,8 @@ def direct_dispatch(
 
 def guess_bot_command(
     message: TelegramMessage,
-    fallback: CommandsNames = CommandsNames.HELP
-) -> CommandsNames:
+    fallback: CommandName = CommandName.HELP
+) -> CommandName:
     """
     Tries to guess which bot command user
     assumed based on content of a message.
@@ -106,16 +106,16 @@ def guess_bot_command(
     raw_data = message.raw_data
 
     if ("photo" in raw_data):
-        command = CommandsNames.UPLOAD_PHOTO
+        command = CommandName.UPLOAD_PHOTO
     elif ("document" in raw_data):
-        command = CommandsNames.UPLOAD_FILE
+        command = CommandName.UPLOAD_FILE
     elif ("audio" in raw_data):
-        command = CommandsNames.UPLOAD_AUDIO
+        command = CommandName.UPLOAD_AUDIO
     elif ("video" in raw_data):
-        command = CommandsNames.UPLOAD_VIDEO
+        command = CommandName.UPLOAD_VIDEO
     elif ("voice" in raw_data):
-        command = CommandsNames.UPLOAD_VOICE
+        command = CommandName.UPLOAD_VOICE
     elif (message.get_entity_value("url") is not None):
-        command = CommandsNames.UPLOAD_URL
+        command = CommandName.UPLOAD_URL
 
     return command

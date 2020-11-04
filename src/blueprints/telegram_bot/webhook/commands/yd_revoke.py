@@ -5,7 +5,7 @@ from src.api import telegram
 from src.blueprints.utils import get_current_datetime
 from .common.decorators import get_db_data
 from .common.responses import request_private_chat
-from . import CommandsNames
+from . import CommandName
 
 
 @get_db_data
@@ -32,7 +32,7 @@ def handle():
             text=(
                 "You don't granted me access to your Yandex.Disk."
                 "\n"
-                f"You can do that with {CommandsNames.YD_AUTH.value}"
+                f"You can do that with {CommandName.YD_AUTH.value}"
             )
         )
 
