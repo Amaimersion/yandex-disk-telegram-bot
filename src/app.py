@@ -3,6 +3,9 @@ Manages the app creation and configuration process.
 """
 
 import os
+from typing import (
+    Union
+)
 
 from flask import (
     Flask,
@@ -10,6 +13,7 @@ from flask import (
     url_for,
     current_app
 )
+import redis
 
 from .configs import flask_config
 from .database import db, migrate
@@ -20,6 +24,10 @@ from .blueprints import (
 from .blueprints.utils import (
     absolute_url_for
 )
+
+
+# `None` means Redis not enabled
+redis_client: Union[redis.Redis, None] = None
 
 
 def create_app(config_name: str = None) -> Flask:
@@ -33,6 +41,7 @@ def create_app(config_name: str = None) -> Flask:
     configure_blueprints(app)
     configure_redirects(app)
     configure_error_handlers(app)
+    configure_redis(app)
 
     return app
 
@@ -109,3 +118,17 @@ def configure_error_handlers(app: Flask) -> None:
                 # temporary, in case if some routes will be added in future
                 code=302
             )
+
+
+def configure_redis(app: Flask) -> None:
+    global redis_client
+
+    redis_server_url = app.config["REDIS_URL"]
+
+    if not redis_server_url:
+        return
+
+    redis_client = redis.from_url(
+        redis_server_url,
+        decode_responses=True
+    )

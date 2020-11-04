@@ -57,6 +57,9 @@ class Config:
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # Redis
+    REDIS_URL = os.getenv("REDIS_URL")
+
     # Telegram API
     # stop waiting for a Telegram response
     # after a given number of seconds
