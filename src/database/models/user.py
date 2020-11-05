@@ -2,7 +2,7 @@ from enum import IntEnum, unique
 
 from sqlalchemy.sql import func
 
-from src.database import db
+from src.extensions import db
 from src.localization import SupportedLanguage
 
 

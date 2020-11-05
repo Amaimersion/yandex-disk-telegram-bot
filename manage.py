@@ -4,8 +4,8 @@ import click
 from sqlalchemy.exc import IntegrityError
 
 from src.app import create_app
+from src.extensions import db
 from src.database import (
-    db,
     User,
     Chat,
     YandexDiskToken,

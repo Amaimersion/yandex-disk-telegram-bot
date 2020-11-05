@@ -8,8 +8,8 @@ from flask import (
 )
 import jwt
 
+from src.extensions import db
 from src.database import (
-    db,
     UserQuery,
     ChatQuery
 )

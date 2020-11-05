@@ -1,6 +1,6 @@
 from flask import g
 
-from src.database import db
+from src.extensions import db
 from src.api import telegram
 from src.blueprints.utils import get_current_datetime
 from .common.decorators import get_db_data

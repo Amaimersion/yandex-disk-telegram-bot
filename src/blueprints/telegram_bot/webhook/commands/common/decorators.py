@@ -2,8 +2,8 @@ from functools import wraps
 
 from flask import g
 
+from src.extensions import db
 from src.database import (
-    db,
     User,
     UserQuery,
     Chat,

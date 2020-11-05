@@ -8,7 +8,7 @@ from cryptography.fernet import (
     InvalidToken as InvalidTokenFernetError
 )
 
-from src.database import db
+from src.extensions import db
 
 
 class YandexDiskToken(db.Model):
