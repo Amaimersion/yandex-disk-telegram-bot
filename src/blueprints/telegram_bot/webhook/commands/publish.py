@@ -20,7 +20,7 @@ from . import CommandName
 
 @yd_access_token_required
 @get_db_data
-def handle():
+def handle(*args, **kwargs):
     """
     Handles `/publish` command.
     """

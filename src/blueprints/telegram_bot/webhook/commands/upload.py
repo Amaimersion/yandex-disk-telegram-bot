@@ -60,7 +60,7 @@ class AttachmentHandler(metaclass=ABCMeta):
 
     @staticmethod
     @abstractmethod
-    def handle() -> None:
+    def handle(*args, **kwargs) -> None:
         """
         Starts uploading process.
         """
@@ -337,7 +337,7 @@ class PhotoHandler(AttachmentHandler):
     Handles uploading of photo.
     """
     @staticmethod
-    def handle():
+    def handle(*args, **kwargs):
         handler = PhotoHandler()
         handler.upload()
 
@@ -377,7 +377,7 @@ class FileHandler(AttachmentHandler):
     Handles uploading of file.
     """
     @staticmethod
-    def handle():
+    def handle(*args, **kwargs):
         handler = FileHandler()
         handler.upload()
 
@@ -403,7 +403,7 @@ class AudioHandler(AttachmentHandler):
     Handles uploading of audio.
     """
     @staticmethod
-    def handle():
+    def handle(*args, **kwargs):
         handler = AudioHandler()
         handler.upload()
 
@@ -441,7 +441,7 @@ class VideoHandler(AttachmentHandler):
     Handles uploading of video.
     """
     @staticmethod
-    def handle():
+    def handle(*args, **kwargs):
         handler = VideoHandler()
         handler.upload()
 
@@ -463,7 +463,7 @@ class VoiceHandler(AttachmentHandler):
     Handles uploading of voice.
     """
     @staticmethod
-    def handle():
+    def handle(*args, **kwargs):
         handler = VoiceHandler()
         handler.upload()
 
@@ -485,7 +485,7 @@ class URLHandler(AttachmentHandler):
     Handles uploading of direct URL to file.
     """
     @staticmethod
-    def handle():
+    def handle(*args, **kwargs):
         handler = URLHandler()
         handler.upload()
 

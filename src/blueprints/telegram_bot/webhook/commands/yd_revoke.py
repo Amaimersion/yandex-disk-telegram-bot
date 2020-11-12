@@ -9,7 +9,7 @@ from . import CommandName
 
 
 @get_db_data
-def handle():
+def handle(*args, **kwargs):
     """
     Handles `/yandex_disk_revoke` command.
 

@@ -28,7 +28,7 @@ from . import CommandName
 
 @register_guest
 @get_db_data
-def handle():
+def handle(*args, **kwargs):
     """
     Handles `/yandex_disk_authorization` command.
 

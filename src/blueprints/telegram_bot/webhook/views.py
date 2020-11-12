@@ -6,7 +6,7 @@ from flask import (
 
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 from . import telegram_interface
-from .dispatcher import dispatch, direct_dispatch
+from .dispatcher import intellectual_dispatch, direct_dispatch
 
 
 @bp.route("/webhook", methods=["POST"])
@@ -42,7 +42,7 @@ def webhook():
     g.telegram_chat = message.get_chat()
     g.direct_dispatch = direct_dispatch
 
-    dispatch(message)()
+    intellectual_dispatch(message)()
 
     return make_success_response()
 

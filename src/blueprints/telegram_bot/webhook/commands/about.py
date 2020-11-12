@@ -4,7 +4,7 @@ from src.api import telegram
 from src.blueprints.utils import absolute_url_for
 
 
-def handle():
+def handle(*args, **kwargs):
     """
     Handles `/about` command.
     """

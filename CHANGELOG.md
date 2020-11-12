@@ -18,6 +18,7 @@
 
 ### Added
 
+- Stateful chat support. Now bot can store custom user data (in different namespaces: user, chat, user in chat); determine Telegram message types; register single use handler (call once for message) with optional timeout for types of message; subscribe handlers with optional timeout for types of messages.
 - Support for different env-type files (based on current environment). Initially it was only for production.
 - Web Site: 302 (redirect to Telegram) will be returned instead of 404 (not found page), but only in production mode.
 - Debug configuration for VSCode.

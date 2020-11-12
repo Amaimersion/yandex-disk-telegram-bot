@@ -88,6 +88,7 @@ class Message:
     def __init__(self, raw_data: dict) -> None:
         self.raw_data = raw_data
         self.entities: Union[List[Entity], None] = None
+        self.plain_text: Union[str, None] = None
 
     @property
     def message_id(self) -> int:
@@ -129,6 +130,66 @@ class Message:
             self.raw_data.get("caption") or
             ""
         )
+
+    def get_text_without_entities(
+        self,
+        without: List[str]
+    ) -> str:
+        """
+        :param without:
+        Types of entities which should be removed
+        from message text. See
+        https://core.telegram.org/bots/api#messageentity
+
+        :returns:
+        Text of message without specified entities.
+        Empty string in case if there are no initial
+        text or nothing left after removing.
+        """
+        original_text = self.get_text()
+        result_text = original_text
+        entities = self.get_entities()
+
+        if not original_text:
+            return ""
+
+        for entity in entities:
+            if entity.type not in without:
+                continue
+
+            offset = entity.offset
+            length = entity.length
+            value = original_text[offset:offset + length]
+
+            result_text = result_text.replace(value, "")
+
+        return result_text.strip()
+
+    def get_plain_text(self) -> str:
+        """
+        :returns:
+        `get_text_without_entities([mention, hashtag,
+        cashtag, bot_command, url, email, phone_number,
+        code, pre, text_link, text_mention]`
+        """
+        if self.plain_text is not None:
+            return self.plain_text
+
+        self.plain_text = self.get_text_without_entities([
+            "mention",
+            "hashtag",
+            "cashtag",
+            "bot_command",
+            "url",
+            "email",
+            "phone_number",
+            "code",
+            "pre",
+            "text_link",
+            "text_mention"
+        ])
+
+        return self.plain_text
 
     def get_entities(self) -> List[Entity]:
         """

@@ -6,7 +6,7 @@ from src.api import telegram
 from . import CommandName
 
 
-def handle():
+def handle(*args, **kwargs):
     """
     Handles `/help` command.
     """
