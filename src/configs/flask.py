@@ -3,6 +3,7 @@ Configurations of the Flask app for specific environments.
 """
 
 import os
+from enum import Enum, auto
 
 from dotenv import load_dotenv
 
@@ -26,6 +27,25 @@ def load_env():
 
 
 load_env()
+
+
+class YandexOAuthAPIMethod(Enum):
+    """
+    Which method to use for OAuth.
+    """
+    # When user give access, he will be redirected
+    # to the app site, and app will extract code
+    # automatically.
+    # https://yandex.ru/dev/oauth/doc/dg/reference/auto-code-client.html
+    AUTO_CODE_CLIENT = auto()
+    # When user give access, he will see code, and
+    # that code user should manually send to the Telegram bot.
+    # This method intended for cases when you don't have
+    # permanent domain name (for example, when testing with `ngrok`)
+    # or when you want to hide it.
+    # `AUTO_CODE_CLIENT` provides better UX.
+    # https://yandex.ru/dev/oauth/doc/dg/reference/console-client.html/
+    CONSOLE_CLIENT = auto()
 
 
 class Config:
@@ -78,19 +98,21 @@ class Config:
     # stop waiting for a Yandex response
     # after a given number of seconds
     YANDEX_OAUTH_API_TIMEOUT = 15
+    # see `YandexOAuthAPIMethod` for more
+    YANDEX_OAUTH_API_METHOD = YandexOAuthAPIMethod.AUTO_CODE_CLIENT
+    # `insert_token` (controls `INSERT` operation)
+    # will contain N random bytes. Each byte will be
+    # converted to two hex digits
+    YANDEX_OAUTH_API_INSERT_TOKEN_BYTES = 8
+    # lifetime of `insert_token` in seconds starting
+    # from date of issue. It is better to find
+    # best combination between `bytes` and `lifetime`
+    YANDEX_OAUTH_API_INSERT_TOKEN_LIFETIME = 60 * 10
 
     # Yandex.Disk API
     # stop waiting for a Yandex response
     # after a given number of seconds
     YANDEX_DISK_API_TIMEOUT = 5
-    # `insert_token` (controls `INSERT` operation)
-    # will contain n random bytes. Each byte will be
-    # converted to two hex digits
-    YANDEX_DISK_API_INSERT_TOKEN_BYTES = 8
-    # lifetime of `insert_token` in seconds starting
-    # from date of issue. It is better to find
-    # best combination between `bytes` and `lifetime`
-    YANDEX_DISK_API_INSERT_TOKEN_LIFETIME = 60 * 10
     # maximum number of checks of operation status
     # (for example, if file is downloaded by Yandex.Disk).
     # It is blocks request until check ending!
@@ -120,6 +142,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     SQLALCHEMY_ECHO = "debug"
+    YANDEX_OAUTH_API_METHOD = YandexOAuthAPIMethod.CONSOLE_CLIENT
 
 
 class TestingConfig(Config):

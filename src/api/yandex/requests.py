@@ -1,5 +1,4 @@
 from os import environ
-import base64
 
 from requests.auth import HTTPBasicAuth
 from flask import current_app
@@ -29,12 +28,9 @@ def create_user_oauth_url(state: str) -> str:
 
     - https://yandex.ru/dev/oauth/doc/dg/concepts/about-docpage/
 
-    :param state: `state` parameter. Will be encoded with base64.
+    :param state: urlsafe `state` parameter.
     """
     client_id = environ["YANDEX_OAUTH_API_APP_ID"]
-    state = base64.urlsafe_b64encode(
-        state.encode()
-    ).decode()
 
     return (
         "https://oauth.yandex.ru/authorize?"

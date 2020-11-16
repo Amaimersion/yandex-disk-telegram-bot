@@ -15,6 +15,7 @@
 
 - Upgrade `python` to 3.8.5.
 - All requirements upgraded to latest version.
+- Big refactoring.
 
 ### Added
 
