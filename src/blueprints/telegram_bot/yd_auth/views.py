@@ -19,9 +19,9 @@ def yd_auth():
     (Auto Code method).
     """
     if is_success_request():
-        handle_success()
+        return handle_success()
     elif is_error_request():
-        handle_error()
+        return handle_error()
     else:
         abort(400)
 

@@ -177,7 +177,7 @@ class YandexOAuthClient:
         `YandexRequestError`.
         """
         response = None
-        kwargs = None
+        kwargs = {}
 
         if code:
             kwargs["grant_type"] = "authorization_code"
@@ -311,14 +311,13 @@ class YandexOAuthClient:
             return False
 
         try:
-            # if no errors, then `access_token` is valid
+            # there will be errors in case of
+            # expired or invalid token
             token.get_access_token()
-
-            return True
         except Exception:
-            pass
+            return False
 
-        return False
+        return True
 
     def create_insert_token(self, user: User) -> str:
         """
