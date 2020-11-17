@@ -4,6 +4,7 @@ from typing import (
     Set
 )
 from collections import deque
+import traceback
 
 from src.extensions import redis_client
 from . import commands
@@ -129,7 +130,11 @@ def intellectual_dispatch(
                     message_events=message_events
                 )
             except Exception as error:
-                print(handler_name, error)
+                print(
+                    f"{handler_name}: {error}",
+                    "\n",
+                    traceback.format_exc()
+                )
 
     return method
 
