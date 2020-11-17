@@ -67,6 +67,7 @@ def make_oauth_request(method_name: str, data: dict):
     password = environ["YANDEX_OAUTH_API_APP_PASSWORD"]
 
     return request(
+        raise_for_status=False,
         content_type="json",
         method="POST",
         url=url,

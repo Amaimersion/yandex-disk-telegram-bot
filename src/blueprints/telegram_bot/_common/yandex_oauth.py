@@ -371,6 +371,8 @@ class YandexOAuthAutoCodeClient(YandexOAuthClient):
         documentation for more. In case of `status = CONTINUE_TO_URL`
         there will be both `url` and `lifetime`. User should open this
         url, after `lifetime` seconds this url will be expired.
+        `state` is used to avoid handling of url, but you should
+        already have valid code from Yandex.
         In case of any other `status` further user actions not needed
         because this user already have valid access token.
 
@@ -412,7 +414,8 @@ class YandexOAuthAutoCodeClient(YandexOAuthClient):
         return {
             "status": OperationStatus.CONTINUE_TO_URL,
             "url": url,
-            "lifetime": lifetime_in_seconds
+            "lifetime": lifetime_in_seconds,
+            "state": state
         }
 
     def after_success_redirect(self, state: str, code: str) -> dict:
@@ -473,8 +476,20 @@ class YandexOAuthAutoCodeClient(YandexOAuthClient):
         db.session.commit()
 
 
-class YandexOAuthConsoleClient(YandexOAuthClient):
-    pass
+# It inherits `YandexOAuthAutoCodeClient`, not base `YandexOAuthClient`,
+# because we will use it exactly like `YandexOAuthAutoCodeClient`.
+# We doing so because `YandexOAuthConsoleClient` intended mostly
+# for usage at development process, so, UX not the key.
+# However, it is better to write pure code for that module later
+class YandexOAuthConsoleClient(YandexOAuthAutoCodeClient):
+    """
+    Implements https://yandex.ru/dev/oauth/doc/dg/reference/console-client.html # noqa
+    """
+    def handle_code(self, state: str, code: str) -> dict:
+        """
+        See `YandexOAuthAutoCodeClient.after_success_redirect` documentation.
+        """
+        return self.after_success_redirect(state, code)
 
 
 class OperationStatus(Enum):

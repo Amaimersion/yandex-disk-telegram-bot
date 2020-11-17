@@ -38,6 +38,7 @@ class YandexOAuthAPIMethod(Enum):
     # automatically.
     # https://yandex.ru/dev/oauth/doc/dg/reference/auto-code-client.html
     AUTO_CODE_CLIENT = auto()
+
     # When user give access, he will see code, and
     # that code user should manually send to the Telegram bot.
     # This method intended for cases when you don't have
