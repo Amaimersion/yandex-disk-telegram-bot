@@ -297,6 +297,15 @@ class YandexOAuthClient:
             "ok": True
         }
 
+    def clear_access_token(self, user: User) -> None:
+        """
+        Clears access token.
+
+        - perform DB commit in order to save changes!
+        """
+        user.yandex_disk_token.clear_access_token()
+        user.yandex_disk_token.clear_refresh_token()
+
     def have_valid_access_token(self, user: User) -> bool:
         """
         :returns:

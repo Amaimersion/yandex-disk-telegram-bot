@@ -2,6 +2,10 @@
 
 ## Telegram Bot
 
+### Improved
+
+- Text of some bot responses.
+
 ### Added
 
 - `/publish`: publishing of files or folders.
@@ -29,6 +33,10 @@
 
 - Redirect to favicon will be handled by nginx.
 - Biggest photo (from single photo file) will be selected based on total pixels count, not based on height.
+
+### Fixed
+
+- A bug when new user (didn't use any command before) used `/revoke_access` command and it led to request crash (500).
 
 
 # 1.1.0 (May 9, 2020)
