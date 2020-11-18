@@ -37,6 +37,7 @@
 ### Fixed
 
 - A bug when new user (didn't use any command before) used `/revoke_access` command and it led to request crash (500).
+- Situation: Telegram send an update, the server sent back a 500; Telegram will send same update again and again until it get 200 from a server, but server always returns 500. Such sitations can occur, for example, when user initiated a command and blocked the bot - bot can't send message to user in this case (it gets 403 from Telegram API, so, server raises error because it is an unexpected error and should be logged). Now it is fixed and the bot always send back 200, even for such error situations.
 
 
 # 1.1.0 (May 9, 2020)

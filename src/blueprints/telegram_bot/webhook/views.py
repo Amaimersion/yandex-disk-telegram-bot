@@ -42,6 +42,14 @@ def webhook():
     g.telegram_chat = message.get_chat()
     g.direct_dispatch = direct_dispatch
 
+    # We call this handler and do not handle any errors.
+    # We assume that all errors already was handeld by
+    # handlers, loggers, etc.
+    # WARNING: in case of any exceptions there will be
+    # 500 from a server. Telegram will send user message
+    # again and again until it get 200 from a server.
+    # So, it is important to always return 200 or return
+    # 500 and expect same message again
     intellectual_dispatch(message)()
 
     return make_success_response()

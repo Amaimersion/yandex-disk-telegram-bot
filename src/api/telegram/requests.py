@@ -87,6 +87,7 @@ def make_request(
     )
     ok = result["content"]["ok"]
 
+    # 4xx or 5xx
     if not ok:
         raise RequestFailed(
             create_error_text(
