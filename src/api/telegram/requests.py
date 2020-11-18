@@ -90,7 +90,7 @@ def make_request(
     if not ok:
         raise RequestFailed(
             create_error_text(
-                result.content
+                result["content"]
             )
         )
 
