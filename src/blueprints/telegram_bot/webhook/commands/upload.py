@@ -22,6 +22,7 @@ from ._common.responses import (
     AbortReason
 )
 
+
 class MessageHealth:
     """
     Health status of Telegram message.
