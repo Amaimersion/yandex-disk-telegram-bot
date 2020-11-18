@@ -3,12 +3,12 @@ from flask import g, current_app
 from src.api import telegram
 from src.extensions import redis_client
 from src.configs.flask import YandexOAuthAPIMethod
-from src.blueprints.utils import (
+from src.blueprints._common.utils import (
     absolute_url_for,
     get_current_datetime
 )
 from src.blueprints.telegram_bot._common import yandex_oauth
-from src.blueprints.telegram_bot.webhook.stateful_chat import (
+from src.blueprints.telegram_bot._common.stateful_chat import (
     set_disposable_handler,
     set_user_chat_data,
     get_user_chat_data,
@@ -18,15 +18,15 @@ from src.blueprints.telegram_bot.webhook.dispatcher_events import (
     DispatcherEvent,
     RouteSource
 )
-from .common.decorators import (
+from ._common.decorators import (
     register_guest,
     get_db_data
 )
-from .common.responses import (
+from ._common.responses import (
     request_private_chat,
     cancel_command
 )
-from . import CommandName
+from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 @register_guest

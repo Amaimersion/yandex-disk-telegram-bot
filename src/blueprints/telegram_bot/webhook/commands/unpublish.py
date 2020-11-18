@@ -1,21 +1,21 @@
 from flask import g
 
 from src.api import telegram
-from .common.responses import (
-    cancel_command,
-    abort_command,
-    AbortReason
-)
-from .common.decorators import (
-    yd_access_token_required,
-    get_db_data
-)
-from .common.yandex_api import (
+from src.blueprints.telegram_bot._common.yandex_disk import (
     unpublish_item,
     YandexAPIUnpublishItemError,
     YandexAPIRequestError
 )
-from . import CommandName
+from ._common.responses import (
+    cancel_command,
+    abort_command,
+    AbortReason
+)
+from ._common.decorators import (
+    yd_access_token_required,
+    get_db_data
+)
+from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 @yd_access_token_required

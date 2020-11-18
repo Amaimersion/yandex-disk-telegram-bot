@@ -4,24 +4,23 @@ from typing import Union
 from flask import g, current_app
 
 from src.api import telegram
-from src.blueprints.telegram_bot.webhook import telegram_interface
-from .common.decorators import (
-    yd_access_token_required,
-    get_db_data
-)
-from .common.responses import (
-    abort_command,
-    cancel_command,
-    AbortReason
-)
-from .common.yandex_api import (
+from src.blueprints.telegram_bot._common import telegram_interface
+from src.blueprints.telegram_bot._common.yandex_disk import (
     upload_file_with_url,
     YandexAPIRequestError,
     YandexAPICreateFolderError,
     YandexAPIUploadFileError,
     YandexAPIExceededNumberOfStatusChecksError
 )
-
+from ._common.decorators import (
+    yd_access_token_required,
+    get_db_data
+)
+from ._common.responses import (
+    abort_command,
+    cancel_command,
+    AbortReason
+)
 
 class MessageHealth:
     """

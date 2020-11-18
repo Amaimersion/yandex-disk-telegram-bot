@@ -6,10 +6,10 @@ from flask import (
 
 from src.api import telegram
 from src.database import ChatQuery
-from src.blueprints.utils import get_current_datetime
+from src.blueprints._common.utils import get_current_datetime
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 from src.blueprints.telegram_bot._common import yandex_oauth
-from src.blueprints.telegram_bot.webhook.commands import CommandName
+from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 @bp.route("/yandex_disk_authorization")

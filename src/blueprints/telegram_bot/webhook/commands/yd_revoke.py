@@ -2,17 +2,17 @@ from flask import g
 
 from src.extensions import db
 from src.api import telegram
-from src.blueprints.utils import get_current_datetime
+from src.blueprints._common.utils import get_current_datetime
 from src.blueprints.telegram_bot._common.yandex_oauth import YandexOAuthClient
-from .common.decorators import (
+from ._common.decorators import (
     get_db_data,
     register_guest
 )
-from .common.responses import (
+from ._common.responses import (
     request_private_chat,
     cancel_command
 )
-from . import CommandName
+from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 class YandexOAuthRemoveClient(YandexOAuthClient):

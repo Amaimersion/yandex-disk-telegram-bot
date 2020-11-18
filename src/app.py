@@ -21,7 +21,7 @@ from .blueprints import (
     telegram_bot_blueprint,
     legal_blueprint
 )
-from .blueprints.utils import (
+from .blueprints._common.utils import (
     absolute_url_for
 )
 # we need to import every model in order Migrate knows them

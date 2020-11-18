@@ -3,7 +3,7 @@
 from flask import g, current_app
 
 from src.api import telegram
-from . import CommandName
+from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 def handle(*args, **kwargs):

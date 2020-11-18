@@ -7,19 +7,19 @@ from collections import deque
 import traceback
 
 from src.extensions import redis_client
-from . import commands
-from .commands import CommandName
-from .dispatcher_events import (
-    DispatcherEvent,
-    RouteSource
-)
-from .telegram_interface import (
-    Message as TelegramMessage
-)
-from .stateful_chat import (
+from src.blueprints.telegram_bot._common.stateful_chat import (
     get_disposable_handler,
     delete_disposable_handler,
     get_subscribed_handlers
+)
+from src.blueprints.telegram_bot._common.telegram_interface import (
+    Message as TelegramMessage
+)
+from src.blueprints.telegram_bot._common.command_names import CommandName
+from . import commands
+from .dispatcher_events import (
+    DispatcherEvent,
+    RouteSource
 )
 
 

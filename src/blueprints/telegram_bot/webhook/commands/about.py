@@ -1,7 +1,7 @@
 from flask import g, current_app
 
 from src.api import telegram
-from src.blueprints.utils import absolute_url_for
+from src.blueprints._common.utils import absolute_url_for
 
 
 def handle(*args, **kwargs):

@@ -13,8 +13,8 @@ from src.database.models import (
     ChatType
 )
 from src.localization import SupportedLanguage
+from src.blueprints.telegram_bot._common.command_names import CommandName
 from .responses import cancel_command
-from .names import CommandName
 
 
 def register_guest(func):

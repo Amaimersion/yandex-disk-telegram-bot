@@ -5,7 +5,7 @@ from flask import (
 )
 
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
-from . import telegram_interface
+from src.blueprints.telegram_bot._common import telegram_interface
 from .dispatcher import intellectual_dispatch, direct_dispatch
 
 
