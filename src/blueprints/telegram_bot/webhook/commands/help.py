@@ -63,7 +63,7 @@ def handle(*args, **kwargs):
         "Folder name should starts from root, "
         f'nested folders should be separated with "{to_code("/")}" character.'
         "\n"
-        f"{CommandName.SPACE.value} — get information about remaining Yandex.Disk space. "
+        f"{CommandName.SPACE.value} — get information about remaining space. "
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"
@@ -80,8 +80,12 @@ def handle(*args, **kwargs):
         f"{CommandName.ABOUT.value} — read about me"
     )
 
+    chat_id = kwargs.get(
+        "chat_id",
+        g.telegram_chat.id
+    )
     telegram.send_message(
-        chat_id=g.telegram_chat.id,
+        chat_id=chat_id,
         parse_mode="HTML",
         text=text
     )
