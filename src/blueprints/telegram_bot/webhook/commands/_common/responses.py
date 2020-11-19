@@ -151,7 +151,7 @@ def request_absolute_path(chat_telegram_id: int) -> None:
         chat_id=chat_telegram_id,
         parse_mode="HTML",
         text=(
-            "Send a path."
+            "Send a full path."
             "\n\n"
             "It should starts from root directory, "
             "nested folders should be separated with "
