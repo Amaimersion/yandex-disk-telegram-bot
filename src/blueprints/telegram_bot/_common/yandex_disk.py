@@ -319,17 +319,17 @@ def create_yandex_error_text(data: dict) -> str:
     """
     :returns: Human error message from Yandex error response.
     """
-    error_name = data["error"]
+    error_name = data.get(
+        "error",
+        "?"
+    )
     error_description = (
         data.get("message") or
         data.get("description") or
         "?"
     )
 
-    return (
-        "Yandex.Disk Error: "
-        f"{error_name} ({error_description})"
-    )
+    return (f"{error_name}: {error_description}")
 
 
 def yandex_operation_is_completed(data: dict) -> bool:

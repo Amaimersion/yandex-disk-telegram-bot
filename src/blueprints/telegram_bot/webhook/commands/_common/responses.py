@@ -118,3 +118,69 @@ def request_private_chat(chat_telegram_id: int) -> None:
             "After that repeat your request."
         )
     )
+
+
+def send_yandex_disk_error(
+    chat_telegram_id: int,
+    error_text: str
+) -> None:
+    """
+    Sends a message that indicates that Yandex.Disk threw an error.
+
+    :param error_text:
+    Text of error that will be printed.
+    Can be empty.
+    """
+    telegram.send_message(
+        chat_id=chat_telegram_id,
+        parse_mode="HTML",
+        text=(
+            "<b>Yandex.Disk Error</b>"
+            "\n\n"
+            f"{error_text or 'Unknown'}"
+        )
+    )
+
+
+def request_absolute_path(chat_telegram_id: int) -> None:
+    """
+    Sends a message that asks a user to send an
+    absolute path (folder or file).
+    """
+    telegram.send_message(
+        chat_id=chat_telegram_id,
+        parse_mode="HTML",
+        text=(
+            "Send a path."
+            "\n\n"
+            "It should starts from root directory, "
+            "nested folders should be separated with "
+            '"<code>/</code>" character. '
+            "In short, i expect an absolute path to the item."
+            "\n\n"
+            "Example: <code>Telegram Bot/kittens and raccoons</code>"
+            "\n"
+            "Example: <code>/Telegram Bot/kittens and raccoons/musya.jpg</code>" # noqa
+        )
+    )
+
+
+def request_absolute_folder_name(chat_telegram_id: int) -> None:
+    """
+    Sends a message that asks a user to send an
+    absolute path of folder.
+    """
+    telegram.send_message(
+        chat_id=chat_telegram_id,
+        parse_mode="HTML",
+        text=(
+            "Send a folder name."
+            "\n\n"
+            "It should starts from root directory, "
+            "nested folders should be separated with "
+            '"<code>/</code>" character. '
+            "In short, i expect a full path."
+            "\n\n"
+            "Example: <code>Telegram Bot/kittens and raccoons</code>"
+        )
+    )
