@@ -117,7 +117,7 @@ def create_folder(
             continue
 
         raise YandexAPICreateFolderError(
-            create_yandex_error_text(result)
+            create_yandex_error_text(response)
         )
 
     return last_status_code

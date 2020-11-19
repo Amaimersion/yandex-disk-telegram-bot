@@ -13,6 +13,15 @@
 - `/space`: getting of information about remaining Yandex.Disk space.
 - Handling of files that exceed file size limit in 20 MB. At the moment the bot will asnwer with warning message, not trying to upload that file. [#3](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/3)
 
+### Changed
+
+- `/create_folder`: now it will wait for folder name if you send empty command, not deny operation.
+
+### Fixed
+
+- `/create_folder`: fixed a bug when bot could remove `/create_folder` occurrences from folder name.
+- `/create_folder`: fixed a bug when bot don't send any responses on invalid folder name.
+
 ## Project
 
 ### Improved
