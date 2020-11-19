@@ -52,6 +52,10 @@ class YandexOAuthAPIMethod(Enum):
 class Config:
     """
     Notes:
+    - don't remove any key from configuration, because code logic
+    may depend on this. Instead set disable value (if code logic
+    supports it); or set empty value and edit code logic to handle
+    such values.
     - keep in mind that Heroku have 30 seconds request timeout.
     So, if your configuration value can exceed 30 seconds, then
     request will be terminated by Heroku.
@@ -65,6 +69,19 @@ class Config:
     PROJECT_URL_FOR_REQUEST = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=feature_request.md" # noqa
     PROJECT_URL_FOR_QUESTION = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=question.md" # noqa
     PROJECT_URL_FOR_BOT = "https://t.me/Ya_Disk_Bot"
+
+    # Runtime (interaction of bot with user, behavior of bot)
+    # Default value (in seconds) when setted but unused
+    # disposable handler should expire and be removed.
+    # Example: user send `/create_folder` but didn't send
+    # any data for that command; bot will handle next message
+    # as needed data for that command; if user don't send any
+    # data in 10 minutes, then this handler will be removed from queue.
+    # Keep in mind that it is only recommended default value,
+    # specific handler can use it own expiration time and ignore
+    # this value at all.
+    # Set to 0 to disable expiration
+    RUNTIME_DISPOSABLE_HANDLER_EXPIRE = 60 * 10
 
     # Flask
     DEBUG = False
