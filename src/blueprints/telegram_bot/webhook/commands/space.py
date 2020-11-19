@@ -11,6 +11,9 @@ from src.blueprints.telegram_bot._common.yandex_disk import (
     get_disk_info,
     YandexAPIRequestError
 )
+from src.blueprints.telegram_bot._common.command_names import (
+    CommandName
+)
 from ._common.responses import (
     cancel_command,
     AbortReason
@@ -19,7 +22,6 @@ from ._common.decorators import (
     yd_access_token_required,
     get_db_data
 )
-from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 @yd_access_token_required
@@ -29,15 +31,18 @@ def handle(*args, **kwargs):
     Handles `/publish` command.
     """
     user = g.db_user
-    chat = g.db_chat
+    chat_id = kwargs.get(
+        "chat_id",
+        g.telegram_chat.id
+    )
     access_token = user.yandex_disk_token.get_access_token()
     disk_info = None
 
     try:
         disk_info = get_disk_info(access_token)
     except YandexAPIRequestError as error:
-        print(error)
-        return cancel_command(chat.telegram_id)
+        cancel_command(chat_id)
+        raise error
 
     current_date = get_current_date()
     jpeg_image = create_space_chart(
@@ -46,15 +51,17 @@ def handle(*args, **kwargs):
         trash_size=disk_info["trash_size"],
         caption=current_date
     )
+    filename = f"{to_filename(current_date)}.jpg"
+    file_caption = f"Yandex.Disk space at {current_date}"
 
     telegram.send_photo(
-        chat_id=chat.telegram_id,
+        chat_id=chat_id,
         photo=(
-            f"{to_filename(current_date)}.jpg",
+            filename,
             jpeg_image,
             "image/jpeg"
         ),
-        caption=f"Yandex.Disk space at {current_date}"
+        caption=file_caption
     )
 
 
