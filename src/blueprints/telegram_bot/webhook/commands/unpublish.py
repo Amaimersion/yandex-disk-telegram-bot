@@ -1,4 +1,4 @@
-from flask import g
+from flask import g, current_app
 
 from src.api import telegram
 from src.blueprints.telegram_bot._common.yandex_disk import (
@@ -6,16 +6,25 @@ from src.blueprints.telegram_bot._common.yandex_disk import (
     YandexAPIUnpublishItemError,
     YandexAPIRequestError
 )
+from src.blueprints.telegram_bot._common.stateful_chat import (
+    set_disposable_handler
+)
+from src.blueprints.telegram_bot._common.command_names import (
+    CommandName
+)
+from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+    DispatcherEvent
+)
 from ._common.responses import (
     cancel_command,
-    abort_command,
-    AbortReason
+    request_absolute_path,
+    send_yandex_disk_error
 )
 from ._common.decorators import (
     yd_access_token_required,
     get_db_data
 )
-from src.blueprints.telegram_bot._common.command_names import CommandName
+from ._common.utils import extract_absolute_path
 
 
 @yd_access_token_required
@@ -24,21 +33,42 @@ def handle(*args, **kwargs):
     """
     Handles `/unpublish` command.
     """
-    message = g.telegram_message
-    user = g.db_user
-    chat = g.db_chat
-    message_text = message.get_text()
-    path = message_text.replace(
+    message = kwargs.get(
+        "message",
+        g.telegram_message
+    )
+    user_id = kwargs.get(
+        "user_id",
+        g.telegram_user.id
+    )
+    chat_id = kwargs.get(
+        "chat_id",
+        g.telegram_chat.id
+    )
+    path = extract_absolute_path(
+        message,
         CommandName.UNPUBLISH.value,
-        ""
-    ).strip()
+        kwargs.get("route_source")
+    )
 
-    if not (path):
-        return abort_command(
-            chat.telegram_id,
-            AbortReason.NO_SUITABLE_DATA
+    if not path:
+        set_disposable_handler(
+            user_id,
+            chat_id,
+            CommandName.UNPUBLISH.value,
+            [
+                DispatcherEvent.PLAIN_TEXT.value,
+                DispatcherEvent.BOT_COMMAND.value,
+                DispatcherEvent.EMAIL.value,
+                DispatcherEvent.HASHTAG.value,
+                DispatcherEvent.URL.value
+            ],
+            current_app.config["RUNTIME_DISPOSABLE_HANDLER_EXPIRE"]
         )
 
+        return request_absolute_path(chat_id)
+
+    user = g.db_user
     access_token = user.yandex_disk_token.get_access_token()
 
     try:
@@ -47,22 +77,16 @@ def handle(*args, **kwargs):
             path
         )
     except YandexAPIRequestError as error:
-        print(error)
-        return cancel_command(chat.telegram_id)
+        cancel_command(chat_id)
+        raise error
     except YandexAPIUnpublishItemError as error:
-        error_text = (
-            str(error) or
-            "Unknown Yandex.Disk error"
-        )
+        send_yandex_disk_error(chat_id, str(error))
 
-        telegram.send_message(
-            chat_id=chat.telegram_id,
-            text=error_text
-        )
-
+        # it is expected error and should be
+        # logged only to user
         return
 
     telegram.send_message(
-        chat_id=chat.telegram_id,
+        chat_id=chat_id,
         text="Unpublished"
     )
