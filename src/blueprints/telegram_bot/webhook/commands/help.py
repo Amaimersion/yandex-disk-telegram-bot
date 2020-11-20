@@ -40,7 +40,7 @@ def handle(*args, **kwargs):
         "You can send audio file without this command."
         "\n"
         f"{CommandName.UPLOAD_VIDEO.value} — upload a video. "
-        "Original name will be not saved, original type may be changed. "
+        "Original name will be saved, original type may be changed. "
         "You can send video file without this command."
         "\n"
         f"{CommandName.UPLOAD_VOICE.value} — upload a voice. "

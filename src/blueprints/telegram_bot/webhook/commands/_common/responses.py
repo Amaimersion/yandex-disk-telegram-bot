@@ -122,7 +122,8 @@ def request_private_chat(chat_telegram_id: int) -> None:
 
 def send_yandex_disk_error(
     chat_telegram_id: int,
-    error_text: str
+    error_text: str,
+    reply_to_message_id: int = None
 ) -> None:
     """
     Sends a message that indicates that Yandex.Disk threw an error.
@@ -130,16 +131,23 @@ def send_yandex_disk_error(
     :param error_text:
     Text of error that will be printed.
     Can be empty.
+    :param reply_to_message_id:
+    If specified, then sended message will be a reply message.
     """
-    telegram.send_message(
-        chat_id=chat_telegram_id,
-        parse_mode="HTML",
-        text=(
+    kwargs = {
+        "chat_id": chat_telegram_id,
+        "parse_mode": "HTML",
+        "text": (
             "<b>Yandex.Disk Error</b>"
             "\n\n"
             f"{error_text or 'Unknown'}"
         )
-    )
+    }
+
+    if reply_to_message_id is not None:
+        kwargs["reply_to_message_id"] = reply_to_message_id
+
+    telegram.send_message(**kwargs)
 
 
 def request_absolute_path(chat_telegram_id: int) -> None:
