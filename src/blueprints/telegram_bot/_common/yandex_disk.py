@@ -34,7 +34,7 @@ class YandexAPICreateFolderError(Exception):
 
 class YandexAPIUploadFileError(Exception):
     """
-    Unable to upload folder on Yandex.Disk.
+    Unable to upload file on Yandex.Disk.
 
     - may contain human-readable error message.
     """
