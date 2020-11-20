@@ -62,6 +62,10 @@
             "description": "Information about remaining space"
         },
         {
+            "command": "element_info",
+            "description": "Information about file or folder"
+        },
+        {
             "command": "grant_access",
             "description": "Grant me an access to your Yandex.Disk"
         },

@@ -141,3 +141,38 @@ def make_link_request(data: dict, user_token: str):
         allow_redirects=False,
         verify=True
     )
+
+
+def make_photo_preview_request(photo_url: str, user_token: str):
+    """
+    Makes request to URL in order to get bytes content of photo.
+
+    Yandex requires user OAuth token in order to get
+    access to photo previews, so, it is why you should
+    use this method.
+
+    - it will not raise in case of error HTTP code.
+    - see `api/request.py` documentation for more.
+
+    :param photo_url:
+    URL of photo.
+    :param user_token:
+    User OAuth token to access this URL.
+
+    :returns:
+    See `api/request.py`.
+    In case of `ok = True` under `content` will be bytes content
+    of requested photo.
+    """
+    timeout = current_app.config["YANDEX_DISK_API_TIMEOUT"]
+
+    return request(
+        raise_for_status=False,
+        content_type="bytes",
+        method="GET",
+        url=photo_url,
+        timeout=timeout,
+        auth=HTTPOAuthAuth(user_token),
+        allow_redirects=False,
+        verify=True
+    )

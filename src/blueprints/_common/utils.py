@@ -46,3 +46,62 @@ def get_current_iso_datetime(timespec="seconds") -> str:
     See https://docs.python.org/3.8/library/datetime.html#datetime.datetime.isoformat # noqa
     """
     return datetime.now(timezone.utc).isoformat(timespec=timespec)
+
+
+def convert_iso_datetime(date_string: str) -> dict:
+    """
+    :returns:
+    Pretty-print information about ISO 8601 `date_string`.
+    """
+    value = datetime.fromisoformat(date_string)
+    value_date = value.strftime("%d.%m.%Y")
+    value_time = value.strftime("%H:%M:%S")
+    value_timezone = value.strftime("%Z")
+
+    return {
+        "date": value_date,
+        "time": value_time,
+        "timezone": value_timezone
+    }
+
+
+def bytes_to_human_unit(
+    bytes_count: int,
+    factor: float,
+    suffix: str
+) -> str:
+    """
+    Converts bytes to human readable string.
+
+    - function source: https://stackoverflow.com/a/1094933/8445442
+    - https://en.wikipedia.org/wiki/Binary_prefix
+    - https://man7.org/linux/man-pages/man7/units.7.html
+
+    :param bytes_count:
+    Count of bytes to convert.
+    :param factor:
+    Use `1024.0` for binary and `1000.0` for decimal.
+    :param suffix:
+    Use `iB` for binary and `B` for decimal.
+    """
+    for unit in ["", "K", "M", "G", "T", "P", "E", "Z"]:
+        if abs(bytes_count) < factor:
+            return "%3.1f %s%s" % (bytes_count, unit, suffix)
+
+        bytes_count /= factor
+
+    return "%.1f %s%s" % (bytes_count, "Y", suffix)
+
+
+def bytes_to_human_binary(bytes_count: int) -> str:
+    """
+    Bytes -> binary representation.
+    """
+    return bytes_to_human_unit(bytes_count, 1024.0, "iB")
+
+
+def bytes_to_human_decimal(bytes_count: int) -> str:
+    """
+    Bytes -> decimal representation.
+    """
+    return bytes_to_human_unit(bytes_count, 1000.0, "B")

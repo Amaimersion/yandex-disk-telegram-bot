@@ -42,12 +42,17 @@ def send_photo(**kwargs):
     https://core.telegram.org/bots/api#sendphoto
 
     - see `api/request.py` documentation for more.
-    - specify `photo` as tuple from `files` in
+    - if you want to send bytes, then specify `photo` as
+    tuple from `files` in
     https://requests.readthedocs.io/en/latest/api/#requests.request
     """
+    files = None
     key = "photo"
-    files = {
-        key: kwargs.pop(key)
-    }
+    value = kwargs.get(key)
+
+    if not isinstance(value, str):
+        files = {
+            key: kwargs.pop(key)
+        }
 
     return make_request("sendPhoto", data=kwargs, files=files)

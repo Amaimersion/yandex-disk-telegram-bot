@@ -36,7 +36,7 @@
 - uploading of voice (limit is 20 MB).
 - publishing and unpublishing of files or folders.
 - creating of folders.
-- getting of information about the disk.
+- getting of information about file, folder or disk.
 
 
 ## Requirements

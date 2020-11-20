@@ -177,7 +177,8 @@ def direct_dispatch(
         CommandName.CREATE_FOLDER.value: commands.create_folder_handler,
         CommandName.PUBLISH.value: commands.publish_handler,
         CommandName.UNPUBLISH.value: commands.unpublish_handler,
-        CommandName.SPACE.value: commands.space_handler
+        CommandName.SPACE.value: commands.space_handler,
+        CommandName.ELEMENT_INFO.value: commands.element_info_handler
     }
     handler = routes.get(command, fallback)
 

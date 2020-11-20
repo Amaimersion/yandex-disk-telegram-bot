@@ -64,6 +64,9 @@ def handle(*args, **kwargs):
         f'nested folders should be separated with "{to_code("/")}" character.'
         "\n"
         f"{CommandName.SPACE.value} — get information about remaining space."
+        "\n"
+        f"{CommandName.ELEMENT_INFO.value} — get information about file or folder. "
+        "Send full path of element with this command."
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"

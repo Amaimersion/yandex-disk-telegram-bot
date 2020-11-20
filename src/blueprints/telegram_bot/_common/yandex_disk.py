@@ -59,6 +59,16 @@ class YandexAPIUnpublishItemError(Exception):
     pass
 
 
+class YandexAPIGetElementInfoError(Exception):
+    """
+    Unable to get information about Yandex.Disk
+    element (folder or file).
+
+    - may contain human-readable error message.
+    """
+    pass
+
+
 class YandexAPIExceededNumberOfStatusChecksError(Exception):
     """
     There was too much attempts to check status
@@ -303,6 +313,34 @@ def get_disk_info(user_access_token: str) -> dict:
             create_yandex_error_text(
                 response
             )
+        )
+
+    return response
+
+
+def get_element_info(
+    user_access_token: str,
+    absolute_element_path: str
+) -> dict:
+    try:
+        response = yandex.get_element_info(
+            user_access_token,
+            path=absolute_element_path,
+            preview_crop=False,
+            preview_size="L",
+            # at the moment we don't display any
+            # elements that embedded in directory
+            limit=0
+        )
+    except Exception as error:
+        raise YandexAPIRequestError(error)
+
+    response = response["content"]
+    is_error = is_error_yandex_response(response)
+
+    if is_error:
+        raise YandexAPIGetElementInfoError(
+            create_yandex_error_text(response)
         )
 
     return response
