@@ -63,7 +63,7 @@ def handle(*args, **kwargs):
         "Folder name should starts from root, "
         f'nested folders should be separated with "{to_code("/")}" character.'
         "\n"
-        f"{CommandName.SPACE.value} — get information about remaining space. "
+        f"{CommandName.SPACE.value} — get information about remaining space."
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"
