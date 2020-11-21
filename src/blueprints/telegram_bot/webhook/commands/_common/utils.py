@@ -70,7 +70,7 @@ def create_element_info_html_text(
 
     if "name" in info:
         text.append(
-            f"<b>Name</b>: {info['name']}"
+            f"<b>Name:</b> {info['name']}"
         )
 
     if "type" in info:
@@ -89,7 +89,7 @@ def create_element_info_html_text(
                 value = f"{value} ({info['mime_type']})"
 
         text.append(
-            f"<b>Type</b>: {value}"
+            f"<b>Type:</b> {value}"
         )
 
     if "size" in info:
@@ -101,7 +101,7 @@ def create_element_info_html_text(
             value = f"{decimal} ({bytes_count:,} bytes)"
 
         text.append(
-            f"<b>Size</b>: {value}"
+            f"<b>Size:</b> {value}"
         )
 
     if (
@@ -110,7 +110,7 @@ def create_element_info_html_text(
     ):
         value = convert_iso_datetime(info["created"])
         text.append(
-            "<b>Created</b>: "
+            "<b>Created:</b> "
             f"{value['date']} {value['time']} {value['timezone']}"
         )
 
@@ -120,7 +120,7 @@ def create_element_info_html_text(
     ):
         value = convert_iso_datetime(info["modified"])
         text.append(
-            "<b>Modified</b>: "
+            "<b>Modified:</b> "
             f"{value['date']} {value['time']} {value['timezone']}"
         )
 
@@ -129,7 +129,7 @@ def create_element_info_html_text(
         ("path" in info)
     ):
         text.append(
-            "<b>Full path</b>: "
+            "<b>Full path:</b> "
             f"<code>{info['path']}</code>"
         )
 
@@ -138,7 +138,7 @@ def create_element_info_html_text(
         ("origin_path" in info)
     ):
         text.append(
-            "<b>Origin path</b>: "
+            "<b>Origin path:</b> "
             f"<code>{info['origin_path']}</code>"
         )
 
@@ -147,12 +147,12 @@ def create_element_info_html_text(
         ("total" in info["_embedded"])
     ):
         text.append(
-            f"<b>Total elements</b>: {info['_embedded']['total']}"
+            f"<b>Total elements:</b> {info['_embedded']['total']}"
         )
 
     if "public_url" in info:
         text.append(
-            f"<b>Public URL</b>: {info['public_url']}"
+            f"<b>Public URL:</b> {info['public_url']}"
         )
 
     if (
@@ -160,7 +160,7 @@ def create_element_info_html_text(
         ("views_count" in info)
     ):
         text.append(
-            f"<b>Views</b>: {info['views_count']}"
+            f"<b>Views:</b> {info['views_count']}"
         )
 
     if (
@@ -185,7 +185,7 @@ def create_element_info_html_text(
             value = login
 
         text.append(
-            f"<b>Owner</b>: {value}"
+            f"<b>Owner:</b> {value}"
         )
 
     if (
@@ -201,7 +201,7 @@ def create_element_info_html_text(
                 value = "Yes"
 
             text.append(
-                f"<b>Shared access — Owner</b>: {value}"
+                f"<b>Shared access — Owner:</b> {value}"
             )
 
         if "rights" in data:
@@ -215,7 +215,7 @@ def create_element_info_html_text(
                 value = "Write"
 
             text.append(
-                f"<b>Shared access — Rights</b>: {value}"
+                f"<b>Shared access — Rights:</b> {value}"
             )
 
         if "is_root" in data:
@@ -225,7 +225,7 @@ def create_element_info_html_text(
                 value = "Yes"
 
             text.append(
-                f"<b>Shared access — Root</b>: {value}"
+                f"<b>Shared access — Root:</b> {value}"
             )
 
     if (
@@ -235,18 +235,18 @@ def create_element_info_html_text(
     ):
         exif = json.dumps(info["exif"], indent=4)
         text.append(
-            "<b>EXIF</b>: "
+            "<b>EXIF:</b> "
             f"<code>{exif}</code>"
         )
 
     if "sha256" in info:
         text.append(
-            f"<b>SHA-256</b>: {info['sha256']}"
+            f"<b>SHA-256:</b> {info['sha256']}"
         )
 
     if "md5" in info:
         text.append(
-            f"<b>MD5</b>: {info['md5']}"
+            f"<b>MD5:</b> {info['md5']}"
         )
 
     return "\n".join(text)
