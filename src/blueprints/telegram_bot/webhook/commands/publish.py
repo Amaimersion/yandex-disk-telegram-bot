@@ -3,6 +3,8 @@ from flask import g, current_app
 from src.api import telegram
 from src.blueprints.telegram_bot._common.yandex_disk import (
     publish_item,
+    get_element_info,
+    YandexAPIGetElementInfoError,
     YandexAPIPublishItemError,
     YandexAPIRequestError
 )
@@ -24,7 +26,10 @@ from ._common.decorators import (
     yd_access_token_required,
     get_db_data
 )
-from ._common.utils import extract_absolute_path
+from ._common.utils import (
+    extract_absolute_path,
+    create_element_info_html_text
+)
 
 
 @yd_access_token_required
@@ -72,10 +77,7 @@ def handle(*args, **kwargs):
     access_token = user.yandex_disk_token.get_access_token()
 
     try:
-        publish_item(
-            access_token,
-            path
-        )
+        publish_item(access_token, path)
     except YandexAPIRequestError as error:
         cancel_command(chat_id)
         raise error
@@ -86,7 +88,25 @@ def handle(*args, **kwargs):
         # logged only to user
         return
 
+    info = None
+
+    try:
+        info = get_element_info(access_token, path)
+    except YandexAPIRequestError as error:
+        cancel_command(chat_id)
+        raise error
+    except YandexAPIGetElementInfoError as error:
+        send_yandex_disk_error(chat_id, str(error))
+
+        # it is expected error and should be
+        # logged only to user
+        return
+
+    text = create_element_info_html_text(info, False)
+
     telegram.send_message(
         chat_id=chat_id,
-        text="Published"
+        text=text,
+        parse_mode="HTML",
+        disable_web_page_preview=True
     )
