@@ -95,3 +95,17 @@ def get_element_info(user_token: str, **kwargs):
         data=kwargs,
         user_token=user_token
     )
+
+
+def get_element_public_info(user_token: str, **kwargs):
+    """
+    https://dev.yandex.net/disk-polygon/?lang=ru&tld=ru#!/v147disk47public47resources/GetPublicResource # noqa
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_disk_request(
+        http_method="GET",
+        api_method="public/resources",
+        data=kwargs,
+        user_token=user_token
+    )

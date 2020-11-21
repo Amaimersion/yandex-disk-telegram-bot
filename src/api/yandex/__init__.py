@@ -5,7 +5,8 @@ from .methods import (
     publish,
     unpublish,
     get_disk_info,
-    get_element_info
+    get_element_info,
+    get_element_public_info
 )
 from .requests import (
     make_link_request,

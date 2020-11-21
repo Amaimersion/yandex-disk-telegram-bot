@@ -77,7 +77,11 @@ def handle(*args, **kwargs):
     info = None
 
     try:
-        info = get_element_info(access_token, path)
+        info = get_element_info(
+            access_token,
+            path,
+            get_public_info=True
+        )
     except YandexAPIRequestError as error:
         cancel_command(chat_id)
         raise error

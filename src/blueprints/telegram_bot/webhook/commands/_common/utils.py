@@ -155,14 +155,37 @@ def create_element_info_html_text(
             f"<b>Public URL</b>: {info['public_url']}"
         )
 
-    if "sha256" in info:
+    if (
+        include_private_info and
+        ("views_count" in info)
+    ):
         text.append(
-            f"<b>SHA-256</b>: {info['sha256']}"
+            f"<b>Views</b>: {info['views_count']}"
         )
 
-    if "md5" in info:
+    if (
+        include_private_info and
+        ("owner" in info)
+    ):
+        data = info["owner"]
+        name = data.get("display_name")
+        login = data.get("login")
+        value = "?"
+
+        if name:
+            value = name
+
+        if (
+            value and
+            login and
+            (value != login)
+        ):
+            value = f"{value} ({login})"
+        elif login:
+            value = login
+
         text.append(
-            f"<b>MD5</b>: {info['md5']}"
+            f"<b>Owner</b>: {value}"
         )
 
     if (
@@ -214,6 +237,16 @@ def create_element_info_html_text(
         text.append(
             "<b>EXIF</b>: "
             f"<code>{exif}</code>"
+        )
+
+    if "sha256" in info:
+        text.append(
+            f"<b>SHA-256</b>: {info['sha256']}"
+        )
+
+    if "md5" in info:
+        text.append(
+            f"<b>MD5</b>: {info['md5']}"
         )
 
     return "\n".join(text)

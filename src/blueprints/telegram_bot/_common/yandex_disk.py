@@ -320,17 +320,62 @@ def get_disk_info(user_access_token: str) -> dict:
 
 def get_element_info(
     user_access_token: str,
-    absolute_element_path: str
+    absolute_element_path: str,
+    get_public_info=False,
+    preview_size="L",
+    preview_crop=False,
+    embedded_elements_limit=0,
+    embedded_elements_offset=0,
+    embedded_elements_sort="name"
 ) -> dict:
+    """
+    - https://yandex.ru/dev/disk/api/reference/meta.html
+    - https://dev.yandex.net/disk-polygon/?lang=ru&tld=ru#!/v147disk47public47resources/GetPublicResource # noqa
+
+    :param user_access_token:
+    User access token.
+    :param absolute_element_path:
+    Absolute path of element.
+    :param get_public_info:
+    Make another HTTP request to get public info.
+    If `True`, then these fields will be added in
+    normal info: `views_count`, `owner`.
+    Set to `False` if you don't need this information -
+    this will improve speed.
+    :param preview_size:
+    Size of preview (if available).
+    :param preview_crop:
+    Allow cropping of preview.
+    :param embedded_elements_limit:
+    How many embedded elements (elements inside
+    folder) should be included in response.
+    Set to `0` if you don't need this information -
+    this will improve speed.
+    :param embedded_elements_offset:
+    Offset for embedded elements.
+    Note `sort` parameter.
+    :param embedded_elements_sort:
+    How to sort embedded elements.
+    Possible values: `name`, `path`, `created`,
+    `modified`, `size`. Append `-` for reverse
+    order (example: `-name`).
+
+    :returns:
+    Information about object.
+    Check for keys before using them!
+
+    :raises:
+    `YandexAPIRequestError`, `YandexAPIGetElementInfoError`.
+    """
     try:
         response = yandex.get_element_info(
             user_access_token,
             path=absolute_element_path,
-            preview_crop=False,
-            preview_size="L",
-            # at the moment we don't display any
-            # elements that embedded in directory
-            limit=0
+            preview_crop=preview_crop,
+            preview_size=preview_size,
+            limit=embedded_elements_limit,
+            offset=embedded_elements_offset,
+            sort=embedded_elements_sort
         )
     except Exception as error:
         raise YandexAPIRequestError(error)
@@ -342,6 +387,38 @@ def get_element_info(
         raise YandexAPIGetElementInfoError(
             create_yandex_error_text(response)
         )
+
+    if (
+        get_public_info and
+        ("public_key" in response)
+    ):
+        public_info_response = None
+
+        try:
+            public_info_response = yandex.get_element_public_info(
+                user_access_token,
+                public_key=response["public_key"],
+                # we need only these fields, because they
+                # are missing in normal info
+                fields="views_count,owner",
+                preview_crop=preview_crop,
+                preview_size=preview_size,
+                limit=embedded_elements_limit,
+                offset=embedded_elements_offset,
+                sort=embedded_elements_sort
+            )
+        except Exception as error:
+            raise YandexAPIRequestError(error)
+
+        public_info_response = public_info_response["content"]
+        is_error = is_error_yandex_response(public_info_response)
+
+        if is_error:
+            raise YandexAPIGetElementInfoError(
+                create_yandex_error_text(response)
+            )
+
+        response = {**response, **public_info_response}
 
     return response
 
