@@ -7,8 +7,12 @@ from src.api import telegram
 from src.blueprints.telegram_bot._common.telegram_interface import (
     Message as TelegramMessage
 )
+from src.blueprints.telegram_bot._common.command_names import (
+    CommandName
+)
 from src.blueprints.telegram_bot._common.yandex_disk import (
     upload_file_with_url,
+    get_element_info,
     YandexAPIRequestError,
     YandexAPICreateFolderError,
     YandexAPIUploadFileError,
@@ -23,6 +27,9 @@ from ._common.responses import (
     cancel_command,
     send_yandex_disk_error,
     AbortReason
+)
+from ._common.utils import (
+    create_element_info_html_text
 )
 
 
@@ -323,10 +330,49 @@ class AttachmentHandler(metaclass=ABCMeta):
                     file_name=file_name,
                     download_url=download_url
                 ):
+                    success = status["success"]
+                    text = ""
+                    is_html_text = False
+
+                    if success:
+                        info = None
+                        full_path = f"{folder_path}/{file_name}"
+
+                        try:
+                            info = get_element_info(
+                                user_access_token,
+                                full_path,
+                                get_public_info=False
+                            )
+                        except Exception:
+                            pass
+
+                        if info:
+                            text = create_element_info_html_text(
+                                info,
+                                include_private_info=True
+                            )
+                            is_html_text = True
+                        else:
+                            text = (
+                                "Successfully completed, but failed "
+                                "to get information about this file."
+                                "\n"
+                                "Type to see information:"
+                                "\n"
+                                f"{CommandName.ELEMENT_INFO.value} {full_path}"
+                            )
+                    else:
+                        # You shouldn't use HTML for this,
+                        # because `upload_status` can be a same
+                        upload_status = status["status"]
+                        text = f"Status: {upload_status}"
+
                     self.reply_to_message(
                         message.message_id,
                         chat_id,
-                        f"Status: {status}"
+                        text,
+                        is_html_text
                     )
             except YandexAPICreateFolderError as error:
                 error_text = str(error) or (
@@ -388,26 +434,42 @@ class AttachmentHandler(metaclass=ABCMeta):
         telegram.send_message(
             chat_id=chat_id,
             text=html_text,
-            parse_mode="HTML"
+            parse_mode="HTML",
+            disable_web_page_preview=True
         )
 
     def reply_to_message(
         self,
         incoming_message_id: int,
         chat_id: int,
-        text: str
+        text: str,
+        html_text=False
     ) -> None:
         """
         Sends reply message to Telegram user.
 
         - if message already was sent, then sent
         message will be updated with new text.
+        - NOTE: using HTML text may lead to error,
+        because text should be compared with already
+        sended text, but already sended text will not
+        contain HTML tags (even if they was before sending),
+        and `text` will, so, comparing already sended HTML
+        text and `text` always will results to `False`.
         """
+        enabled_html = {}
+
+        if html_text:
+            enabled_html["parse_mode"] = "HTML"
+
         if self.sended_message is None:
             result = telegram.send_message(
                 reply_to_message_id=incoming_message_id,
                 chat_id=chat_id,
-                text=text
+                text=text,
+                allow_sending_without_reply=True,
+                disable_web_page_preview=True,
+                **enabled_html
             )
             self.sended_message = TelegramMessage(
                 result["content"]
@@ -416,7 +478,9 @@ class AttachmentHandler(metaclass=ABCMeta):
             telegram.edit_message_text(
                 message_id=self.sended_message.message_id,
                 chat_id=chat_id,
-                text=text
+                text=text,
+                disable_web_page_preview=True,
+                **enabled_html
             )
 
 

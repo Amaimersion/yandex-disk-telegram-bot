@@ -196,7 +196,7 @@ def upload_file_with_url(
     folder_path: str,
     file_name: str,
     download_url: str
-) -> Generator[str, None, None]:
+) -> Generator[dict, None, None]:
     """
     Uploads a file to Yandex.Disk using file download url.
 
@@ -205,15 +205,24 @@ def upload_file_with_url(
     to app configuration. Because it is synchronous, it may
     take significant time to end this function!
 
-    :yields: status of operation in Yandex format (for example,
-    `"in progress"`). It will yields with some interval (according
-    to app configuration). Order is an order in which Yandex
-    sends the operation status.
+    :yields:
+    `dict` with `success`, `failed`, `completed`, `status`.
+    It will yields with some interval (according
+    to app configuration). Order is an order in which
+    Yandex sent an operation status, so, `status` can
+    be safely logged to user.
+    `status` - currenet string status of uploading
+    (for example, `in progress`).
+    `completed` - uploading is completed.
+    `success` - uploading is successfully ended.
+    `failed` - uploading is failed (unknown error, known
+    error will be throwed with `YandexAPIUploadFileError`).
 
-    :raises: YandexAPIRequestError
-    :raises: YandexAPICreateFolderError
-    :raises: YandexAPIUploadFileError
-    :raises: YandexAPIExceededNumberOfStatusChecksError
+    :raises:
+    `YandexAPIRequestError`,
+    `YandexAPICreateFolderError`,
+    `YandexAPIUploadFileError`,
+    `YandexAPIExceededNumberOfStatusChecksError`
     """
     create_folder(
         user_access_token=user_access_token,
@@ -236,14 +245,16 @@ def upload_file_with_url(
     operation_status_link = response["content"]
     is_error = is_error_yandex_response(operation_status_link)
 
-    if (is_error):
+    if is_error:
         raise YandexAPIUploadFileError(
-            create_yandex_error_text(
-                operation_status_link
-            )
+            create_yandex_error_text(operation_status_link)
         )
 
-    operation_status = {}
+    operation_status = None
+    is_error = False
+    is_success = False
+    is_failed = False
+    is_completed = False
     attempt = 0
     max_attempts = current_app.config[
         "YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS"
@@ -251,11 +262,12 @@ def upload_file_with_url(
     interval = current_app.config[
         "YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL"
     ]
+    too_many_attempts = (attempt >= max_attempts)
 
     while not (
-        is_error_yandex_response(operation_status) or
-        yandex_operation_is_completed(operation_status) or
-        attempt >= max_attempts
+        is_error or
+        is_completed or
+        too_many_attempts
     ):
         sleep(interval)
 
@@ -268,23 +280,30 @@ def upload_file_with_url(
             raise YandexAPIRequestError(error)
 
         operation_status = response["content"]
-
-        if ("status" in operation_status):
-            yield operation_status["status"]
-
+        is_error = is_error_yandex_response(operation_status)
+        is_success = yandex_operation_is_success(operation_status)
+        is_failed = yandex_operation_is_failed(operation_status)
+        is_completed = (is_success or is_failed)
         attempt += 1
+        too_many_attempts = (attempt >= max_attempts)
 
-    is_error = is_error_yandex_response(operation_status)
-    is_completed = yandex_operation_is_completed(operation_status)
+        if not is_error:
+            yield {
+                "success": is_success,
+                "failed": is_failed,
+                "completed": (is_success or is_failed),
+                "status": operation_status.get(
+                    "status",
+                    "unknown"
+                )
+            }
 
-    if (is_error):
+    if is_error:
         raise YandexAPIUploadFileError(
-            create_yandex_error_text(
-                operation_status
-            )
+            create_yandex_error_text(operation_status)
         )
     elif (
-        (attempt >= max_attempts) and
+        too_many_attempts and
         not is_completed
     ):
         raise YandexAPIExceededNumberOfStatusChecksError()
@@ -447,17 +466,29 @@ def create_yandex_error_text(data: dict) -> str:
     return (f"{error_name}: {error_description}")
 
 
-def yandex_operation_is_completed(data: dict) -> bool:
+def yandex_operation_is_success(data: dict) -> bool:
     """
-    :returns: Yandex response contains completed
-    operation status or not.
+    :returns:
+    Yandex response contains status which
+    indicates that operation is successfully ended.
     """
     return (
         ("status" in data) and
-        (
-            (data["status"] == "success") or
+        (data["status"] == "success")
+    )
+
+
+def yandex_operation_is_failed(data: dict) -> bool:
+    """
+    :returns:
+    Yandex response contains status which
+    indicates that operation is failed.
+    """
+    return (
+        ("status" in data) and
+        (data["status"] in (
             # Yandex documentation is different in some places
-            (data["status"] == "failure") or
-            (data["status"] == "failed")
-        )
+            "failure",
+            "failed"
+        ))
     )

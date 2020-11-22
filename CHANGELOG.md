@@ -18,6 +18,7 @@
 ### Changed
 
 - `/create_folder`: now it will wait for folder name if you send empty command, not deny operation.
+- `/upload`: on success it will return information about uploaded file, not plain status.
 
 ### Fixed
 
