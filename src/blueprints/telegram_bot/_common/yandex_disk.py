@@ -6,6 +6,9 @@ from flask import current_app
 from src.api import yandex
 
 
+# region Exceptions
+
+
 class YandexAPIRequestError(Exception):
     """
     Unknown error occurred during Yandex.Disk API request
@@ -81,6 +84,68 @@ class YandexAPIExceededNumberOfStatusChecksError(Exception):
     pass
 
 
+# endregion
+
+
+# region Helpers
+
+
+def create_yandex_error_text(data: dict) -> str:
+    """
+    :returns:
+    Human error message from Yandex error response.
+    """
+    error_name = data.get("error", "?")
+    error_description = (
+        data.get("message") or
+        data.get("description") or
+        "?"
+    )
+
+    return (f"{error_name}: {error_description}")
+
+
+def is_error_yandex_response(data: dict) -> bool:
+    """
+    :returns: Yandex response contains error or not.
+    """
+    return ("error" in data)
+
+
+def yandex_operation_is_success(data: dict) -> bool:
+    """
+    :returns:
+    Yandex response contains status which
+    indicates that operation is successfully ended.
+    """
+    return (
+        ("status" in data) and
+        (data["status"] == "success")
+    )
+
+
+def yandex_operation_is_failed(data: dict) -> bool:
+    """
+    :returns:
+    Yandex response contains status which
+    indicates that operation is failed.
+    """
+    return (
+        ("status" in data) and
+        (data["status"] in (
+            # Yandex documentation is different in some places
+            "failure",
+            "failed"
+        ))
+    )
+
+
+# endregion
+
+
+# region API
+
+
 def create_folder(
     user_access_token: str,
     folder_name: str
@@ -94,10 +159,12 @@ def create_folder(
     already exists, for example) from all folder names
     except last one.
 
-    :returns: Last (for last folder name) HTTP Status code.
+    :returns:
+    Last (for last folder name) HTTP Status code.
 
-    :raises: YandexAPIRequestError
-    :raises: YandexAPICreateFolderError
+    :raises:
+    `YandexAPIRequestError`,
+    `YandexAPICreateFolderError`.
     """
     folders = [x for x in folder_name.split("/") if x]
     folder_path = ""
@@ -122,7 +189,7 @@ def create_folder(
         if (
             (last_status_code == 201) or
             (last_status_code in allowed_errors) or
-            (not is_error_yandex_response(response))
+            not is_error_yandex_response(response)
         ):
             continue
 
@@ -140,8 +207,9 @@ def publish_item(
     """
     Publish an item that already exists on Yandex.Disk.
 
-    :raises: YandexAPIRequestError
-    :raises: YandexAPIPublishItemError
+    :raises:
+    `YandexAPIRequestError`,
+    `YandexAPIPublishItemError`.
     """
     try:
         response = yandex.publish(
@@ -154,11 +222,9 @@ def publish_item(
     response = response["content"]
     is_error = is_error_yandex_response(response)
 
-    if (is_error):
+    if is_error:
         raise YandexAPIPublishItemError(
-            create_yandex_error_text(
-                response
-            )
+            create_yandex_error_text(response)
         )
 
 
@@ -169,8 +235,9 @@ def unpublish_item(
     """
     Unpublish an item that already exists on Yandex.Disk.
 
-    :raises: YandexAPIRequestError
-    :raises: YandexAPIUnpublishItemError
+    :raises:
+    `YandexAPIRequestError`,
+    `YandexAPIUnpublishItemError`.
     """
     try:
         response = yandex.unpublish(
@@ -183,11 +250,9 @@ def unpublish_item(
     response = response["content"]
     is_error = is_error_yandex_response(response)
 
-    if (is_error):
+    if is_error:
         raise YandexAPIUnpublishItemError(
-            create_yandex_error_text(
-                response
-            )
+            create_yandex_error_text(response)
         )
 
 
@@ -315,9 +380,11 @@ def get_disk_info(user_access_token: str) -> dict:
     - https://yandex.ru/dev/disk/api/reference/capacity-docpage/
     - https://dev.yandex.net/disk-polygon/#!/v147disk
 
-    :returns: Information about user Yandex.Disk.
+    :returns:
+    Information about user Yandex.Disk.
 
-    :raises: YandexAPIRequestError
+    :raises:
+    `YandexAPIRequestError`.
     """
     try:
         response = yandex.get_disk_info(user_access_token)
@@ -327,11 +394,9 @@ def get_disk_info(user_access_token: str) -> dict:
     response = response["content"]
     is_error = is_error_yandex_response(response)
 
-    if (is_error):
+    if is_error:
         raise YandexAPIUploadFileError(
-            create_yandex_error_text(
-                response
-            )
+            create_yandex_error_text(response)
         )
 
     return response
@@ -442,53 +507,4 @@ def get_element_info(
     return response
 
 
-def is_error_yandex_response(data: dict) -> bool:
-    """
-    :returns: Yandex response contains error or not.
-    """
-    return ("error" in data)
-
-
-def create_yandex_error_text(data: dict) -> str:
-    """
-    :returns: Human error message from Yandex error response.
-    """
-    error_name = data.get(
-        "error",
-        "?"
-    )
-    error_description = (
-        data.get("message") or
-        data.get("description") or
-        "?"
-    )
-
-    return (f"{error_name}: {error_description}")
-
-
-def yandex_operation_is_success(data: dict) -> bool:
-    """
-    :returns:
-    Yandex response contains status which
-    indicates that operation is successfully ended.
-    """
-    return (
-        ("status" in data) and
-        (data["status"] == "success")
-    )
-
-
-def yandex_operation_is_failed(data: dict) -> bool:
-    """
-    :returns:
-    Yandex response contains status which
-    indicates that operation is failed.
-    """
-    return (
-        ("status" in data) and
-        (data["status"] in (
-            # Yandex documentation is different in some places
-            "failure",
-            "failed"
-        ))
-    )
+# endregion
