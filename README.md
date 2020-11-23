@@ -34,6 +34,7 @@
 - uploading of audio (limit is 20 MB).
 - uploading of video (limit is 20 MB).
 - uploading of voice (limit is 20 MB).
+- uploading for public access.
 - publishing and unpublishing of files or folders.
 - creating of folders.
 - getting of information about file, folder or disk.

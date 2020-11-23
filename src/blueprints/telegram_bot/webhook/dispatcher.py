@@ -174,6 +174,12 @@ def direct_dispatch(
         CommandName.UPLOAD_VIDEO.value: commands.upload_video_handler,
         CommandName.UPLOAD_VOICE.value: commands.upload_voice_handler,
         CommandName.UPLOAD_URL.value: commands.upload_url_handler,
+        CommandName.PUBLIC_UPLOAD_PHOTO.value: commands.public_upload_photo_handler, # noqa
+        CommandName.PUBLIC_UPLOAD_FILE.value: commands.public_upload_file_handler, # noqa
+        CommandName.PUBLIC_UPLOAD_AUDIO.value: commands.public_upload_audio_handler, # noqa
+        CommandName.PUBLIC_UPLOAD_VIDEO.value: commands.public_upload_video_handler, # noqa
+        CommandName.PUBLIC_UPLOAD_VOICE.value: commands.public_upload_voice_handler, # noqa
+        CommandName.PUBLIC_UPLOAD_URL.value: commands.public_upload_url_handler, # noqa
         CommandName.CREATE_FOLDER.value: commands.create_folder_handler,
         CommandName.PUBLISH.value: commands.publish_handler,
         CommandName.UNPUBLISH.value: commands.unpublish_handler,

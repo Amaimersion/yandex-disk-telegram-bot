@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from typing import Union
+from collections import deque
 
 from flask import g, current_app
 
@@ -13,6 +14,7 @@ from src.blueprints.telegram_bot._common.command_names import (
 from src.blueprints.telegram_bot._common.yandex_disk import (
     upload_file_with_url,
     get_element_info,
+    publish_item,
     YandexAPIRequestError,
     YandexAPICreateFolderError,
     YandexAPIUploadFileError,
@@ -124,6 +126,15 @@ class AttachmentHandler(metaclass=ABCMeta):
         there are no suitable data for handling).
         """
         pass
+
+    @property
+    def public_upload(self) -> bool:
+        """
+        :returns:
+        Upload file and then publish it.
+        Defaults to `False`.
+        """
+        return False
 
     def get_attachment(
         self,
@@ -331,12 +342,29 @@ class AttachmentHandler(metaclass=ABCMeta):
                     download_url=download_url
                 ):
                     success = status["success"]
-                    text = ""
+                    text_content = deque()
                     is_html_text = False
 
                     if success:
-                        info = None
                         full_path = f"{folder_path}/{file_name}"
+                        is_private_message = (not self.public_upload)
+
+                        if self.public_upload:
+                            try:
+                                publish_item(
+                                    user_access_token,
+                                    full_path
+                                )
+                            except Exception as error:
+                                print(error)
+                                text_content.append(
+                                    "\n"
+                                    "Failed to publish. Type to do it:"
+                                    "\n"
+                                    f"{CommandName.PUBLISH.value} {full_path}"
+                                )
+
+                        info = None
 
                         try:
                             info = get_element_info(
@@ -344,29 +372,43 @@ class AttachmentHandler(metaclass=ABCMeta):
                                 full_path,
                                 get_public_info=False
                             )
-                        except Exception:
-                            pass
-
-                        if info:
-                            text = create_element_info_html_text(
-                                info,
-                                include_private_info=True
-                            )
-                            is_html_text = True
-                        else:
-                            text = (
-                                "Successfully completed, but failed "
-                                "to get information about this file."
+                        except Exception as error:
+                            print(error)
+                            text_content.append(
                                 "\n"
-                                "Type to see information:"
+                                "Failed to get information. Type to do it:"
                                 "\n"
                                 f"{CommandName.ELEMENT_INFO.value} {full_path}"
                             )
+
+                        if text_content:
+                            text_content.append(
+                                "It is successfully uploaded, "
+                                "but i failed to perform some actions. "
+                                "You need to execute them manually."
+                            )
+                            text_content.reverse()
+
+                        if info:
+                            # extra line before info
+                            if text_content:
+                                text_content.append("")
+
+                            is_html_text = True
+                            info_text = create_element_info_html_text(
+                                info,
+                                include_private_info=is_private_message
+                            )
+                            text_content.append(info_text)
                     else:
                         # You shouldn't use HTML for this,
                         # because `upload_status` can be a same
                         upload_status = status["status"]
-                        text = f"Status: {upload_status}"
+                        text_content.append(
+                            f"Status: {upload_status}"
+                        )
+
+                    text = "\n".join(text_content)
 
                     self.reply_to_message(
                         message.message_id,
@@ -508,7 +550,8 @@ class PhotoHandler(AttachmentHandler):
 
     def create_help_message(self):
         return (
-            "Send a photos that you want to upload."
+            "Send a photos that you want to upload"
+            f"{' and publish' if self.public_upload else ''}."
             "\n\n"
             "Note:"
             "\n"
@@ -558,7 +601,8 @@ class FileHandler(AttachmentHandler):
 
     def create_help_message(self):
         return (
-            "Send a files that you want to upload."
+            "Send a files that you want to upload"
+            f"{' and publish' if self.public_upload else ''}."
             "\n\n"
             "Note:"
             "\n"
@@ -595,7 +639,8 @@ class AudioHandler(AttachmentHandler):
 
     def create_help_message(self):
         return (
-            "Send a music that you want to upload."
+            "Send a music that you want to upload"
+            f"{' and publish' if self.public_upload else ''}."
             "\n\n"
             "Note:"
             "\n"
@@ -646,7 +691,8 @@ class VideoHandler(AttachmentHandler):
 
     def create_help_message(self):
         return (
-            "Send a video that you want to upload."
+            "Send a video that you want to upload"
+            f"{' and publish' if self.public_upload else ''}."
             "\n\n"
             "Note:"
             "\n"
@@ -681,7 +727,8 @@ class VoiceHandler(AttachmentHandler):
 
     def create_help_message(self):
         return (
-            "Send a voice message that you want to upload."
+            "Send a voice message that you want to upload"
+            f"{' and publish' if self.public_upload else ''}."
         )
 
 
@@ -708,7 +755,8 @@ class URLHandler(AttachmentHandler):
 
     def create_help_message(self):
         return (
-            "Send a direct URL to file that you want to upload."
+            "Send a direct URL to file that you want to upload"
+            f"{' and publish' if self.public_upload else ''}."
             "\n\n"
             "Note:"
             "\n"
@@ -724,9 +772,84 @@ class URLHandler(AttachmentHandler):
         return attachment.split("/")[-1]
 
 
+class PublicHandler:
+    """
+    Handles public uploading.
+    """
+    @property
+    def public_upload(self):
+        return True
+
+
+class PublicPhotoHandler(PublicHandler, PhotoHandler):
+    """
+    Handles public uploading of photo.
+    """
+    @staticmethod
+    def handle(*args, **kwargs):
+        handler = PublicPhotoHandler()
+        handler.upload(*args, **kwargs)
+
+
+class PublicFileHandler(PublicHandler, FileHandler):
+    """
+    Handles public uploading of file.
+    """
+    @staticmethod
+    def handle(*args, **kwargs):
+        handler = PublicFileHandler()
+        handler.upload(*args, **kwargs)
+
+
+class PublicAudioHandler(PublicHandler, AudioHandler):
+    """
+    Handles public uploading of audio.
+    """
+    @staticmethod
+    def handle(*args, **kwargs):
+        handler = PublicAudioHandler()
+        handler.upload(*args, **kwargs)
+
+
+class PublicVideoHandler(PublicHandler, VideoHandler):
+    """
+    Handles public uploading of video.
+    """
+    @staticmethod
+    def handle(*args, **kwargs):
+        handler = PublicVideoHandler()
+        handler.upload(*args, **kwargs)
+
+
+class PublicVoiceHandler(PublicHandler, VoiceHandler):
+    """
+    Handles public uploading of voice.
+    """
+    @staticmethod
+    def handle(*args, **kwargs):
+        handler = PublicVoiceHandler()
+        handler.upload(*args, **kwargs)
+
+
+class PublicURLHandler(PublicHandler, URLHandler):
+    """
+    Handles public uploading of direct URL to file.
+    """
+    @staticmethod
+    def handle(*args, **kwargs):
+        handler = PublicURLHandler()
+        handler.upload(*args, **kwargs)
+
+
 handle_photo = PhotoHandler.handle
 handle_file = FileHandler.handle
 handle_audio = AudioHandler.handle
 handle_video = VideoHandler.handle
 handle_voice = VoiceHandler.handle
 handle_url = URLHandler.handle
+handle_public_photo = PublicPhotoHandler.handle
+handle_public_file = PublicFileHandler.handle
+handle_public_audio = PublicAudioHandler.handle
+handle_public_video = PublicVideoHandler.handle
+handle_public_voice = PublicVoiceHandler.handle
+handle_public_url = PublicURLHandler.handle

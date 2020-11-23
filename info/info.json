@@ -26,24 +26,48 @@
             "description": "Upload a photo with quality loss"
         },
         {
+            "command": "public_upload_photo",
+            "description": "Upload a photo and publish it"
+        },
+        {
             "command": "upload_file",
             "description": "Upload a file with original state"
+        },
+        {
+            "command": "public_upload_file",
+            "description": "Upload a file and publish it"
         },
         {
             "command": "upload_audio",
             "description": "Upload an audio with original quality"
         },
         {
+            "command": "public_upload_audio",
+            "description": "Upload an audio and publish it"
+        },
+        {
             "command": "upload_video",
             "description": "Upload a video with original quality"
+        },
+        {
+            "command": "public_upload_video",
+            "description": "Upload a video and publish it"
         },
         {
             "command": "upload_voice",
             "description": "Upload a voice message"
         },
         {
+            "command": "public_upload_voice",
+            "description": "Upload a voice and publish it"
+        },
+        {
             "command": "upload_url",
             "description": "Upload a file using direct URL"
+        },
+        {
+            "command": "public_upload_url",
+            "description": "Upload a file using direct URL and publish it"
         },
         {
             "command": "publish",

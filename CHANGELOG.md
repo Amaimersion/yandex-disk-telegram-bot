@@ -8,6 +8,7 @@
 
 ### Added
 
+- `/public_upload_photo`, `/public_upload_file`, `/public_upload_audio`, `/public_upload_video`, `/public_upload_voice`, `/public_upload_url`: uploading of files and then publishing them.
 - `/publish`: publishing of files or folders.
 - `/unpublish`: unpublishing of files or folders.
 - `/space`: getting of information about remaining Yandex.Disk space.
