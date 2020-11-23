@@ -1,6 +1,7 @@
 from abc import ABCMeta, abstractmethod
 from typing import Union
 from collections import deque
+from urllib.parse import urlparse
 
 from flask import g, current_app
 
@@ -769,7 +770,7 @@ class URLHandler(AttachmentHandler):
         return message.get_entity_value(self.raw_data_key)
 
     def create_file_name(self, attachment, file):
-        return attachment.split("/")[-1]
+        return urlparse(attachment).path.split("/")[-1]
 
 
 class PublicHandler:

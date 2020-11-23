@@ -20,6 +20,7 @@
 
 - `/create_folder`: now it will wait for folder name if you send empty command, not deny operation.
 - `/upload`: on success it will return information about uploaded file, not plain status.
+- `/upload_url`: result name will not contain parameters, queries and fragments.
 
 ### Fixed
 
