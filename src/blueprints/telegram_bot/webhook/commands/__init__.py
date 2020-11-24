@@ -48,3 +48,4 @@ from .unpublish import handle as unpublish_handler
 from .space_info import handle as space_info_handler
 from .element_info import handle as element_info_handler
 from .disk_info import handle as disk_info_handler
+from .commands_list import handle as commands_list_handler

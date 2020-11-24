@@ -185,7 +185,8 @@ def direct_dispatch(
         CommandName.UNPUBLISH.value: commands.unpublish_handler,
         CommandName.SPACE_INFO.value: commands.space_info_handler,
         CommandName.ELEMENT_INFO.value: commands.element_info_handler,
-        CommandName.DISK_INFO.value: commands.disk_info_handler
+        CommandName.DISK_INFO.value: commands.disk_info_handler,
+        CommandName.COMMANDS_LIST.value: commands.commands_list_handler
     }
     handler = routes.get(command, fallback)
 

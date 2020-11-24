@@ -22,6 +22,10 @@
             "description": "Read about me"
         },
         {
+            "command": "commands",
+            "description": "See full list of commands"
+        },
+        {
             "command": "upload_photo",
             "description": "Upload a photo with quality loss"
         },

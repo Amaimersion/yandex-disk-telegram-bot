@@ -89,6 +89,9 @@ def handle(*args, **kwargs):
         "<b>Information</b>"
         "\n"
         f"{CommandName.ABOUT.value} — read about me"
+        "\n"
+        f"{CommandName.COMMANDS_LIST.value} — see full list of "
+        "available commands without help message"
     )
 
     chat_id = kwargs.get(

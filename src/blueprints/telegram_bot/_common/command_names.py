@@ -30,3 +30,4 @@ class CommandName(Enum):
     SPACE_INFO = "/space_info"
     ELEMENT_INFO = "/element_info"
     DISK_INFO = "/disk_info"
+    COMMANDS_LIST = "/commands"
