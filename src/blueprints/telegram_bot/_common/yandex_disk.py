@@ -1,5 +1,6 @@
 from time import sleep
-from typing import Generator
+from typing import Generator, Deque
+from collections import deque
 
 from flask import current_app
 
@@ -90,6 +91,105 @@ class YandexAPIExceededNumberOfStatusChecksError(Exception):
 # region Helpers
 
 
+class YandexDiskPath:
+    """
+    Yandex.Disk path to resource.
+
+    - you should use this class, not raw strings from user!
+    """
+    def __init__(self, *args):
+        """
+        :param *args:
+        List of raw paths from user.
+        """
+        self.separator = "/"
+        self.disk_namespace = "disk:"
+        self.trash_namespace = "trash:"
+        self.raw_paths = args
+
+    def get_absolute_path(self) -> Deque[str]:
+        """
+        :returns:
+        Iterable of resource names without separator.
+        Join result with separator will be a valid Yandex.Disk path.
+
+        :examples:
+        1) `self.raw_paths = ["Telegram Bot/test", "name.jpg"]` ->
+        `["disk:", "Telegram Bot", "test", "name.jpg"]`.
+        2) `self.raw_paths = ["disk:/Telegram Bot//test", "/name.jpg/"]` ->
+        `["disk:", "Telegram Bot", "test", "name.jpg"]`.
+        """
+        data = deque()
+
+        for raw_path in self.raw_paths:
+            data.extend(
+                [x for x in raw_path.split(self.separator) if x]
+            )
+
+        if not data:
+            data.append(self.disk_namespace)
+
+        namespace = data[0]
+        is_valid_namepsace = namespace in (
+            self.disk_namespace,
+            self.trash_namespace
+        )
+
+        # Yandex.Disk path must starts with some namespace
+        # (Disk, Trash, etc.). Paths without valid namespace
+        # are invalid! However, they can work without namespace.
+        # But paths without namespace can lead to unexpected
+        # error at any time. So, you always should add namespace.
+        # For example, `Telegram Bot/12` will work, but
+        # `Telegram Bot/12:12` will lead to `DiskPathFormatError`
+        # from Yandex because Yandex assumes `12` as namespace.
+        # `disk:/Telegram Bot/12:12` will work fine.
+        if not is_valid_namepsace:
+            # Let's use Disk namespace by default
+            data.appendleft(self.disk_namespace)
+
+        return data
+
+    def create_absolute_path(self) -> str:
+        """
+        :returns:
+        Valid absolute path.
+        """
+        data = self.get_absolute_path()
+
+        # if path is only namespace, then
+        # it should end with separator,
+        # otherwise there should be no
+        # separator at the end
+        if (len(data) == 1):
+            return f"{data.pop()}{self.separator}"
+        else:
+            return self.separator.join(data)
+
+    def generate_absolute_path(
+        self,
+        include_namespace=True
+    ) -> Generator[str, None, None]:
+        """
+        :yields:
+        Valid absolute path piece by piece.
+
+        :examples:
+        1) `create_absolute_path()` -> `disk:/Telegram Bot/folder/file.jpg`
+        `generate_absolute_path(True)` -> `[disk:/, disk:/Telegram Bot,
+        disk:/Telegram Bot/folder, disk:/Telegram Bot/folder/file.jpg]`.
+        """
+        data = self.get_absolute_path()
+        absolute_path = data.popleft()
+
+        if include_namespace:
+            yield f"{absolute_path}{self.separator}"
+
+        for element in data:
+            absolute_path += f"{self.separator}{element}"
+            yield absolute_path
+
+
 def create_yandex_error_text(data: dict) -> str:
     """
     :returns:
@@ -166,19 +266,18 @@ def create_folder(
     `YandexAPIRequestError`,
     `YandexAPICreateFolderError`.
     """
-    folders = [x for x in folder_name.split("/") if x]
-    folder_path = ""
-    last_status_code = 201  # root always created
+    path = YandexDiskPath(folder_name)
+    resources = path.generate_absolute_path(True)
+    last_status_code = 201  # namespace always created
     allowed_errors = [409]
 
-    for folder in folders:
+    for resource in resources:
         result = None
-        folder_path = f"{folder_path}/{folder}"
 
         try:
             result = yandex.create_folder(
                 user_access_token,
-                path=folder_path
+                path=resource
             )
         except Exception as error:
             raise YandexAPIRequestError(error)
@@ -211,10 +310,13 @@ def publish_item(
     `YandexAPIRequestError`,
     `YandexAPIPublishItemError`.
     """
+    path = YandexDiskPath(absolute_item_path)
+    absolute_path = path.create_absolute_path()
+
     try:
         response = yandex.publish(
             user_access_token,
-            path=absolute_item_path
+            path=absolute_path
         )
     except Exception as error:
         raise YandexAPIRequestError(error)
@@ -239,10 +341,13 @@ def unpublish_item(
     `YandexAPIRequestError`,
     `YandexAPIUnpublishItemError`.
     """
+    path = YandexDiskPath(absolute_item_path)
+    absolute_path = path.create_absolute_path()
+
     try:
         response = yandex.unpublish(
             user_access_token,
-            path=absolute_item_path
+            path=absolute_path
         )
     except Exception as error:
         raise YandexAPIRequestError(error)
@@ -294,15 +399,15 @@ def upload_file_with_url(
         folder_name=folder_path
     )
 
-    folders = [x for x in folder_path.split("/") if x]
-    full_path = "/".join(folders + [file_name])
+    path = YandexDiskPath(folder_path, file_name)
+    absolute_path = path.create_absolute_path()
     response = None
 
     try:
         response = yandex.upload_file_with_url(
             user_access_token,
             url=download_url,
-            path=full_path
+            path=absolute_path
         )
     except Exception as error:
         raise YandexAPIRequestError(error)
@@ -451,10 +556,13 @@ def get_element_info(
     :raises:
     `YandexAPIRequestError`, `YandexAPIGetElementInfoError`.
     """
+    path = YandexDiskPath(absolute_element_path)
+    absolute_path = path.create_absolute_path()
+
     try:
         response = yandex.get_element_info(
             user_access_token,
-            path=absolute_element_path,
+            path=absolute_path,
             preview_crop=preview_crop,
             preview_size=preview_size,
             limit=embedded_elements_limit,

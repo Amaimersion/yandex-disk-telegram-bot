@@ -27,6 +27,7 @@
 - `/create_folder`: fixed a bug when bot could remove `/create_folder` occurrences from folder name.
 - `/create_folder`: fixed a bug when bot don't send any responses on invalid folder name.
 - Wrong information in help message for `/upload_video`.
+- A bug when paths with `:` in name (for example, `Telegram Bot/folder:test`) led to `DiskPathFormatError` from Yandex.
 
 ## Project
 
