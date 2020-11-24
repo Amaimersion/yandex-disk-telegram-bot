@@ -7,6 +7,7 @@ from plotly.express import colors
 from plotly.io import to_image
 
 from src.api import telegram
+from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common.yandex_disk import (
     get_disk_info,
     YandexAPIRequestError
@@ -14,10 +15,7 @@ from src.blueprints.telegram_bot._common.yandex_disk import (
 from src.blueprints.telegram_bot._common.command_names import (
     CommandName
 )
-from ._common.responses import (
-    cancel_command,
-    AbortReason
-)
+from ._common.responses import cancel_command
 from ._common.decorators import (
     yd_access_token_required,
     get_db_data
@@ -28,7 +26,7 @@ from ._common.decorators import (
 @get_db_data
 def handle(*args, **kwargs):
     """
-    Handles `/publish` command.
+    Handles `/space_info` command.
     """
     user = g.db_user
     chat_id = kwargs.get(
@@ -44,15 +42,16 @@ def handle(*args, **kwargs):
         cancel_command(chat_id)
         raise error
 
-    current_date = get_current_date()
+    current_utc_date = get_current_utc_datetime()
+    current_iso_date = get_current_iso_datetime()
     jpeg_image = create_space_chart(
         total_space=disk_info["total_space"],
         used_space=disk_info["used_space"],
         trash_size=disk_info["trash_size"],
-        caption=current_date
+        caption=current_utc_date
     )
-    filename = f"{to_filename(current_date)}.jpg"
-    file_caption = f"Yandex.Disk space at {current_date}"
+    filename = f"{to_filename(current_iso_date)}.jpg"
+    file_caption = f"Yandex.Disk space at {current_utc_date}"
 
     telegram.send_photo(
         chat_id=chat_id,
@@ -75,8 +74,8 @@ def create_space_chart(
     Creates Yandex.Disk space chart.
 
     - all sizes (total, used, trash) should be
-    specified in binary bytes (B). They will be
-    converted to binary gigabytes (GB).
+    specified in binary bytes. They will be
+    converted to binary gigabytes.
 
     :returns: JPEG image as bytes.
     """
@@ -165,7 +164,7 @@ def b_to_gb(value: int) -> int:
     return (value / 1024 / 1024 / 1024)
 
 
-def get_current_date() -> str:
+def get_current_utc_datetime() -> str:
     """
     :returns: Current date as string representation.
     """
