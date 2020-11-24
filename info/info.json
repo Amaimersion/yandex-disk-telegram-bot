@@ -82,12 +82,12 @@
             "description": "Create a folder using OS path"
         },
         {
-            "command": "space",
-            "description": "Information about remaining space"
-        },
-        {
             "command": "element_info",
             "description": "Information about file or folder"
+        },
+        {
+            "command": "space_info",
+            "description": "Information about remaining space"
         },
         {
             "command": "disk_info",

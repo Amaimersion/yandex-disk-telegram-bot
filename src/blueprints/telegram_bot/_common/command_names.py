@@ -27,6 +27,6 @@ class CommandName(Enum):
     CREATE_FOLDER = "/create_folder"
     PUBLISH = "/publish"
     UNPUBLISH = "/unpublish"
-    SPACE = "/space"
+    SPACE_INFO = "/space_info"
     ELEMENT_INFO = "/element_info"
     DISK_INFO = "/disk_info"

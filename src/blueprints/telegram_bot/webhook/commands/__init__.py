@@ -45,6 +45,6 @@ from .yd_revoke import handle as yd_revoke_handler
 from .create_folder import handle as create_folder_handler
 from .publish import handle as publish_handler
 from .unpublish import handle as unpublish_handler
-from .space import handle as space_handler
+from .space_info import handle as space_info_handler
 from .element_info import handle as element_info_handler
 from .disk_info import handle as disk_info_handler

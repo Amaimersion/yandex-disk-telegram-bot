@@ -183,7 +183,7 @@ def direct_dispatch(
         CommandName.CREATE_FOLDER.value: commands.create_folder_handler,
         CommandName.PUBLISH.value: commands.publish_handler,
         CommandName.UNPUBLISH.value: commands.unpublish_handler,
-        CommandName.SPACE.value: commands.space_handler,
+        CommandName.SPACE_INFO.value: commands.space_info_handler,
         CommandName.ELEMENT_INFO.value: commands.element_info_handler,
         CommandName.DISK_INFO.value: commands.disk_info_handler
     }
