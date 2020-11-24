@@ -5,6 +5,7 @@
 ### Improved
 
 - Text of some bot responses.
+- Formatting of help message.
 
 ### Added
 
