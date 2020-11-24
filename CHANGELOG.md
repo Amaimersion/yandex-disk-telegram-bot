@@ -13,6 +13,7 @@
 - `/unpublish`: unpublishing of files or folders.
 - `/space`: getting of information about remaining Yandex.Disk space.
 - `/element_info`: getting of information about file or folder.
+- `/disk_info`: getting of information about Yandex.Disk.
 - Handling of files that exceed file size limit in 20 MB. At the moment the bot will asnwer with warning message, not trying to upload that file. [#3](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/3)
 - Help messages for each upload command will be sended when there are no suitable input data.
 

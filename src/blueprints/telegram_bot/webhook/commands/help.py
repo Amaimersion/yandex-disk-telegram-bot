@@ -73,6 +73,8 @@ def handle(*args, **kwargs):
         "\n"
         f"{CommandName.ELEMENT_INFO.value} — get information about file or folder. "
         "Send full path of element with this command."
+        "\n"
+        f"{CommandName.DISK_INFO.value} — get information about your Yandex.Disk. "
         "\n\n"
         "<b>Yandex.Disk Access</b>"
         "\n"

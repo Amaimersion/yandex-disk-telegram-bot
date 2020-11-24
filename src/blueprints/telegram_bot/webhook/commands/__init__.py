@@ -47,3 +47,4 @@ from .publish import handle as publish_handler
 from .unpublish import handle as unpublish_handler
 from .space import handle as space_handler
 from .element_info import handle as element_info_handler
+from .disk_info import handle as disk_info_handler

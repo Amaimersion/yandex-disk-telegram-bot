@@ -29,3 +29,4 @@ class CommandName(Enum):
     UNPUBLISH = "/unpublish"
     SPACE = "/space"
     ELEMENT_INFO = "/element_info"
+    DISK_INFO = "/disk_info"
