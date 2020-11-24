@@ -48,6 +48,7 @@
 - Support for different env-type files (based on current environment). Initially it was only for production.
 - Web Site: 302 (redirect to Telegram) will be returned instead of 404 (not found page), but only in production mode.
 - Debug configuration for VSCode.
+- DB: add indexes for frequent using columns.
 
 ### Changed
 

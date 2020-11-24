@@ -46,6 +46,7 @@ class User(db.Model):
     telegram_id = db.Column(
         db.Integer,
         unique=True,
+        index=True,
         nullable=False,
         comment="Unique ID to identificate user in Telegram"
     )

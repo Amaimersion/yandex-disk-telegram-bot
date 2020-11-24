@@ -69,6 +69,7 @@ class YandexDiskToken(db.Model):
         db.Integer,
         db.ForeignKey("users.id"),
         unique=True,
+        index=True,
         nullable=False,
         comment="Tokens belongs to this user"
     )
