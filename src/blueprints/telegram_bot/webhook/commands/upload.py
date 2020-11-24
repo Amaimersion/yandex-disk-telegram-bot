@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 from flask import g, current_app
 
 from src.api import telegram
+from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common.telegram_interface import (
     Message as TelegramMessage
 )
@@ -731,6 +732,9 @@ class VoiceHandler(AttachmentHandler):
             "Send a voice message that you want to upload"
             f"{' and publish' if self.public_upload else ''}."
         )
+
+    def create_file_name(self, attachment, file):
+        return get_current_iso_datetime()
 
 
 class URLHandler(AttachmentHandler):
