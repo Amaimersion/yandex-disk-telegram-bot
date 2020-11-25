@@ -158,11 +158,12 @@ class AttachmentHandler(metaclass=ABCMeta):
 
     def check_message_health(
         self,
-        message: TelegramMessage
+        attachment: Union[dict, str, None]
     ) -> MessageHealth:
         """
-        :param message:
-        Incoming Telegram message.
+        :param attachment:
+        Attachment of incoming Telegram message.
+        `None` means there is no attachment.
 
         :returns:
         See `MessageHealth` documentation.
@@ -170,20 +171,22 @@ class AttachmentHandler(metaclass=ABCMeta):
         in case of `ok = true`.
         """
         health = MessageHealth(True)
-        value = self.get_attachment(message)
 
-        if not isinstance(value, self.raw_data_type):
+        if attachment is None:
+            health.ok = False
+            health.abort_reason = AbortReason.NO_SUITABLE_DATA
+        elif not isinstance(attachment, self.raw_data_type):
             health.ok = False
             health.abort_reason = AbortReason.NO_SUITABLE_DATA
         elif (
-            (type(value) in [str]) and
-            (len(value) == 0)
+            (type(attachment) in [str]) and
+            (len(attachment) == 0)
         ):
             health.ok = False
             health.abort_reason = AbortReason.NO_SUITABLE_DATA
         elif (
-            isinstance(value, dict) and
-            self.is_too_big_file(value)
+            isinstance(attachment, dict) and
+            self.is_too_big_file(attachment)
         ):
             health.ok = False
             health.abort_reason = AbortReason.EXCEED_FILE_SIZE_LIMIT
@@ -273,7 +276,8 @@ class AttachmentHandler(metaclass=ABCMeta):
             "message",
             g.telegram_message
         )
-        message_health = self.check_message_health(message)
+        attachment = self.get_attachment(message)
+        message_health = self.check_message_health(attachment)
 
         if not message_health.ok:
             reason = (
@@ -288,15 +292,6 @@ class AttachmentHandler(metaclass=ABCMeta):
                 )
             else:
                 return abort_command(chat_id, reason)
-
-        attachment = self.get_attachment(message)
-        data_is_empty = (attachment is None)
-
-        if data_is_empty:
-            return self.send_html_message(
-                chat_id,
-                self.create_help_message()
-            )
 
         try:
             telegram.send_chat_action(
