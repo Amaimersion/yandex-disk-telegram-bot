@@ -737,13 +737,13 @@ class VoiceHandler(AttachmentHandler):
         return get_current_iso_datetime()
 
 
-class URLHandler(AttachmentHandler):
+class DirectURLHandler(AttachmentHandler):
     """
     Handles uploading of direct URL to file.
     """
     @staticmethod
     def handle(*args, **kwargs):
-        handler = URLHandler()
+        handler = DirectURLHandler()
         handler.upload(*args, **kwargs)
 
     @property
@@ -836,13 +836,13 @@ class PublicVoiceHandler(PublicHandler, VoiceHandler):
         handler.upload(*args, **kwargs)
 
 
-class PublicURLHandler(PublicHandler, URLHandler):
+class PublicDirectURLHandler(PublicHandler, DirectURLHandler):
     """
     Handles public uploading of direct URL to file.
     """
     @staticmethod
     def handle(*args, **kwargs):
-        handler = PublicURLHandler()
+        handler = PublicDirectURLHandler()
         handler.upload(*args, **kwargs)
 
 
@@ -851,10 +851,10 @@ handle_file = FileHandler.handle
 handle_audio = AudioHandler.handle
 handle_video = VideoHandler.handle
 handle_voice = VoiceHandler.handle
-handle_url = URLHandler.handle
+handle_url = DirectURLHandler.handle
 handle_public_photo = PublicPhotoHandler.handle
 handle_public_file = PublicFileHandler.handle
 handle_public_audio = PublicAudioHandler.handle
 handle_public_video = PublicVideoHandler.handle
 handle_public_voice = PublicVoiceHandler.handle
-handle_public_url = PublicURLHandler.handle
+handle_public_url = PublicDirectURLHandler.handle
