@@ -67,11 +67,11 @@
         },
         {
             "command": "upload_url",
-            "description": "Upload a file using direct URL"
+            "description": "Upload a resource using URL"
         },
         {
             "command": "public_upload_url",
-            "description": "Upload a file using direct URL and publish it"
+            "description": "Upload a resource using URL and publish it"
         },
         {
             "command": "publish",

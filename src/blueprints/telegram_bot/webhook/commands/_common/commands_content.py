@@ -82,10 +82,17 @@ commands_html_content = (
             {
                 "name": CommandName.UPLOAD_URL.value,
                 "help": (
-                    "upload a file using direct URL. "
-                    "Original name will be saved. "
-                    "You can send direct URL to a "
-                    "file without this command. "
+                    "upload a some resource using URL. "
+                    "For direct URL's to file original name, "
+                    "quality and size will be saved. "
+                    "For URL's to some resource best name and "
+                    "best possible quality will be selected. "
+                    '"Resource" means anything: YouTube video, '
+                    "Twitch clip, music track, etc. "
+                    "Not everything will work as you expect, "
+                    "but some URL's will. "
+                    'See <a href="https://github.com/ytdl-org/youtube-dl/blob/master/docs/supportedsites.md">this</a> '
+                    "for all supported sites. "
                     f"Use {CommandName.PUBLIC_UPLOAD_URL.value} "
                     "for public uploading"
                 )

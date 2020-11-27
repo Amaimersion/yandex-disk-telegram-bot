@@ -30,10 +30,11 @@
 
 - uploading of photos (limit is 20 MB).
 - uploading of files (limit is 20 MB).
-- uploading of files using direct URL.
 - uploading of audio (limit is 20 MB).
 - uploading of video (limit is 20 MB).
 - uploading of voice (limit is 20 MB).
+- uploading of files using direct URL.
+- uploading of various resources (YouTube, for example) with help of `youtube-dl`.
 - uploading for public access.
 - publishing and unpublishing of files or folders.
 - creating of folders.

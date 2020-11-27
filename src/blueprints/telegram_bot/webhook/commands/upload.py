@@ -7,6 +7,7 @@ from flask import g, current_app
 
 from src.api import telegram
 from src.blueprints._common.utils import get_current_iso_datetime
+from src.blueprints.telegram_bot._common import youtube_dl
 from src.blueprints.telegram_bot._common.telegram_interface import (
     Message as TelegramMessage
 )
@@ -772,6 +773,116 @@ class DirectURLHandler(AttachmentHandler):
         return urlparse(attachment).path.split("/")[-1]
 
 
+class IntellectualURLHandler(DirectURLHandler):
+    """
+    Handles uploading of direct URL to file.
+
+    But unlike `DirectURLHandler`, this handler will
+    try to guess which content user actually assumed.
+    For example, if user passed URL to YouTube video,
+    `DirectURLHandler` will download HTML page, but
+    `IntellectualURLHandler` will download a video.
+
+    In short, `DirectURLHandler` makes minimum changes
+    to input content; `IntellectualURLHandler` makes
+    maximum changes, but these changes focused for
+    "that user actually wants" and "it should be right".
+
+    What this handler does:
+    - using `youtube_dl` gets direct URL to
+    input video/music URL, and gets right filename
+    - in case if nothing works, then fallback to `DirectURLHandler`
+    """
+    def __init__(self):
+        super().__init__()
+
+        self.input_url = None
+        self.youtube_dl_info = None
+
+    @staticmethod
+    def handle(*args, **kwargs):
+        handler = IntellectualURLHandler()
+        handler.upload(*args, **kwargs)
+
+    def create_help_message(self):
+        return (
+            "Send an URL to resource that you want to upload"
+            f"{' and publish' if self.public_upload else ''}."
+            "\n\n"
+            "Note:"
+            "\n"
+            "- for direct URL's to file original name, "
+            "quality and size will be saved"
+            "\n"
+            "- for URL's to some resource best name amd "
+            "best possible quality will be selected"
+            "\n"
+            "- i will try to guess what resource you actually assumed. "
+            "For example, you can send URL to YouTube video or "
+            "Twitch clip, and video from that URL will be uploaded"
+            "\n"
+            "- you can send URL to any resource: video, audio, image, "
+            "text, page, etc. Not everything will work as you expect, "
+            "but some URL's will"
+            "\n"
+            "- i'm using youtube-dl, if that means anything to you (:"
+        )
+
+    def get_attachment(self, message: TelegramMessage):
+        self.input_url = super().get_attachment(message)
+
+        if not self.input_url:
+            return None
+
+        best_url = self.input_url
+
+        try:
+            self.youtube_dl_info = youtube_dl.extract_info(
+                self.input_url
+            )
+        except youtube_dl.UnsupportedURLError:
+            # Unsupported URL's is expected here,
+            # let's treat them as direct URL's to files
+            pass
+        except youtube_dl.UnexpectedError as error:
+            # TODO:
+            # Something goes wrong in `youtube_dl`.
+            # It is better to log this error to user,
+            # because there can be restrictions or limits,
+            # but there also can be some internal info
+            # which shouldn't be printed to user.
+            # At the moment there is no best way for UX, so,
+            # let's just print this information in logs.
+            print(
+                "Unexpected youtube_dl error:",
+                error
+            )
+
+        if self.youtube_dl_info:
+            best_url = self.youtube_dl_info["direct_url"]
+
+        return best_url
+
+    def create_file_name(self, attachment, file):
+        input_filename = super().create_file_name(
+            self.input_url,
+            file
+        )
+        youtube_dl_filename = None
+
+        if self.youtube_dl_info:
+            youtube_dl_filename = self.youtube_dl_info.get(
+                "filename"
+            )
+
+        best_filename = (
+            youtube_dl_filename or
+            input_filename
+        )
+
+        return best_filename
+
+
 class PublicHandler:
     """
     Handles public uploading.
@@ -841,15 +952,27 @@ class PublicDirectURLHandler(PublicHandler, DirectURLHandler):
         handler.upload(*args, **kwargs)
 
 
+class PublicIntellectualURLHandler(PublicHandler, IntellectualURLHandler):
+    """
+    Handles public uploading of direct URL to file.
+
+    - see `IntellectualURLHandler` documentation.
+    """
+    @staticmethod
+    def handle(*args, **kwargs):
+        handler = PublicIntellectualURLHandler()
+        handler.upload(*args, **kwargs)
+
+
 handle_photo = PhotoHandler.handle
 handle_file = FileHandler.handle
 handle_audio = AudioHandler.handle
 handle_video = VideoHandler.handle
 handle_voice = VoiceHandler.handle
-handle_url = DirectURLHandler.handle
+handle_url = IntellectualURLHandler.handle
 handle_public_photo = PublicPhotoHandler.handle
 handle_public_file = PublicFileHandler.handle
 handle_public_audio = PublicAudioHandler.handle
 handle_public_video = PublicVideoHandler.handle
 handle_public_voice = PublicVoiceHandler.handle
-handle_public_url = PublicDirectURLHandler.handle
+handle_public_url = PublicIntellectualURLHandler.handle
