@@ -332,6 +332,8 @@ class AttachmentHandler(metaclass=ABCMeta):
         ]
 
         def long_task():
+            full_path = f"{folder_path}/{file_name}"
+
             try:
                 for status in upload_file_with_url(
                     user_access_token=user_access_token,
@@ -344,7 +346,6 @@ class AttachmentHandler(metaclass=ABCMeta):
                     is_html_text = False
 
                     if success:
-                        full_path = f"{folder_path}/{file_name}"
                         is_private_message = (not self.public_upload)
 
                         if self.public_upload:
@@ -439,7 +440,10 @@ class AttachmentHandler(metaclass=ABCMeta):
             except YandexAPIExceededNumberOfStatusChecksError:
                 error_text = (
                     "I can't track operation status of "
-                    "this anymore. Perform manual checking."
+                    "this anymore. It can be uploaded "
+                    "after a while. Type to check:"
+                    "\n"
+                    f"{CommandName.ELEMENT_INFO.value} {full_path}"
                 )
 
                 return self.reply_to_message(
