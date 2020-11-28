@@ -770,7 +770,16 @@ class DirectURLHandler(AttachmentHandler):
         return message.get_entity_value(self.raw_data_key)
 
     def create_file_name(self, attachment, file):
-        return urlparse(attachment).path.split("/")[-1]
+        parse_result = urlparse(attachment)
+        filename = parse_result.path.split("/")[-1]
+
+        # for example, `https://ya.ru` leads to
+        # empty path, so, `filename` will be empty
+        # in that case. Then let it be `ya.ru`
+        if not filename:
+            filename = parse_result.netloc
+
+        return filename
 
 
 class IntellectualURLHandler(DirectURLHandler):
