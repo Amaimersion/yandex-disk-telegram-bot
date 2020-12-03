@@ -52,13 +52,18 @@ class YandexOAuthAPIMethod(Enum):
 class Config:
     """
     Notes:
-    - don't remove any key from configuration, because code logic
-    may depend on this. Instead set disable value (if code logic
+    - don't remove any keys from configuration, because code logic
+    can depend on this. Instead set disable value (if code logic
     supports it); or set empty value and edit code logic to handle
     such values.
-    - keep in mind that Heroku have 30 seconds request timeout.
-    So, if your configuration value can exceed 30 seconds, then
-    request will be terminated by Heroku.
+    - keep in mind that Telegram, Heroku, etc. have request timeout.
+    It is about 30 seconds, but actual value can be different.
+    If you don't end current request in a long time, then it will
+    be force closed. Telegram will send new request in that case.
+    Try to always use background task queue, not block current thread.
+    If you have no opportunity to use background task queue, then
+    change current configuration in order request with blocked thread
+    cannot take long time to complete.
     """
     # Project
     # name of app that will be used in HTML and so on
