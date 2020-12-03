@@ -1,5 +1,6 @@
 from flask import g, current_app
 
+from src.extensions import task_queue
 from src.api import telegram
 from src.api.yandex import make_photo_preview_request
 from src.blueprints.telegram_bot._common.yandex_disk import (
@@ -111,24 +112,68 @@ def handle(*args, **kwargs):
             ]]
         }
 
+    # We will send message without preview,
+    # because it can take a while to download
+    # preview file and send it. We will
+    # send it later if it is available.
     telegram.send_message(**params)
 
-    preview = info.get("preview")
+    preview_url = info.get("preview")
 
-    if preview:
-        # Yandex requires user OAuth token to get preview
-        result = make_photo_preview_request(preview, access_token)
+    if preview_url:
+        filename = info.get("name", "preview.jpg")
+        arguments = (
+            preview_url,
+            filename,
+            access_token,
+            chat_id
+        )
 
-        if result["ok"]:
-            data = result["content"]
-            filename = info.get("name", "?")
+        if task_queue.is_enabled:
+            job_timeout = current_app.config[
+                "YANDEX_DISK_WORKER_ELEMENT_INFO_TIMEOUT"
+            ]
 
-            telegram.send_photo(
-                chat_id=chat_id,
-                photo=(
-                    filename,
-                    data,
-                    "image/jpeg"
-                ),
-                disable_notification=True
+            task_queue.enqueue(
+                send_preview,
+                args=arguments,
+                description=CommandName.ELEMENT_INFO.value,
+                job_timeout=job_timeout,
+                result_ttl=0,
+                failure_ttl=0
             )
+        else:
+            # NOTE: current thread will
+            # be blocked for a while
+            send_preview(*arguments)
+
+
+def send_preview(
+    preview_url,
+    filename,
+    user_access_token,
+    chat_id
+):
+    """
+    Downloads preview from Yandex.Disk and sends it to user.
+
+    - requires user Yandex.Disk access token to
+    download preview file.
+    """
+    result = make_photo_preview_request(
+        preview_url,
+        user_access_token
+    )
+
+    if result["ok"]:
+        data = result["content"]
+
+        telegram.send_photo(
+            chat_id=chat_id,
+            photo=(
+                filename,
+                data,
+                "image/jpeg"
+            ),
+            disable_notification=True
+        )

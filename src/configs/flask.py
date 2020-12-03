@@ -175,6 +175,9 @@ class Config:
     # In seconds.
     # Applied only if task queue (RQ, for example) is enabled
     YANDEX_DISK_WORKER_UPLOAD_FAILURE_TTL = 0
+    # See `YANDEX_DISK_WORKER_UPLOAD_JOB_TIMEOUT`
+    # documentation. This value is for `/element_info` worker.
+    YANDEX_DISK_WORKER_ELEMENT_INFO_TIMEOUT = 5
 
     # Google Analytics
     GOOGLE_ANALYTICS_UA = os.getenv("GOOGLE_ANALYTICS_UA")
