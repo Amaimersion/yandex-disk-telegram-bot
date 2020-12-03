@@ -6,6 +6,7 @@
 
 - Text of some bot responses.
 - Formatting of help message.
+- `/upload`: multiple items will be handled at a same time, not one by one.
 
 ### Added
 
@@ -46,6 +47,7 @@
 
 - Stateful chat support. Now bot can store custom user data (in different namespaces: user, chat, user in chat); determine Telegram message types; register single use handler (call once for message) with optional timeout for types of message; subscribe handlers with optional timeout for types of messages.
 - [Console Client](https://yandex.ru/dev/oauth/doc/dg/reference/console-client.html) Yandex.OAuth method. By default it is disabled, and default one is [Auto Code Client](https://yandex.ru/dev/oauth/doc/dg/reference/auto-code-client.html/).
+- RQ (job queue). It requires Redis to be enabled, and as Redis it is also optional. However, it is highly recommended to use it.
 - Support for different env-type files (based on current environment). Initially it was only for production.
 - Web Site: 302 (redirect to Telegram) will be returned instead of 404 (not found page), but only in production mode.
 - Debug configuration for VSCode.

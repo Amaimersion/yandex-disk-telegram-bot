@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 from flask import g, current_app
 
 from src.api import telegram
+from src.extensions import task_queue
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common import youtube_dl
 from src.blueprints.telegram_bot._common.telegram_interface import (
@@ -93,6 +94,17 @@ class AttachmentHandler(metaclass=ABCMeta):
         :returns:
         Action type from
         https://core.telegram.org/bots/api/#sendchataction
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def telegram_command(self) -> str:
+        """
+        :returns:
+        With what Telegram command this handler
+        is associated. It is exact command name
+        (`/upload_photo`, for example).
         """
         pass
 
@@ -263,11 +275,22 @@ class AttachmentHandler(metaclass=ABCMeta):
 
     @yd_access_token_required
     @get_db_data
-    def upload(self, *args, **kwargs) -> None:
+    def init_upload(self, *args, **kwargs) -> None:
         """
-        Uploads an attachment.
+        Initializes uploading process of message attachment.
+        Attachment will be prepared for uploading, and if
+        everything is ok, then uploading will be automatically
+        started, otherwise error will be logged back to user.
 
-        `*args`, `**kwargs` - arguments from dispatcher.
+        - it is expected entry point for dispatcher.
+        - `*args`, `**kwargs` - arguments from dispatcher.
+
+        NOTE:
+        Depending on app configuration uploading can start
+        in same or separate process. If it is same process,
+        then this function will take a long time to complete,
+        if it is separate process, then this function will
+        be completed fast.
         """
         chat_id = kwargs.get(
             "chat_id",
@@ -324,148 +347,234 @@ class AttachmentHandler(metaclass=ABCMeta):
                 file["file_path"]
             )
 
+        message_id = message.message_id
         user = g.db_user
         file_name = self.create_file_name(attachment, file)
         user_access_token = user.yandex_disk_token.get_access_token()
         folder_path = current_app.config[
             "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
         ]
+        arguments = (
+            folder_path,
+            file_name,
+            download_url,
+            user_access_token,
+            chat_id,
+            message_id
+        )
 
-        def long_task():
-            full_path = f"{folder_path}/{file_name}"
+        # Everything is fine by this moment.
+        # Because task workers can be busy,
+        # it can take a while to start uploading.
+        # Let's indicate to user that uploading
+        # process is started and user shouldn't
+        # send any data again
+        self.reply_to_message(
+            message_id,
+            chat_id,
+            "Status: pending",
+            False
+        )
 
-            try:
-                for status in upload_file_with_url(
-                    user_access_token=user_access_token,
-                    folder_path=folder_path,
-                    file_name=file_name,
-                    download_url=download_url
-                ):
-                    success = status["success"]
-                    text_content = deque()
-                    is_html_text = False
+        if task_queue.is_enabled:
+            job_timeout = current_app.config[
+                "YANDEX_DISK_WORKER_UPLOAD_JOB_TIMEOUT"
+            ]
+            ttl = current_app.config[
+                "YANDEX_DISK_WORKER_UPLOAD_TTL"
+            ]
+            result_ttl = current_app.config[
+                "YANDEX_DISK_WORKER_UPLOAD_RESULT_TTL"
+            ]
+            failure_ttl = current_app.config[
+                "YANDEX_DISK_WORKER_UPLOAD_FAILURE_TTL"
+            ]
 
-                    if success:
-                        is_private_message = (not self.public_upload)
+            task_queue.enqueue(
+                self.start_upload,
+                args=arguments,
+                description=self.telegram_command,
+                job_timeout=job_timeout,
+                ttl=ttl,
+                result_ttl=result_ttl,
+                failure_ttl=failure_ttl
+            )
+        else:
+            # NOTE: current thread will
+            # be blocked for a long time
+            self.start_upload(*arguments)
 
-                        if self.public_upload:
-                            try:
-                                publish_item(
-                                    user_access_token,
-                                    full_path
-                                )
-                            except Exception as error:
-                                print(error)
-                                text_content.append(
-                                    "\n"
-                                    "Failed to publish. Type to do it:"
-                                    "\n"
-                                    f"{CommandName.PUBLISH.value} {full_path}"
-                                )
+    def start_upload(
+        self,
+        folder_path: str,
+        file_name: str,
+        download_url: str,
+        user_access_token: str,
+        chat_id: int,
+        message_id: int
+    ) -> None:
+        """
+        Starts uploading of provided URL.
 
-                        info = None
+        It will send provided URL to Yandex.Disk API,
+        after that operation monitoring will be started.
+        See app configuration for monitoring config.
 
+        NOTE:
+        This function requires long time to complete.
+        And because it is sync function, it will block
+        your thread.
+
+        :param folder_path:
+        Yandex.Disk path where to put file.
+        :param file_name:
+        Name (with extension) of result file.
+        :param download_url:
+        Direct URL to file. Yandex.Disk will download it.
+        :param user_access_token:
+        Access token of user to access Yandex.Disk API.
+        :param chat_id:
+        ID of incoming Telegram chat.
+        :param message_id:
+        ID of incoming Telegram message.
+        This message will be reused to edit this message
+        with new status instead of sending it every time.
+
+        :raises:
+        Raises error if occurs.
+        """
+        full_path = f"{folder_path}/{file_name}"
+
+        try:
+            for status in upload_file_with_url(
+                user_access_token=user_access_token,
+                folder_path=folder_path,
+                file_name=file_name,
+                download_url=download_url
+            ):
+                success = status["success"]
+                text_content = deque()
+                is_html_text = False
+
+                if success:
+                    is_private_message = (not self.public_upload)
+
+                    if self.public_upload:
                         try:
-                            info = get_element_info(
+                            publish_item(
                                 user_access_token,
-                                full_path,
-                                get_public_info=False
+                                full_path
                             )
                         except Exception as error:
                             print(error)
                             text_content.append(
                                 "\n"
-                                "Failed to get information. Type to do it:"
+                                "Failed to publish. Type to do it:"
                                 "\n"
-                                f"{CommandName.ELEMENT_INFO.value} {full_path}"
+                                f"{CommandName.PUBLISH.value} {full_path}"
                             )
 
-                        if text_content:
-                            text_content.append(
-                                "It is successfully uploaded, "
-                                "but i failed to perform some actions. "
-                                "You need to execute them manually."
-                            )
-                            text_content.reverse()
+                    info = None
 
-                        if info:
-                            # extra line before info
-                            if text_content:
-                                text_content.append("")
-
-                            is_html_text = True
-                            info_text = create_element_info_html_text(
-                                info,
-                                include_private_info=is_private_message
-                            )
-                            text_content.append(info_text)
-                    else:
-                        # You shouldn't use HTML for this,
-                        # because `upload_status` can be a same
-                        upload_status = status["status"]
+                    try:
+                        info = get_element_info(
+                            user_access_token,
+                            full_path,
+                            get_public_info=False
+                        )
+                    except Exception as error:
+                        print(error)
                         text_content.append(
-                            f"Status: {upload_status}"
+                            "\n"
+                            "Failed to get information. Type to do it:"
+                            "\n"
+                            f"{CommandName.ELEMENT_INFO.value} {full_path}"
                         )
 
-                    text = "\n".join(text_content)
+                    if text_content:
+                        text_content.append(
+                            "It is successfully uploaded, "
+                            "but i failed to perform some actions. "
+                            "You need to execute them manually."
+                        )
+                        text_content.reverse()
 
-                    self.reply_to_message(
-                        message.message_id,
-                        chat_id,
-                        text,
-                        is_html_text
-                    )
-            except YandexAPICreateFolderError as error:
-                error_text = str(error) or (
-                    "I can't create default upload folder "
-                    "due to an unknown Yandex.Disk error."
-                )
+                    if info:
+                        # extra line before info
+                        if text_content:
+                            text_content.append("")
 
-                return send_yandex_disk_error(
-                    chat_id,
-                    error_text,
-                    message.message_id
-                )
-            except YandexAPIUploadFileError as error:
-                error_text = str(error) or (
-                    "I can't upload this due "
-                    "to an unknown Yandex.Disk error."
-                )
-
-                return send_yandex_disk_error(
-                    chat_id,
-                    error_text,
-                    message.message_id
-                )
-            except YandexAPIExceededNumberOfStatusChecksError:
-                error_text = (
-                    "I can't track operation status of "
-                    "this anymore. It can be uploaded "
-                    "after a while. Type to check:"
-                    "\n"
-                    f"{CommandName.ELEMENT_INFO.value} {full_path}"
-                )
-
-                return self.reply_to_message(
-                    message.message_id,
-                    chat_id,
-                    error_text
-                )
-            except Exception as error:
-                if self.sended_message is None:
-                    cancel_command(
-                        chat_id,
-                        reply_to_message=message.message_id
-                    )
+                        is_html_text = True
+                        info_text = create_element_info_html_text(
+                            info,
+                            include_private_info=is_private_message
+                        )
+                        text_content.append(info_text)
                 else:
-                    cancel_command(
-                        chat_id,
-                        edit_message=self.sended_message.message_id
+                    # You shouldn't use HTML for this,
+                    # because `upload_status` can be a same
+                    upload_status = status["status"]
+                    text_content.append(
+                        f"Status: {upload_status}"
                     )
 
-                raise error
+                text = "\n".join(text_content)
 
-        long_task()
+                self.reply_to_message(
+                    message_id,
+                    chat_id,
+                    text,
+                    is_html_text
+                )
+        except YandexAPICreateFolderError as error:
+            error_text = str(error) or (
+                "I can't create default upload folder "
+                "due to an unknown Yandex.Disk error."
+            )
+
+            return send_yandex_disk_error(
+                chat_id,
+                error_text,
+                message_id
+            )
+        except YandexAPIUploadFileError as error:
+            error_text = str(error) or (
+                "I can't upload this due "
+                "to an unknown Yandex.Disk error."
+            )
+
+            return send_yandex_disk_error(
+                chat_id,
+                error_text,
+                message_id
+            )
+        except YandexAPIExceededNumberOfStatusChecksError:
+            error_text = (
+                "I can't track operation status of "
+                "this anymore. It can be uploaded "
+                "after a while. Type to check:"
+                "\n"
+                f"{CommandName.ELEMENT_INFO.value} {full_path}"
+            )
+
+            return self.reply_to_message(
+                message_id,
+                chat_id,
+                error_text
+            )
+        except Exception as error:
+            if self.sended_message is None:
+                cancel_command(
+                    chat_id,
+                    reply_to_message=message_id
+                )
+            else:
+                cancel_command(
+                    chat_id,
+                    edit_message=self.sended_message.message_id
+                )
+
+            raise error
 
     def send_html_message(
         self,
@@ -535,11 +644,15 @@ class PhotoHandler(AttachmentHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = PhotoHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
 
     @property
     def telegram_action(self):
         return "upload_photo"
+
+    @property
+    def telegram_command(self):
+        return CommandName.UPLOAD_PHOTO.value
 
     @property
     def raw_data_key(self):
@@ -587,11 +700,15 @@ class FileHandler(AttachmentHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = FileHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
 
     @property
     def telegram_action(self):
         return "upload_document"
+
+    @property
+    def telegram_command(self):
+        return CommandName.UPLOAD_FILE.value
 
     @property
     def raw_data_key(self):
@@ -625,11 +742,15 @@ class AudioHandler(AttachmentHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = AudioHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
 
     @property
     def telegram_action(self):
         return "upload_audio"
+
+    @property
+    def telegram_command(self):
+        return CommandName.UPLOAD_AUDIO.value
 
     @property
     def raw_data_key(self):
@@ -677,11 +798,15 @@ class VideoHandler(AttachmentHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = VideoHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
 
     @property
     def telegram_action(self):
         return "upload_video"
+
+    @property
+    def telegram_command(self):
+        return CommandName.UPLOAD_VIDEO.value
 
     @property
     def raw_data_key(self):
@@ -713,11 +838,15 @@ class VoiceHandler(AttachmentHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = VoiceHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
 
     @property
     def telegram_action(self):
         return "upload_audio"
+
+    @property
+    def telegram_command(self):
+        return CommandName.UPLOAD_VOICE.value
 
     @property
     def raw_data_key(self):
@@ -744,11 +873,15 @@ class DirectURLHandler(AttachmentHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = DirectURLHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
 
     @property
     def telegram_action(self):
         return "upload_document"
+
+    @property
+    def telegram_command(self):
+        return CommandName.UPLOAD_URL.value
 
     @property
     def raw_data_key(self):
@@ -815,7 +948,7 @@ class IntellectualURLHandler(DirectURLHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = IntellectualURLHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
 
     def create_help_message(self):
         return (
@@ -912,7 +1045,11 @@ class PublicPhotoHandler(PublicHandler, PhotoHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = PublicPhotoHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
+
+    @property
+    def telegram_command(self):
+        return CommandName.PUBLIC_UPLOAD_PHOTO.value
 
 
 class PublicFileHandler(PublicHandler, FileHandler):
@@ -922,7 +1059,11 @@ class PublicFileHandler(PublicHandler, FileHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = PublicFileHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
+
+    @property
+    def telegram_command(self):
+        return CommandName.PUBLIC_UPLOAD_FILE.value
 
 
 class PublicAudioHandler(PublicHandler, AudioHandler):
@@ -932,7 +1073,11 @@ class PublicAudioHandler(PublicHandler, AudioHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = PublicAudioHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
+
+    @property
+    def telegram_command(self):
+        return CommandName.PUBLIC_UPLOAD_AUDIO.value
 
 
 class PublicVideoHandler(PublicHandler, VideoHandler):
@@ -942,7 +1087,11 @@ class PublicVideoHandler(PublicHandler, VideoHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = PublicVideoHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
+
+    @property
+    def telegram_command(self):
+        return CommandName.PUBLIC_UPLOAD_VIDEO.value
 
 
 class PublicVoiceHandler(PublicHandler, VoiceHandler):
@@ -952,7 +1101,11 @@ class PublicVoiceHandler(PublicHandler, VoiceHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = PublicVoiceHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
+
+    @property
+    def telegram_command(self):
+        return CommandName.PUBLIC_UPLOAD_VOICE.value
 
 
 class PublicDirectURLHandler(PublicHandler, DirectURLHandler):
@@ -962,7 +1115,11 @@ class PublicDirectURLHandler(PublicHandler, DirectURLHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = PublicDirectURLHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
+
+    @property
+    def telegram_command(self):
+        return CommandName.PUBLIC_UPLOAD_URL.value
 
 
 class PublicIntellectualURLHandler(PublicHandler, IntellectualURLHandler):
@@ -974,7 +1131,11 @@ class PublicIntellectualURLHandler(PublicHandler, IntellectualURLHandler):
     @staticmethod
     def handle(*args, **kwargs):
         handler = PublicIntellectualURLHandler()
-        handler.upload(*args, **kwargs)
+        handler.init_upload(*args, **kwargs)
+
+    @property
+    def telegram_command(self):
+        return CommandName.PUBLIC_UPLOAD_URL.value
 
 
 handle_photo = PhotoHandler.handle

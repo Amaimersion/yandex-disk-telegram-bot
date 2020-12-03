@@ -15,7 +15,8 @@ from .configs import flask_config
 from .extensions import (
     db,
     migrate,
-    redis_client
+    redis_client,
+    task_queue
 )
 from .blueprints import (
     telegram_bot_blueprint,
@@ -67,6 +68,10 @@ def configure_extensions(app: Flask) -> None:
 
     # Redis
     redis_client.init_app(app)
+
+    # RQ
+    if redis_client.is_enabled:
+        task_queue.init_app(app, redis_client.connection)
 
 
 def configure_blueprints(app: Flask) -> None:
