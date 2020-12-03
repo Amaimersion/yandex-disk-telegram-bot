@@ -90,6 +90,37 @@ class Config:
     # RQ (background tasks queue) is enabled.
     # Also depends on `REDIS_URL`
     RUNTIME_RQ_ENABLED = True
+    # Maximum runtime of uploading process in `/upload`
+    # before it’s interrupted. In seconds.
+    # This value shouldn't be less than
+    # `YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS` *
+    # `YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL`.
+    # This timeout should be used only for force quit if
+    # uploading function start behave incorrectly.
+    # Use `MAX_ATTEMPTS` and `INTERVAL` for expected quit.
+    # Applied only if task queue (RQ, for example) is enabled
+    RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT = 30
+    # Maximum queued time of upload function before it's discarded.
+    # "Queued" means function awaits execution.
+    # In seconds. `None` for infinite awaiting.
+    # Applied only if task queue (RQ, for example) is enabled
+    RUNTIME_UPLOAD_WORKER_UPLOAD_TTL = None
+    # How long successful result of uploading is kept.
+    # In seconds.
+    # Applied only if task queue (RQ, for example) is enabled
+    RUNTIME_UPLOAD_WORKER_RESULT_TTL = 0
+    # How long failed result of uploading is kept.
+    # "Failed result" means function raises an error,
+    # not any logical error returns from function.
+    # In seconds.
+    # Applied only if task queue (RQ, for example) is enabled
+    RUNTIME_UPLOAD_WORKER_FAILURE_TTL = 0
+    # See `RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT` documentation.
+    # This value is for `/element_info` worker.
+    RUNTIME_ELEMENT_INFO_WORKER_TIMEOUT = 5
+    # See `RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT` documentation.
+    # This value is for `/space_info` worker.
+    RUNTIME_SPACE_INFO_WORKER_TIMEOUT = 5
 
     # Flask
     DEBUG = False
@@ -151,36 +182,6 @@ class Config:
     # in this folder files will be uploaded by default
     # if user not specified custom folder.
     YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER = "Telegram Bot"
-    # Maximum runtime of uploading process before it’s interrupted.
-    # In seconds. This value shouldn't be less than
-    # `YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS` *
-    # `YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL`.
-    # This timeout should be used only for force quit if
-    # uploading function start behave incorrectly.
-    # Use `MAX_ATTEMPTS` and `INTERVAL` for expected quit.
-    # Applied only if task queue (RQ, for example) is enabled
-    YANDEX_DISK_WORKER_UPLOAD_JOB_TIMEOUT = 30
-    # Maximum queued time of upload function before it's discarded.
-    # "Queued" means function awaits execution.
-    # In seconds. `None` for infinite awaiting.
-    # Applied only if task queue (RQ, for example) is enabled
-    YANDEX_DISK_WORKER_UPLOAD_TTL = None
-    # How long successful result of uploading is kept.
-    # In seconds.
-    # Applied only if task queue (RQ, for example) is enabled
-    YANDEX_DISK_WORKER_UPLOAD_RESULT_TTL = 0
-    # How long failed result of uploading is kept.
-    # "Failed result" means function raises an error,
-    # not any logical error returns from function.
-    # In seconds.
-    # Applied only if task queue (RQ, for example) is enabled
-    YANDEX_DISK_WORKER_UPLOAD_FAILURE_TTL = 0
-    # See `YANDEX_DISK_WORKER_UPLOAD_JOB_TIMEOUT`
-    # documentation. This value is for `/element_info` worker.
-    YANDEX_DISK_WORKER_ELEMENT_INFO_TIMEOUT = 5
-    # See `YANDEX_DISK_WORKER_UPLOAD_JOB_TIMEOUT`
-    # documentation. This value is for `/space_info` worker.
-    YANDEX_DISK_WORKER_SPACE_INFO_TIMEOUT = 5
 
     # Google Analytics
     GOOGLE_ANALYTICS_UA = os.getenv("GOOGLE_ANALYTICS_UA")

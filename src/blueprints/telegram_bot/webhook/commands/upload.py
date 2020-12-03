@@ -378,16 +378,16 @@ class AttachmentHandler(metaclass=ABCMeta):
 
         if task_queue.is_enabled:
             job_timeout = current_app.config[
-                "YANDEX_DISK_WORKER_UPLOAD_JOB_TIMEOUT"
+                "RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT"
             ]
             ttl = current_app.config[
-                "YANDEX_DISK_WORKER_UPLOAD_TTL"
+                "RUNTIME_UPLOAD_WORKER_UPLOAD_TTL"
             ]
             result_ttl = current_app.config[
-                "YANDEX_DISK_WORKER_UPLOAD_RESULT_TTL"
+                "RUNTIME_UPLOAD_WORKER_RESULT_TTL"
             ]
             failure_ttl = current_app.config[
-                "YANDEX_DISK_WORKER_UPLOAD_FAILURE_TTL"
+                "RUNTIME_UPLOAD_WORKER_FAILURE_TTL"
             ]
 
             task_queue.enqueue(

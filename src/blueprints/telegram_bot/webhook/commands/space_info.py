@@ -62,7 +62,7 @@ def handle(*args, **kwargs):
 
     if task_queue.is_enabled:
         job_timeout = current_app.config[
-            "YANDEX_DISK_WORKER_SPACE_INFO_TIMEOUT"
+            "RUNTIME_SPACE_INFO_WORKER_TIMEOUT"
         ]
 
         task_queue.enqueue(
