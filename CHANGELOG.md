@@ -25,6 +25,7 @@
 
 - `/create_folder`: now it will wait for folder name if you send empty command, not deny operation.
 - `/upload`: on success it will return information about uploaded file, not plain status.
+- `/upload`: increase maxium time of checking of operation status from 10 seconds to 16.
 - `/upload_url`: result name will not contain parameters, queries and fragments.
 - `/upload_voice`: result name will be ISO 8601 date (for example, `2020-11-24T09:57:46+00:00`), not ID from Telegram.
 

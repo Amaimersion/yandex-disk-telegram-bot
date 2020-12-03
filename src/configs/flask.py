@@ -142,7 +142,7 @@ class Config:
     # maximum number of checks of operation status
     # (for example, if file is downloaded by Yandex.Disk).
     # It is blocks request until check ending!
-    YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS = 5
+    YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS = 8
     # interval in seconds between checks of operation status.
     # It is blocks request until check ending!
     # For example, if max. attempts is 5 and interval is 2,
