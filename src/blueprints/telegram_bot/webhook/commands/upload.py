@@ -615,6 +615,8 @@ class AttachmentHandler(metaclass=ABCMeta):
         if html_text:
             enabled_html["parse_mode"] = "HTML"
 
+        result = None
+
         if self.sended_message is None:
             result = telegram.send_message(
                 reply_to_message_id=incoming_message_id,
@@ -624,16 +626,23 @@ class AttachmentHandler(metaclass=ABCMeta):
                 disable_web_page_preview=True,
                 **enabled_html
             )
-            self.sended_message = TelegramMessage(
-                result["content"]
-            )
         elif (text != self.sended_message.get_text()):
-            telegram.edit_message_text(
+            result = telegram.edit_message_text(
                 message_id=self.sended_message.message_id,
                 chat_id=chat_id,
                 text=text,
                 disable_web_page_preview=True,
                 **enabled_html
+            )
+
+        new_message_sended = (
+            (result is not None) and
+            result["ok"]
+        )
+
+        if new_message_sended:
+            self.sended_message = TelegramMessage(
+                result["content"]
             )
 
 
