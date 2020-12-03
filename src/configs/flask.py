@@ -178,6 +178,9 @@ class Config:
     # See `YANDEX_DISK_WORKER_UPLOAD_JOB_TIMEOUT`
     # documentation. This value is for `/element_info` worker.
     YANDEX_DISK_WORKER_ELEMENT_INFO_TIMEOUT = 5
+    # See `YANDEX_DISK_WORKER_UPLOAD_JOB_TIMEOUT`
+    # documentation. This value is for `/space_info` worker.
+    YANDEX_DISK_WORKER_SPACE_INFO_TIMEOUT = 5
 
     # Google Analytics
     GOOGLE_ANALYTICS_UA = os.getenv("GOOGLE_ANALYTICS_UA")

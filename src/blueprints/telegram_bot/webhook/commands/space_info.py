@@ -1,11 +1,12 @@
 from string import ascii_letters, digits
 from datetime import datetime, timezone
 
-from flask import g
+from flask import g, current_app
 from plotly.graph_objects import Pie, Figure
 from plotly.express import colors
 from plotly.io import to_image
 
+from src.extensions import task_queue
 from src.api import telegram
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common.yandex_disk import (
@@ -52,16 +53,28 @@ def handle(*args, **kwargs):
     )
     filename = f"{to_filename(current_iso_date)}.jpg"
     file_caption = f"Yandex.Disk space at {current_utc_date}"
-
-    telegram.send_photo(
-        chat_id=chat_id,
-        photo=(
-            filename,
-            jpeg_image,
-            "image/jpeg"
-        ),
-        caption=file_caption
+    arguments = (
+        jpeg_image,
+        filename,
+        file_caption,
+        chat_id
     )
+
+    if task_queue.is_enabled:
+        job_timeout = current_app.config[
+            "YANDEX_DISK_WORKER_SPACE_INFO_TIMEOUT"
+        ]
+
+        task_queue.enqueue(
+            send_photo,
+            args=arguments,
+            description=CommandName.SPACE_INFO.value,
+            job_timeout=job_timeout,
+            result_ttl=0,
+            failure_ttl=0
+        )
+    else:
+        send_photo(*arguments)
 
 
 def create_space_chart(
@@ -187,3 +200,23 @@ def to_filename(value: str) -> str:
     filename = "".join(x for x in filename if x in valid_chars)
 
     return filename
+
+
+def send_photo(
+    content: bytes,
+    filename: str,
+    file_caption: str,
+    chat_id: str
+):
+    """
+    Sends photo to user.
+    """
+    telegram.send_photo(
+        chat_id=chat_id,
+        photo=(
+            filename,
+            content,
+            "image/jpeg"
+        ),
+        caption=file_caption
+    )
