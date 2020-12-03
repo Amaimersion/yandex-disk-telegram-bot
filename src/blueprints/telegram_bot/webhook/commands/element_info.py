@@ -149,10 +149,10 @@ def handle(*args, **kwargs):
 
 
 def send_preview(
-    preview_url,
-    filename,
-    user_access_token,
-    chat_id
+    preview_url: str,
+    filename: str,
+    user_access_token: str,
+    chat_id: int
 ):
     """
     Downloads preview from Yandex.Disk and sends it to user.
