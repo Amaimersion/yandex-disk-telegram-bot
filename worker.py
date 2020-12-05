@@ -16,7 +16,7 @@ def main():
         raise Exception("Redis URL is not specified")
 
     connection = redis.from_url(redis_url)
-    listen = ['default']
+    listen = ["default"]
 
     with Connection(connection):
         # we should bind Flask app context
