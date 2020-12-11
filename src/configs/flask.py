@@ -87,6 +87,14 @@ class Config:
     # this value at all.
     # Set to 0 to disable expiration
     RUNTIME_DISPOSABLE_HANDLER_EXPIRE = 60 * 10
+    # Dispatcher will bind command to message date.
+    # How long this data should be stored. In seconds.
+    # We don't need to memorize it for a long, because
+    # bot expects messages with exact same date to be sent
+    # in a short period of time (for example, "Forward" sents
+    # messages one by one as fast as server process them;
+    # or user uploads all files as media group within 1 minute).
+    RUNTIME_SAME_DATE_COMMAND_EXPIRE = 60 * 2
     # RQ (background tasks queue) is enabled.
     # Also depends on `REDIS_URL`
     RUNTIME_RQ_ENABLED = True

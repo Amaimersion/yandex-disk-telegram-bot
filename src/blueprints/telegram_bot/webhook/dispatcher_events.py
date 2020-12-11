@@ -63,5 +63,6 @@ class RouteSource(Enum):
     """
     DISPOSABLE_HANDLER = auto()
     SUBSCRIBED_HANDLER = auto()
+    SAME_DATE_COMMAND = auto()
     DIRECT_COMMAND = auto()
     GUESSED_COMMAND = auto()

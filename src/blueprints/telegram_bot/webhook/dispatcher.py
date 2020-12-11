@@ -6,11 +6,14 @@ from typing import (
 from collections import deque
 import traceback
 
+from flask import current_app
 from src.extensions import redis_client
 from src.blueprints.telegram_bot._common.stateful_chat import (
     get_disposable_handler,
     delete_disposable_handler,
-    get_subscribed_handlers
+    get_subscribed_handlers,
+    set_user_chat_data,
+    get_user_chat_data
 )
 from src.blueprints.telegram_bot._common.telegram_interface import (
     Message as TelegramMessage
@@ -32,13 +35,20 @@ def intellectual_dispatch(
 
     Priority of handlers:
     1) if disposable handler exists and message events matches,
-    then only that handler will be called and after removed
+    then only that handler will be called and after removed.
+    That disposable handler will be associated with message date.
     2) if subscribed handlers exists, then only ones with events
     matched to message events will be called. If nothing is matched,
     then forwarding to № 3
     3) attempt to get first `bot_command` entity from message.
-    If nothing found, then forwarding to № 4
-    4) guessing of command that user assumed based on
+    It will be treated as direct command. That direct command will be
+    associated with message date. If nothing found, then forwarding to № 4
+    4) attempt to get command based on message date.
+    For example, when `/upload_photo` was used for message that was
+    sent on `1607677734` date, and after that separate message was
+    sent on same `1607677734` date, then it is the case.
+    If nothing found, then forwarding to № 5
+    5) guessing of command that user assumed based on
     content of message
 
     Events matching:
@@ -62,6 +72,7 @@ def intellectual_dispatch(
     """
     user_id = message.get_user().id
     chat_id = message.get_chat().id
+    message_date = message.get_date()
     stateful_chat_is_enabled = redis_client.is_enabled
     disposable_handler = None
     subscribed_handlers = None
@@ -109,6 +120,52 @@ def intellectual_dispatch(
 
         if command:
             route_source = RouteSource.DIRECT_COMMAND
+            handler_names.append(command)
+
+    should_bind_command_to_date = (
+        stateful_chat_is_enabled and
+        (
+            route_source in
+            (
+                RouteSource.DISPOSABLE_HANDLER,
+                RouteSource.DIRECT_COMMAND
+            )
+        )
+    )
+    should_get_command_by_date = (
+        stateful_chat_is_enabled and
+        (not handler_names)
+    )
+
+    if should_bind_command_to_date:
+        # we expect only one active command
+        command = handler_names[0]
+
+        # we need to handle cases when user forwards
+        # many separate messages (one with direct command and
+        # others without any command but with some attachments).
+        # These messages will be sended by Telegram one by one
+        # (it is means we got separate direct command and
+        # separate attachments without that any commands).
+        # We also using `RouteSource.DISPOSABLE_HANDLER`
+        # because user can start command without any attachments,
+        # but forward multiple attachments at once or send
+        # media group (media group messages have same date).
+        bind_command_to_date(
+            user_id,
+            chat_id,
+            message_date,
+            command
+        )
+    elif should_get_command_by_date:
+        command = get_command_by_date(
+            user_id,
+            chat_id,
+            message_date
+        )
+
+        if command:
+            route_source = RouteSource.SAME_DATE_COMMAND
             handler_names.append(command)
 
     if not handler_names:
@@ -299,3 +356,51 @@ def match_events(
     `True` - match found, `False` otherwise.
     """
     return any(x in b for x in a)
+
+
+def bind_command_to_date(
+    user_id: int,
+    chat_id: int,
+    date: int,
+    command: str
+) -> None:
+    """
+    Binds command to date.
+
+    You can use it to detect right command for messages
+    with same date but without specific command.
+
+    - stateful chat should be enabled.
+    """
+    key = f"dispatcher:date:{date}:command"
+    expire = current_app.config[
+        "RUNTIME_SAME_DATE_COMMAND_EXPIRE"
+    ]
+
+    set_user_chat_data(
+        user_id,
+        chat_id,
+        key,
+        command,
+        expire
+    )
+
+
+def get_command_by_date(
+    user_id: int,
+    chat_id: int,
+    date: int
+) -> Union[str, None]:
+    """
+    - stateful chat should be enabled.
+
+    :returns:
+    Value that was set using `bind_command_to_date()`.
+    """
+    key = f"dispatcher:date:{date}:command"
+
+    return get_user_chat_data(
+        user_id,
+        chat_id,
+        key
+    )

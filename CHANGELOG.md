@@ -19,6 +19,8 @@
 - `/commands`: full list of available commands without help message.
 - `/upload_url`: added `youtube-dl` support.
 - Handling of files that exceed file size limit in 20 MB. At the moment the bot will asnwer with warning message, not trying to upload that file. [#3](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/3)
+- Now you can forward many attachments and add single command. This command will be applied to all forwarders attachments.
+- Now you can send many attachments as a one group and add single command. This command will be applied to all attachments of that group.
 - Help messages for each upload command will be sended when there are no suitable input data.
 
 ### Changed

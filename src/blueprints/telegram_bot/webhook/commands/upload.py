@@ -1,12 +1,12 @@
 from abc import ABCMeta, abstractmethod
-from typing import Union
+from typing import Union, Set
 from collections import deque
 from urllib.parse import urlparse
 
 from flask import g, current_app
 
 from src.api import telegram
-from src.extensions import task_queue
+from src.extensions import task_queue, redis_client
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common import youtube_dl
 from src.blueprints.telegram_bot._common.telegram_interface import (
@@ -23,6 +23,12 @@ from src.blueprints.telegram_bot._common.yandex_disk import (
     YandexAPICreateFolderError,
     YandexAPIUploadFileError,
     YandexAPIExceededNumberOfStatusChecksError
+)
+from src.blueprints.telegram_bot._common.stateful_chat import (
+    set_disposable_handler
+)
+from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+    DispatcherEvent
 )
 from ._common.decorators import (
     yd_access_token_required,
@@ -101,10 +107,12 @@ class AttachmentHandler(metaclass=ABCMeta):
     @abstractmethod
     def telegram_command(self) -> str:
         """
+        - use `CommandName` enum.
+
         :returns:
         With what Telegram command this handler
-        is associated. It is exact command name
-        (`/upload_photo`, for example).
+        is associated. It is exact command name,
+        not enum value.
         """
         pass
 
@@ -127,6 +135,20 @@ class AttachmentHandler(metaclass=ABCMeta):
         Expected type of raw data.
         Example: `dict`.
         `None` never should be returned!
+        """
+        pass
+
+    @property
+    @abstractmethod
+    def dispatcher_events(self) -> Set[str]:
+        """
+        - use `DispatcherEvent` enum.
+
+        :returns:
+        With what dispatcher events this handler
+        is associated. These events will be used
+        to set disposable handler. It is exact event
+        names, not enum values.
         """
         pass
 
@@ -273,6 +295,41 @@ class AttachmentHandler(metaclass=ABCMeta):
 
         return (size > limit)
 
+    def set_disposable_handler(
+        self,
+        user_id: int,
+        chat_id: int
+    ) -> None:
+        """
+        Sets disposable handler.
+
+        It is means that next message with matched
+        `self.dispatcher_events` will be forwarded to
+        `self.telegram_command`.
+
+        - will be used when user didn't sent any
+        suitable data for handling.
+
+        :param user_id:
+        Telegram ID of current user.
+        :param chat_id:
+        Telegram ID of current chat.
+        """
+        if not redis_client.is_enabled:
+            return
+
+        expire = current_app.config[
+            "RUNTIME_DISPOSABLE_HANDLER_EXPIRE"
+        ]
+
+        set_disposable_handler(
+            user_id,
+            chat_id,
+            self.telegram_command,
+            self.dispatcher_events,
+            expire
+        )
+
     @yd_access_token_required
     @get_db_data
     def init_upload(self, *args, **kwargs) -> None:
@@ -292,6 +349,10 @@ class AttachmentHandler(metaclass=ABCMeta):
         if it is separate process, then this function will
         be completed fast.
         """
+        user_id = kwargs.get(
+            "chat_id",
+            g.db_user.telegram_id
+        )
         chat_id = kwargs.get(
             "chat_id",
             g.db_chat.telegram_id
@@ -310,6 +371,8 @@ class AttachmentHandler(metaclass=ABCMeta):
             )
 
             if (reason == AbortReason.NO_SUITABLE_DATA):
+                self.set_disposable_handler(user_id, chat_id)
+
                 return self.send_html_message(
                     chat_id,
                     self.create_help_message()
@@ -672,6 +735,12 @@ class PhotoHandler(AttachmentHandler):
         # dict, not list, because we will select biggest photo
         return dict
 
+    @property
+    def dispatcher_events(self):
+        return [
+            DispatcherEvent.PHOTO.value
+        ]
+
     def create_help_message(self):
         return (
             "Send a photos that you want to upload"
@@ -727,6 +796,12 @@ class FileHandler(AttachmentHandler):
     def raw_data_type(self):
         return dict
 
+    @property
+    def dispatcher_events(self):
+        return [
+            DispatcherEvent.FILE.value
+        ]
+
     def create_help_message(self):
         return (
             "Send a files that you want to upload"
@@ -768,6 +843,12 @@ class AudioHandler(AttachmentHandler):
     @property
     def raw_data_type(self):
         return dict
+
+    @property
+    def dispatcher_events(self):
+        return [
+            DispatcherEvent.AUDIO.value
+        ]
 
     def create_help_message(self):
         return (
@@ -825,6 +906,12 @@ class VideoHandler(AttachmentHandler):
     def raw_data_type(self):
         return dict
 
+    @property
+    def dispatcher_events(self):
+        return [
+            DispatcherEvent.VIDEO.value
+        ]
+
     def create_help_message(self):
         return (
             "Send a video that you want to upload"
@@ -865,6 +952,12 @@ class VoiceHandler(AttachmentHandler):
     def raw_data_type(self):
         return dict
 
+    @property
+    def dispatcher_events(self):
+        return [
+            DispatcherEvent.VOICE.value
+        ]
+
     def create_help_message(self):
         return (
             "Send a voice message that you want to upload"
@@ -899,6 +992,12 @@ class DirectURLHandler(AttachmentHandler):
     @property
     def raw_data_type(self):
         return str
+
+    @property
+    def dispatcher_events(self):
+        return [
+            DispatcherEvent.URL.value
+        ]
 
     def create_help_message(self):
         return (

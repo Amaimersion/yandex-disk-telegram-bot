@@ -131,6 +131,13 @@ class Message:
             ""
         )
 
+    def get_date(self) -> int:
+        """
+        :returns:
+        "Date the message was sent in Unix time"
+        """
+        return self.raw_data["date"]
+
     def get_text_without_entities(
         self,
         without: List[str]
