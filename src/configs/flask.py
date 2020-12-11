@@ -17,10 +17,10 @@ def load_env():
     }
     file_name = file_names.get(config_name)
 
-    if (file_name is None):
+    if file_name is None:
         raise Exception(
-            "Unable to map configuration name "
-            "and .env.* files"
+            "Unable to map configuration name and .env.* files. "
+            "Did you forget to set env variables?"
         )
 
     load_dotenv(file_name)
@@ -31,7 +31,7 @@ load_env()
 
 class YandexOAuthAPIMethod(Enum):
     """
-    Which method to use for OAuth.
+    Which method to use for Yandex OAuth API.
     """
     # When user give access, he will be redirected
     # to the app site, and app will extract code
@@ -52,8 +52,8 @@ class YandexOAuthAPIMethod(Enum):
 class Config:
     """
     Notes:
-    - don't remove any keys from configuration, because code logic
-    can depend on this. Instead set disable value (if code logic
+    - don't remove any keys from this configuration, because code
+    logic can depend on this. Instead, set "off" value (if code logic
     supports it); or set empty value and edit code logic to handle
     such values.
     - keep in mind that Telegram, Heroku, etc. have request timeout.
@@ -63,9 +63,10 @@ class Config:
     Try to always use background task queue, not block current thread.
     If you have no opportunity to use background task queue, then
     change current configuration in order request with blocked thread
-    cannot take long time to complete.
+    will be not able to take long time to complete.
     """
-    # Project
+    # region Project
+
     # name of app that will be used in HTML and so on
     PROJECT_APP_NAME = "Yandex.Disk Telegram Bot"
     PROJECT_AUTHOR = "Sergey Kuznetsov"
@@ -75,7 +76,10 @@ class Config:
     PROJECT_URL_FOR_QUESTION = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=question.md" # noqa
     PROJECT_URL_FOR_BOT = "https://t.me/Ya_Disk_Bot"
 
-    # Runtime (interaction of bot with user, behavior of bot)
+    # endregion
+
+    # region Runtime (interaction of bot with user, behavior of bot, etc.)
+
     # Default value (in seconds) when setted but unused
     # disposable handler should expire and be removed.
     # Example: user send `/create_folder` but didn't send
@@ -87,6 +91,7 @@ class Config:
     # this value at all.
     # Set to 0 to disable expiration
     RUNTIME_DISPOSABLE_HANDLER_EXPIRE = 60 * 10
+
     # Dispatcher will bind command to message date.
     # How long this data should be stored. In seconds.
     # We don't need to memorize it for a long, because
@@ -95,9 +100,11 @@ class Config:
     # messages one by one as fast as server process them;
     # or user uploads all files as media group within 1 minute).
     RUNTIME_SAME_DATE_COMMAND_EXPIRE = 60 * 2
+
     # RQ (background tasks queue) is enabled.
     # Also depends on `REDIS_URL`
     RUNTIME_RQ_ENABLED = True
+
     # Maximum runtime of uploading process in `/upload`
     # before it’s interrupted. In seconds.
     # This value shouldn't be less than
@@ -108,47 +115,65 @@ class Config:
     # Use `MAX_ATTEMPTS` and `INTERVAL` for expected quit.
     # Applied only if task queue (RQ, for example) is enabled
     RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT = 30
+
     # Maximum queued time of upload function before it's discarded.
     # "Queued" means function awaits execution.
     # In seconds. `None` for infinite awaiting.
     # Applied only if task queue (RQ, for example) is enabled
     RUNTIME_UPLOAD_WORKER_UPLOAD_TTL = None
+
     # How long successful result of uploading is kept.
     # In seconds.
     # Applied only if task queue (RQ, for example) is enabled
     RUNTIME_UPLOAD_WORKER_RESULT_TTL = 0
+
     # How long failed result of uploading is kept.
     # "Failed result" means function raises an error,
     # not any logical error returns from function.
     # In seconds.
     # Applied only if task queue (RQ, for example) is enabled
     RUNTIME_UPLOAD_WORKER_FAILURE_TTL = 0
+
     # See `RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT` documentation.
     # This value is for `/element_info` worker.
     RUNTIME_ELEMENT_INFO_WORKER_TIMEOUT = 5
+
     # See `RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT` documentation.
     # This value is for `/space_info` worker.
     RUNTIME_SPACE_INFO_WORKER_TIMEOUT = 5
 
-    # Flask
+    # endregion
+
+    # region Flask
+
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY")
 
-    # Flask SQLAlchemy
+    # endregion
+
+    # region Flask SQLAlchemy
+
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL",
         "sqlite:///temp.sqlite"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Redis
+    # endregion
+
+    # region Redis
+
     REDIS_URL = os.getenv("REDIS_URL")
 
-    # Telegram API
+    # endregion
+
+    # region Telegram API
+
     # stop waiting for a Telegram response
     # after a given number of seconds
     TELEGRAM_API_TIMEOUT = 5
+
     # maximum file size in bytes that bot
     # can handle by itself.
     # It is Telegram limit, not bot.
@@ -159,40 +184,57 @@ class Config:
     # to create exactly 20M file
     TELEGRAM_API_MAX_FILE_SIZE = 20 * 1024 * 1024
 
-    # Yandex OAuth API
+    # endregion
+
+    # region Yandex OAuth API
+
     # stop waiting for a Yandex response
     # after a given number of seconds
     YANDEX_OAUTH_API_TIMEOUT = 15
+
     # see `YandexOAuthAPIMethod` for more
     YANDEX_OAUTH_API_METHOD = YandexOAuthAPIMethod.AUTO_CODE_CLIENT
+
     # `insert_token` (controls `INSERT` operation)
     # will contain N random bytes. Each byte will be
     # converted to two hex digits
     YANDEX_OAUTH_API_INSERT_TOKEN_BYTES = 8
+
     # lifetime of `insert_token` in seconds starting
     # from date of issue. It is better to find
     # best combination between `bytes` and `lifetime`
     YANDEX_OAUTH_API_INSERT_TOKEN_LIFETIME = 60 * 10
 
-    # Yandex.Disk API
+    # endregion
+
+    # region Yandex.Disk API
+
     # stop waiting for a Yandex response
     # after a given number of seconds
     YANDEX_DISK_API_TIMEOUT = 5
+
     # maximum number of checks of operation status
     # (for example, if file is downloaded by Yandex.Disk).
     # It is blocks request until check ending!
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_MAX_ATTEMPTS = 5
+
     # interval in seconds between checks of operation status.
     # It is blocks request until check ending!
     # For example, if max. attempts is 5 and interval is 2,
     # then request will be blocked maximum for (5 * 2) seconds.
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 2
+
     # in this folder files will be uploaded by default
     # if user not specified custom folder.
     YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER = "Telegram Bot"
 
-    # Google Analytics
+    # endregion
+
+    # region Google Analytics
+
     GOOGLE_ANALYTICS_UA = os.getenv("GOOGLE_ANALYTICS_UA")
+
+    # endregion
 
 
 class ProductionConfig(Config):
