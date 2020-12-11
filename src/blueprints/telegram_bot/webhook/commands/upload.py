@@ -965,7 +965,7 @@ class VoiceHandler(AttachmentHandler):
         )
 
     def create_file_name(self, attachment, file):
-        return get_current_iso_datetime()
+        return get_current_iso_datetime(sep=" ")
 
 
 class DirectURLHandler(AttachmentHandler):

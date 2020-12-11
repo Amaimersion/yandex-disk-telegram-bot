@@ -41,11 +41,11 @@ def get_current_datetime() -> dict:
     }
 
 
-def get_current_iso_datetime(timespec="seconds") -> str:
+def get_current_iso_datetime(sep="T", timespec="seconds") -> str:
     """
     See https://docs.python.org/3.8/library/datetime.html#datetime.datetime.isoformat # noqa
     """
-    return datetime.now(timezone.utc).isoformat(timespec=timespec)
+    return datetime.now(timezone.utc).isoformat(sep, timespec)
 
 
 def convert_iso_datetime(date_string: str) -> dict:
