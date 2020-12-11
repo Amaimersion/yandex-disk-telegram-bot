@@ -10,6 +10,7 @@ from src.blueprints.telegram_bot._common.command_names import (
     CommandName
 )
 from src.blueprints.telegram_bot._common.stateful_chat import (
+    stateful_chat_is_enabled,
     set_disposable_handler
 )
 from src.blueprints.telegram_bot.webhook.dispatcher_events import (
@@ -49,19 +50,20 @@ def handle(*args, **kwargs):
     )
 
     if not folder_name:
-        set_disposable_handler(
-            user_id,
-            chat_id,
-            CommandName.CREATE_FOLDER.value,
-            [
-                DispatcherEvent.PLAIN_TEXT.value,
-                DispatcherEvent.BOT_COMMAND.value,
-                DispatcherEvent.EMAIL.value,
-                DispatcherEvent.HASHTAG.value,
-                DispatcherEvent.URL.value
-            ],
-            current_app.config["RUNTIME_DISPOSABLE_HANDLER_EXPIRE"]
-        )
+        if stateful_chat_is_enabled():
+            set_disposable_handler(
+                user_id,
+                chat_id,
+                CommandName.CREATE_FOLDER.value,
+                [
+                    DispatcherEvent.PLAIN_TEXT.value,
+                    DispatcherEvent.BOT_COMMAND.value,
+                    DispatcherEvent.EMAIL.value,
+                    DispatcherEvent.HASHTAG.value,
+                    DispatcherEvent.URL.value
+                ],
+                current_app.config["RUNTIME_DISPOSABLE_HANDLER_EXPIRE"]
+            )
 
         return request_absolute_folder_name(chat_id)
 
