@@ -7,8 +7,8 @@ from collections import deque
 import traceback
 
 from flask import current_app
-from src.extensions import redis_client
 from src.blueprints.telegram_bot._common.stateful_chat import (
+    stateful_chat_is_enabled,
     get_disposable_handler,
     delete_disposable_handler,
     get_subscribed_handlers,
@@ -73,11 +73,11 @@ def intellectual_dispatch(
     user_id = message.get_user().id
     chat_id = message.get_chat().id
     message_date = message.get_date()
-    stateful_chat_is_enabled = redis_client.is_enabled
+    is_stateful_chat = stateful_chat_is_enabled()
     disposable_handler = None
     subscribed_handlers = None
 
-    if stateful_chat_is_enabled:
+    if is_stateful_chat:
         disposable_handler = get_disposable_handler(user_id, chat_id)
         subscribed_handlers = get_subscribed_handlers(user_id, chat_id)
 
@@ -123,7 +123,7 @@ def intellectual_dispatch(
             handler_names.append(command)
 
     should_bind_command_to_date = (
-        stateful_chat_is_enabled and
+        is_stateful_chat and
         (
             route_source in
             (
@@ -133,7 +133,7 @@ def intellectual_dispatch(
         )
     )
     should_get_command_by_date = (
-        stateful_chat_is_enabled and
+        is_stateful_chat and
         (not handler_names)
     )
 

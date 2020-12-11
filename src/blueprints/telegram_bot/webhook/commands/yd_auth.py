@@ -1,7 +1,6 @@
 from flask import g, current_app
 
 from src.api import telegram
-from src.extensions import redis_client
 from src.configs.flask import YandexOAuthAPIMethod
 from src.blueprints._common.utils import (
     absolute_url_for,
@@ -9,6 +8,7 @@ from src.blueprints._common.utils import (
 )
 from src.blueprints.telegram_bot._common import yandex_oauth
 from src.blueprints.telegram_bot._common.stateful_chat import (
+    stateful_chat_is_enabled,
     set_disposable_handler,
     set_user_chat_data,
     get_user_chat_data,
@@ -101,9 +101,9 @@ def run_auto_code_client(db_user, chat_id: int) -> None:
 
 
 def start_console_client(db_user, chat_id: int) -> None:
-    if not redis_client.is_enabled:
+    if not stateful_chat_is_enabled():
         cancel_command(chat_id)
-        raise Exception("Redis is required")
+        raise Exception("Stateful chat is required to be enabled")
 
     client = yandex_oauth.YandexOAuthConsoleClient()
     result = None

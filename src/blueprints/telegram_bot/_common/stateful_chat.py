@@ -6,7 +6,8 @@ based on current state, data and some custom conditions. In short,
 this module manages the state and dispatcher manages the behavior,
 dispatcher should be implemented independently.
 
-- requires Redis to be enabled
+- requires Redis to be enabled. Use `stateful_chat_is_enabled()`
+to check if stateful chat is enabled and can be used.
 - you shouldn't import things that starts with `_`,
 because they are intended for internal usage only
 
@@ -94,6 +95,10 @@ _SUBSCRIBED_HANDLERS_KEY = "subscribed_handlers"
 
 def _create_key(*args) -> str:
     return _SEPARATOR.join(map(str, args))
+
+
+def stateful_chat_is_enabled() -> bool:
+    return redis_client.is_enabled
 
 
 # endregion

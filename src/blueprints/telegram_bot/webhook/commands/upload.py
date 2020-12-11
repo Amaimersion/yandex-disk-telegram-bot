@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from flask import g, current_app
 
 from src.api import telegram
-from src.extensions import task_queue, redis_client
+from src.extensions import task_queue
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common import youtube_dl
 from src.blueprints.telegram_bot._common.telegram_interface import (
@@ -25,6 +25,7 @@ from src.blueprints.telegram_bot._common.yandex_disk import (
     YandexAPIExceededNumberOfStatusChecksError
 )
 from src.blueprints.telegram_bot._common.stateful_chat import (
+    stateful_chat_is_enabled,
     set_disposable_handler
 )
 from src.blueprints.telegram_bot.webhook.dispatcher_events import (
@@ -315,7 +316,7 @@ class AttachmentHandler(metaclass=ABCMeta):
         :param chat_id:
         Telegram ID of current chat.
         """
-        if not redis_client.is_enabled:
+        if not stateful_chat_is_enabled():
             return
 
         expire = current_app.config[
