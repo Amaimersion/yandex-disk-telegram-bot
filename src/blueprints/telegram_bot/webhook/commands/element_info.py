@@ -131,7 +131,10 @@ def handle(*args, **kwargs):
 
         if task_queue.is_enabled:
             job_timeout = current_app.config[
-                "RUNTIME_ELEMENT_INFO_WORKER_TIMEOUT"
+                "RUNTIME_ELEMENT_INFO_WORKER_JOB_TIMEOUT"
+            ]
+            ttl = current_app.config[
+                "RUNTIME_ELEMENT_INFO_WORKER_TTL"
             ]
 
             task_queue.enqueue(
@@ -139,6 +142,7 @@ def handle(*args, **kwargs):
                 args=arguments,
                 description=CommandName.ELEMENT_INFO.value,
                 job_timeout=job_timeout,
+                ttl=ttl,
                 result_ttl=0,
                 failure_ttl=0
             )

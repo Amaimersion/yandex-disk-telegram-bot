@@ -136,7 +136,17 @@ class Config:
 
     # See `RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT` documentation.
     # This value is for `/element_info` worker.
-    RUNTIME_ELEMENT_INFO_WORKER_TIMEOUT = 5
+    RUNTIME_ELEMENT_INFO_WORKER_JOB_TIMEOUT = 5
+
+    # See `RUNTIME_UPLOAD_WORKER_UPLOAD_TTL` documentation.
+    # This value is for `/element_info` worker.
+    # Because worker is used only to send preview,
+    # we will use small TTL, because if all workers
+    # are busy, most likely it can take a long time
+    # before preview will be sended. There is no point
+    # to send preview after 5 minutes - preview should
+    # be sended either now or never.
+    RUNTIME_ELEMENT_INFO_WORKER_TTL = 10
 
     # See `RUNTIME_UPLOAD_WORKER_JOB_TIMEOUT` documentation.
     # This value is for `/space_info` worker.
