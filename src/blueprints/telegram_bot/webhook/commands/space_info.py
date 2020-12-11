@@ -37,10 +37,25 @@ def handle(*args, **kwargs):
     access_token = user.yandex_disk_token.get_access_token()
     disk_info = None
 
+    # If all task queue workers are busy,
+    # it can take a long time before they
+    # execute `send_photo()` function.
+    # We will indicate to user that everything
+    # is fine and result will be sent soon
+    sended_message = telegram.send_message(
+        chat_id=chat_id,
+        text="Generating..."
+    )
+    sended_message_id = sended_message["content"]["message_id"]
+
     try:
         disk_info = get_disk_info(access_token)
     except YandexAPIRequestError as error:
-        cancel_command(chat_id)
+        cancel_command(
+            chat_telegram_id=chat_id,
+            edit_message=sended_message_id
+        )
+
         raise error
 
     current_utc_date = get_current_utc_datetime()
@@ -57,7 +72,8 @@ def handle(*args, **kwargs):
         jpeg_image,
         filename,
         file_caption,
-        chat_id
+        chat_id,
+        sended_message_id
     )
 
     if task_queue.is_enabled:
@@ -206,7 +222,8 @@ def send_photo(
     content: bytes,
     filename: str,
     file_caption: str,
-    chat_id: str
+    chat_id: int,
+    sended_message_id: int
 ):
     """
     Sends photo to user.
@@ -220,3 +237,13 @@ def send_photo(
         ),
         caption=file_caption
     )
+
+    try:
+        telegram.delete_message(
+            chat_id=chat_id,
+            message_id=sended_message_id
+        )
+    except Exception:
+        # we can safely ignore if we can't delete
+        # sended message. Anyway we will send new one
+        pass

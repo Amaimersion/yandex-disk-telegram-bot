@@ -37,6 +37,15 @@ def edit_message_text(**kwargs):
     return make_request("editMessageText", kwargs)
 
 
+def delete_message(**kwargs):
+    """
+    https://core.telegram.org/bots/api#deletemessage
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_request("deleteMessage", kwargs)
+
+
 def send_photo(**kwargs):
     """
     https://core.telegram.org/bots/api#sendphoto
