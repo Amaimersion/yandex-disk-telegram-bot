@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Flask",
+            "type": "python",
+            "request": "launch",
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "wsgi.py",
+                "FLASK_ENV": "development",
+                "FLASK_DEBUG": "0",
+                "CONFIG_NAME": "development"
+            },
+            "args": [
+                "run",
+                "--no-debugger",
+                "--no-reload",
+                "--port",
+                "8000"
+            ],
+            "jinja": true,
+            "console": "integratedTerminal"
+        }
+    ]
+}

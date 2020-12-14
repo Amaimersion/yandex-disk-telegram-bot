@@ -1,15 +1,18 @@
 from flask import g, current_app
 
 from src.api import telegram
-from src.blueprints.utils import absolute_url_for
+from src.blueprints._common.utils import absolute_url_for
 
 
-def handle():
+def handle(*args, **kwargs):
     """
     Handles `/about` command.
     """
     telegram.send_message(
-        chat_id=g.telegram_chat.id,
+        chat_id=kwargs.get(
+            "chat_id",
+            g.telegram_chat.id
+        ),
         disable_web_page_preview=True,
         text=(
             "I'm free and open-source bot that allows "

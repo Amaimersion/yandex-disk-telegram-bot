@@ -23,7 +23,7 @@ class RequestResult(typing.TypedDict):
 
 
 def request(
-    raise_for_status=True,
+    raise_for_status=False,
     content_type: CONTENT_TYPE = "none",
     **kwargs
 ) -> RequestResult:

@@ -1,6 +1,6 @@
 from enum import IntEnum, unique
 
-from src.database import db
+from src.extensions import db
 
 
 @unique
@@ -45,6 +45,7 @@ class Chat(db.Model):
     telegram_id = db.Column(
         db.BigInteger,
         unique=True,
+        index=True,
         nullable=False,
         comment="Unique ID to identificate chat in Telegram"
     )

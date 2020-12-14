@@ -2,8 +2,8 @@ from functools import wraps
 
 from flask import g
 
+from src.extensions import db
 from src.database import (
-    db,
     User,
     UserQuery,
     Chat,
@@ -12,9 +12,9 @@ from src.database import (
 from src.database.models import (
     ChatType
 )
-from src.localization import SupportedLanguages
+from src.localization import SupportedLanguage
+from src.blueprints.telegram_bot._common.command_names import CommandName
 from .responses import cancel_command
-from .names import CommandsNames
 
 
 def register_guest(func):
@@ -37,7 +37,7 @@ def register_guest(func):
         new_user = User(
             telegram_id=tg_user.id,
             is_bot=tg_user.is_bot,
-            language=SupportedLanguages.get(tg_user.language_code)
+            language=SupportedLanguage.get(tg_user.language_code)
         )
         Chat(
             telegram_id=tg_chat.id,
@@ -102,7 +102,7 @@ def yd_access_token_required(func):
             (user.yandex_disk_token is None) or
             (not user.yandex_disk_token.have_access_token())
         ):
-            return g.route_to(CommandsNames.YD_AUTH)
+            return g.direct_dispatch(CommandName.YD_AUTH)()
 
         return func(*args, **kwargs)
 

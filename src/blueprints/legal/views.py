@@ -1,6 +1,6 @@
 from flask import redirect, url_for
 
-from src.blueprints.utils import absolute_url_for
+from src.blueprints._common.utils import absolute_url_for
 from src.blueprints.legal import legal_blueprint as bp
 
 

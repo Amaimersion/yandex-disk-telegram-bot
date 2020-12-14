@@ -1,7 +1,7 @@
 """Init
 
 Revision ID: c6fa89936c27
-Revises: 
+Revises:
 Create Date: 2020-03-29 13:07:39.579009
 
 """
@@ -24,7 +24,7 @@ def upgrade():
     sa.Column('last_update_date', sa.DateTime(), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.Column('telegram_id', sa.Integer(), nullable=False, comment='Unique ID to identificate user in Telegram'),
     sa.Column('is_bot', sa.Boolean(), nullable=False, comment='User is bot in Telegram'),
-    sa.Column('language', sa.Enum('EN', name='supportedlanguages'), nullable=False, comment='Preferred language of user'),
+    sa.Column('language', sa.Enum('EN', name='supportedlanguage'), nullable=False, comment='Preferred language of user'),
     sa.Column('group', sa.Enum('USER', 'TESTER', 'ADMIN', name='usergroup'), nullable=False, comment='User rights group'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('telegram_id')

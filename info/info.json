@@ -1,6 +1,6 @@
 {
     "name": "Yandex.Disk Bot",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "This bot integrates Yandex.Disk into Telegram.",
     "about": "Work with Yandex.Disk.",
     "telegram": "Ya_Disk_Bot",
@@ -22,32 +22,80 @@
             "description": "Read about me"
         },
         {
+            "command": "commands",
+            "description": "See full list of commands"
+        },
+        {
             "command": "upload_photo",
             "description": "Upload a photo with quality loss"
+        },
+        {
+            "command": "public_upload_photo",
+            "description": "Upload a photo and publish it"
         },
         {
             "command": "upload_file",
             "description": "Upload a file with original state"
         },
         {
+            "command": "public_upload_file",
+            "description": "Upload a file and publish it"
+        },
+        {
             "command": "upload_audio",
             "description": "Upload an audio with original quality"
+        },
+        {
+            "command": "public_upload_audio",
+            "description": "Upload an audio and publish it"
         },
         {
             "command": "upload_video",
             "description": "Upload a video with original quality"
         },
         {
+            "command": "public_upload_video",
+            "description": "Upload a video and publish it"
+        },
+        {
             "command": "upload_voice",
             "description": "Upload a voice message"
         },
         {
+            "command": "public_upload_voice",
+            "description": "Upload a voice and publish it"
+        },
+        {
             "command": "upload_url",
-            "description": "Upload a file using direct URL"
+            "description": "Upload a resource using URL"
+        },
+        {
+            "command": "public_upload_url",
+            "description": "Upload a resource using URL and publish it"
+        },
+        {
+            "command": "publish",
+            "description": "Publish a file or folder using OS path"
+        },
+        {
+            "command": "unpublish",
+            "description": "Unpublish a file or folder using OS path"
         },
         {
             "command": "create_folder",
             "description": "Create a folder using OS path"
+        },
+        {
+            "command": "element_info",
+            "description": "Information about file or folder"
+        },
+        {
+            "command": "space_info",
+            "description": "Information about remaining space"
+        },
+        {
+            "command": "disk_info",
+            "description": "Information about your Yandex.Disk"
         },
         {
             "command": "grant_access",

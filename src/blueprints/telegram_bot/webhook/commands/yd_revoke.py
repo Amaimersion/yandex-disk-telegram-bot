@@ -1,53 +1,85 @@
 from flask import g
 
-from src.database import db
+from src.extensions import db
 from src.api import telegram
-from src.blueprints.utils import get_current_datetime
-from .common.decorators import get_db_data
-from .common.responses import request_private_chat
-from . import CommandsNames
+from src.blueprints._common.utils import get_current_datetime
+from src.blueprints.telegram_bot._common.yandex_oauth import YandexOAuthClient
+from ._common.decorators import (
+    get_db_data,
+    register_guest
+)
+from ._common.responses import (
+    request_private_chat,
+    cancel_command
+)
+from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
+class YandexOAuthRemoveClient(YandexOAuthClient):
+    def clear_access_token(self, db_user) -> None:
+        super().clear_access_token(db_user)
+        db.session.commit()
+
+
+@register_guest
 @get_db_data
-def handle():
+def handle(*args, **kwargs):
     """
-    Handles `/yandex_disk_revoke` command.
+    Handles `/revoke_access` command.
 
     Revokes bot access to user Yandex.Disk.
     """
-    user = g.db_user
-    incoming_chat = g.db_chat
     private_chat = g.db_private_chat
 
-    if (private_chat is None):
-        return request_private_chat(incoming_chat.telegram_id)
+    if private_chat is None:
+        incoming_chat_id = kwargs.get(
+            "chat_id",
+            g.db_chat.telegram_id
+        )
+
+        return request_private_chat(incoming_chat_id)
+
+    user = g.db_user
+    chat_id = private_chat.telegram_id
+    client = YandexOAuthRemoveClient()
 
     if (
         (user is None) or
-        (user.yandex_disk_token is None) or
-        (not user.yandex_disk_token.have_access_token())
+        not client.have_valid_access_token(user)
     ):
-        telegram.send_message(
-            chat_id=private_chat.telegram_id,
-            text=(
-                "You don't granted me access to your Yandex.Disk."
-                "\n"
-                f"You can do that with {CommandsNames.YD_AUTH.value}"
-            )
+        return message_dont_have_access_token(chat_id)
+
+    try:
+        client.clear_access_token(user)
+    except Exception as error:
+        cancel_command(chat_id)
+        raise error
+
+    message_access_token_removed(chat_id)
+
+
+# region Messages
+
+
+def message_dont_have_access_token(chat_id: int) -> None:
+    telegram.send_message(
+        chat_id=chat_id,
+        text=(
+            "You don't granted me access to your Yandex.Disk."
+            "\n"
+            f"You can do that with {CommandName.YD_AUTH.value}"
         )
+    )
 
-        return
 
-    user.yandex_disk_token.clear_all_tokens()
-    db.session.commit()
-
-    current_datetime = get_current_datetime()
-    date = current_datetime["date"]
-    time = current_datetime["time"]
-    timezone = current_datetime["timezone"]
+def message_access_token_removed(chat_id: int) -> None:
+    now = get_current_datetime()
+    date = now["date"]
+    time = now["time"]
+    timezone = now["timezone"]
 
     telegram.send_message(
-        chat_id=private_chat.telegram_id,
+        chat_id=chat_id,
         parse_mode="HTML",
         disable_web_page_preview=True,
         text=(
@@ -58,5 +90,10 @@ def handle():
             "\n\n"
             "Don't forget to do that in your "
             '<a href="https://passport.yandex.ru/profile">Yandex Profile</a>.'
+            "\n"
+            f"To grant access again use {CommandName.YD_AUTH.value}"
         )
     )
+
+
+# endregion

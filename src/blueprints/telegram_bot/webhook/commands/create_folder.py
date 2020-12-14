@@ -1,40 +1,73 @@
-from flask import g
+from flask import g, current_app
 
 from src.api import telegram
-from .common.responses import (
-    cancel_command,
-    abort_command
-)
-from .common.decorators import (
-    yd_access_token_required,
-    get_db_data
-)
-from .common.yandex_api import (
+from src.blueprints.telegram_bot._common.yandex_disk import (
     create_folder,
     YandexAPICreateFolderError,
     YandexAPIRequestError
 )
-from . import CommandsNames
+from src.blueprints.telegram_bot._common.command_names import (
+    CommandName
+)
+from src.blueprints.telegram_bot._common.stateful_chat import (
+    stateful_chat_is_enabled,
+    set_disposable_handler
+)
+from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+    DispatcherEvent
+)
+from ._common.responses import (
+    cancel_command,
+    send_yandex_disk_error,
+    request_absolute_folder_name
+)
+from ._common.decorators import (
+    yd_access_token_required,
+    get_db_data
+)
+from ._common.utils import extract_absolute_path
 
 
 @yd_access_token_required
 @get_db_data
-def handle():
-    """
-    Handles `/create_folder` command.
-    """
-    message = g.telegram_message
+def handle(*args, **kwargs):
+    message = kwargs.get(
+        "message",
+        g.telegram_message
+    )
+    user_id = kwargs.get(
+        "user_id",
+        g.telegram_user.id
+    )
+    chat_id = kwargs.get(
+        "chat_id",
+        g.telegram_chat.id
+    )
+    folder_name = extract_absolute_path(
+        message,
+        CommandName.CREATE_FOLDER.value,
+        kwargs.get("route_source")
+    )
+
+    if not folder_name:
+        if stateful_chat_is_enabled():
+            set_disposable_handler(
+                user_id,
+                chat_id,
+                CommandName.CREATE_FOLDER.value,
+                [
+                    DispatcherEvent.PLAIN_TEXT.value,
+                    DispatcherEvent.BOT_COMMAND.value,
+                    DispatcherEvent.EMAIL.value,
+                    DispatcherEvent.HASHTAG.value,
+                    DispatcherEvent.URL.value
+                ],
+                current_app.config["RUNTIME_DISPOSABLE_HANDLER_EXPIRE"]
+            )
+
+        return request_absolute_folder_name(chat_id)
+
     user = g.db_user
-    chat = g.db_chat
-    message_text = message.get_text()
-    folder_name = message_text.replace(
-        CommandsNames.CREATE_FOLDER.value,
-        ""
-    ).strip()
-
-    if not (folder_name):
-        return abort_command(chat.telegram_id)
-
     access_token = user.yandex_disk_token.get_access_token()
     last_status_code = None
 
@@ -44,19 +77,13 @@ def handle():
             folder_name=folder_name
         )
     except YandexAPIRequestError as error:
-        print(error)
-        return cancel_command(chat.telegram_id)
+        cancel_command(chat_id)
+        raise error
     except YandexAPICreateFolderError as error:
-        error_text = (
-            str(error) or
-            "Unknown Yandex.Disk error"
-        )
+        send_yandex_disk_error(chat_id, str(error))
 
-        telegram.send_message(
-            chat_id=chat.telegram_id,
-            text=error_text
-        )
-
+        # it is expected error and should be
+        # logged only to user
         return
 
     text = None
@@ -66,9 +93,9 @@ def handle():
     elif (last_status_code == 409):
         text = "Already exists"
     else:
-        text = f"Unknown status code: {last_status_code}"
+        text = f"Unknown operation status: {last_status_code}"
 
     telegram.send_message(
-        chat_id=chat.telegram_id,
+        chat_id=chat_id,
         text=text
     )

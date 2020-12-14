@@ -5,7 +5,8 @@ from flask import (
 )
 
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
-from . import commands, telegram_interface
+from src.blueprints.telegram_bot._common import telegram_interface
+from .dispatcher import intellectual_dispatch, direct_dispatch
 
 
 @bp.route("/webhook", methods=["POST"])
@@ -39,45 +40,19 @@ def webhook():
     g.telegram_message = message
     g.telegram_user = message.get_user()
     g.telegram_chat = message.get_chat()
-    g.route_to = route_command
+    g.direct_dispatch = direct_dispatch
 
-    command = message.get_entity_value("bot_command")
-
-    if (command is None):
-        command = message.guess_bot_command()
-
-    route_command(command)
+    # We call this handler and do not handle any errors.
+    # We assume that all errors already was handeld by
+    # handlers, loggers, etc.
+    # WARNING: in case of any exceptions there will be
+    # 500 from a server. Telegram will send user message
+    # again and again until it get 200 from a server.
+    # So, it is important to always return 200 or return
+    # 500 and expect same message again
+    intellectual_dispatch(message)()
 
     return make_success_response()
-
-
-def route_command(command: str) -> None:
-    """
-    Routes command to specific handler.
-    """
-    CommandNames = commands.CommandsNames
-
-    if (isinstance(command, CommandNames)):
-        command = command.value
-
-    routes = {
-        CommandNames.START.value: commands.help_handler,
-        CommandNames.HELP.value: commands.help_handler,
-        CommandNames.ABOUT.value: commands.about_handler,
-        CommandNames.SETTINGS.value: commands.settings_handler,
-        CommandNames.YD_AUTH.value: commands.yd_auth_handler,
-        CommandNames.YD_REVOKE.value: commands.yd_revoke_handler,
-        CommandNames.UPLOAD_PHOTO.value: commands.upload_photo_handler,
-        CommandNames.UPLOAD_FILE.value: commands.upload_file_handler,
-        CommandNames.UPLOAD_AUDIO.value: commands.upload_audio_handler,
-        CommandNames.UPLOAD_VIDEO.value: commands.upload_video_handler,
-        CommandNames.UPLOAD_VOICE.value: commands.upload_voice_handler,
-        CommandNames.UPLOAD_URL.value: commands.upload_url_handler,
-        CommandNames.CREATE_FOLDER.value: commands.create_folder_handler
-    }
-    method = routes.get(command, commands.unknown_handler)
-
-    method()
 
 
 def make_error_response():

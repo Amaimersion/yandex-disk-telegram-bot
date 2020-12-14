@@ -1,76 +1,81 @@
-# flake8: noqa
+from collections import deque
 
 from flask import g, current_app
 
 from src.api import telegram
-from . import CommandsNames
+from ._common.commands_content import (
+    to_code,
+    commands_html_content
+)
 
 
-def handle():
+def handle(*args, **kwargs):
     """
     Handles `/help` command.
     """
+    chat_id = kwargs.get(
+        "chat_id",
+        g.telegram_chat.id
+    )
+    text = create_help_html_text()
+    telegram.send_message(
+        chat_id=chat_id,
+        parse_mode="HTML",
+        text=text,
+        disable_web_page_preview=True
+    )
+
+
+def create_help_html_text() -> str:
     yd_upload_default_folder = current_app.config[
         "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
     ]
+    file_size_limit_in_mb = int(current_app.config[
+        "TELEGRAM_API_MAX_FILE_SIZE"
+    ] / 1024 / 1024)
+    bullet_char = "•"
+    text = deque()
 
-    text = (
-        "You can control me by sending these commands:"
+    text.append(
+        "You can interact with "
+        '<a href="https://disk.yandex.com">Yandex.Disk</a> '
+        "by using me. To control me send following commands."
         "\n\n"
-        "<b>Yandex.Disk</b>"
+        "Note:"
         "\n"
-        f'For uploading "{to_code(yd_upload_default_folder)}" folder is used by default.'
+        f"{bullet_char} for uploading "
+        f'"{to_code(yd_upload_default_folder)}" '
+        "folder is used by default,"
         "\n"
-        f"{CommandsNames.UPLOAD_PHOTO.value} — upload a photo. "
-        "Original name will be not saved, quality of photo will be decreased. "
-        "You can send photo without this command."
+        f"{bullet_char} maximum size of every upload "
+        f"(except URL) is {file_size_limit_in_mb} MB."
         "\n"
-        f"{CommandsNames.UPLOAD_FILE.value} — upload a file. "
-        "Original name will be saved. "
-        "For photos, original quality will be saved. "
-        "You can send file without this command."
-        "\n"
-        f"{CommandsNames.UPLOAD_AUDIO.value} — upload an audio. "
-        "Original name will be saved, original type may be changed. "
-        "You can send audio file without this command."
-        "\n"
-        f"{CommandsNames.UPLOAD_VIDEO.value} — upload a video. "
-        "Original name will be not saved, original type may be changed. "
-        "You can send video file without this command."
-        "\n"
-        f"{CommandsNames.UPLOAD_VOICE.value} — upload a voice. "
-        "You can send voice file without this command."
-        "\n"
-        f"{CommandsNames.UPLOAD_URL.value} — upload a file using direct URL. "
-        "Original name will be saved. "
-        "You can send direct URL to a file without this command."
-        "\n"
-        f"{CommandsNames.CREATE_FOLDER.value}— create a folder. "
-        "Send folder name to create with this command. "
-        "Folder name should starts from root, "
-        f'nested folders should be separated with "{to_code("/")}" character.'
-        "\n\n"
-        "<b>Yandex.Disk Access</b>"
-        "\n"
-        f"{CommandsNames.YD_AUTH.value} — grant me access to your Yandex.Disk"
-        "\n"
-        f"{CommandsNames.YD_REVOKE.value} — revoke my access to your Yandex.Disk"
-        "\n\n"
-        "<b>Settings</b>"
-        "\n"
-        f"{CommandsNames.SETTINGS.value} — edit your settings"
-        "\n\n"
-        "<b>Information</b>"
-        "\n"
-        f"{CommandsNames.ABOUT.value} — read about me"
     )
 
-    telegram.send_message(
-        chat_id=g.telegram_chat.id,
-        parse_mode="HTML",
-        text=text
-    )
+    for group in commands_html_content:
+        group_name = group["name"]
+        commands = group["commands"]
+        group_added = False
 
+        text.append(
+            f"<b>{group_name}</b>"
+        )
 
-def to_code(text: str) -> str:
-    return f"<code>{text}</code>"
+        for command in commands:
+            command_name = command["name"]
+            help_message = command.get("help")
+
+            if help_message:
+                text.append(
+                    f"{bullet_char} {command_name} — {help_message}."
+                )
+                group_added = True
+
+        if group_added:
+            # extra line
+            text.append("")
+        else:
+            # we don't want empty group name
+            text.pop()
+
+    return "\n".join(text)

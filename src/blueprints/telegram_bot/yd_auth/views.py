@@ -1,60 +1,35 @@
-import base64
-
 from flask import (
     request,
     abort,
-    render_template,
-    current_app
+    render_template
 )
-import jwt
 
-from src.database import (
-    db,
-    UserQuery,
-    ChatQuery
-)
-from src.api import yandex, telegram
+from src.api import telegram
+from src.database import ChatQuery
+from src.blueprints._common.utils import get_current_datetime
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
-from src.blueprints.utils import (
-    get_current_datetime
-)
-from src.blueprints.telegram_bot.webhook.commands import CommandsNames
-from .exceptions import (
-    InvalidCredentials,
-    LinkExpired,
-    InvalidInsertToken
-)
+from src.blueprints.telegram_bot._common import yandex_oauth
+from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 @bp.route("/yandex_disk_authorization")
 def yd_auth():
     """
-    Handles user redirect from Yandex OAuth page.
+    Handles user redirect from Yandex.OAuth page
+    (Auto Code method).
     """
-    if (is_error_request()):
-        return handle_error()
-    elif (is_success_request()):
+    if is_success_request():
         return handle_success()
+    elif is_error_request():
+        return handle_error()
     else:
         abort(400)
 
 
-def is_error_request() -> bool:
-    """
-    :returns: Incoming request is a failed user authorization.
-    """
-    state = request.args.get("state", "")
-    error = request.args.get("error", "")
-
-    return (
-        len(state) > 0 and
-        len(error) > 0
-    )
-
-
 def is_success_request() -> bool:
     """
-    :returns: Incoming request is a successful user authorization.
+    :returns:
+    Incoming request is a successful user authorization.
     """
     state = request.args.get("state", "")
     code = request.args.get("code", "")
@@ -65,82 +40,56 @@ def is_success_request() -> bool:
     )
 
 
-def handle_error():
+def is_error_request() -> bool:
     """
-    Handles failed user authorization.
+    :returns:
+    Incoming request is a failed user authorization.
     """
-    try:
-        db_user = get_db_user()
-        db_user.yandex_disk_token.clear_insert_token()
-        db.session.commit()
-    except Exception:
-        pass
+    state = request.args.get("state", "")
+    error = request.args.get("error", "")
 
-    return create_error_response()
+    return (
+        len(state) > 0 and
+        len(error) > 0
+    )
 
 
 def handle_success():
     """
     Handles success user authorization.
     """
-    db_user = None
+    state = request.args["state"]
+    code = request.args["code"]
+    client = yandex_oauth.YandexOAuthAutoCodeClient()
+    result = None
 
     try:
-        db_user = get_db_user()
-    except InvalidCredentials:
+        result = client.after_success_redirect(state, code)
+    except yandex_oauth.InvalidState:
         return create_error_response("invalid_credentials")
-    except LinkExpired:
+    except yandex_oauth.ExpiredInsertToken:
         return create_error_response("link_expired")
-    except InvalidInsertToken:
+    except yandex_oauth.InvalidInsertToken:
         return create_error_response("invalid_insert_token")
     except Exception as error:
         print(error)
         return create_error_response("internal_server_error")
 
-    code = request.args["code"]
-    yandex_response = None
-
-    try:
-        yandex_response = yandex.get_access_token(
-            grant_type="authorization_code",
-            code=code
-        )["content"]
-    except Exception as error:
-        print(error)
-        return create_error_response("internal_server_error")
-
-    if ("error" in yandex_response):
-        db_user.yandex_disk_token.clear_all_tokens()
-        db.session.commit()
-
+    if not result["ok"]:
         return create_error_response(
             error_code="internal_server_error",
-            raw_error_title=yandex_response["error"],
-            raw_error_description=yandex_response.get("error_description")
+            raw_error_title=result["error"],
+            raw_error_description=result.get("error_description")
         )
 
-    db_user.yandex_disk_token.clear_insert_token()
-    db_user.yandex_disk_token.set_access_token(
-        yandex_response["access_token"]
-    )
-    db_user.yandex_disk_token.access_token_type = (
-        yandex_response["token_type"]
-    )
-    db_user.yandex_disk_token.access_token_expires_in = (
-        yandex_response["expires_in"]
-    )
-    db_user.yandex_disk_token.set_refresh_token(
-        yandex_response["refresh_token"]
-    )
-    db.session.commit()
+    user = result["user"]
+    private_chat = ChatQuery.get_private_chat(user.id)
 
-    private_chat = ChatQuery.get_private_chat(db_user.id)
-
-    if (private_chat):
-        current_datetime = get_current_datetime()
-        date = current_datetime["date"]
-        time = current_datetime["time"]
-        timezone = current_datetime["timezone"]
+    if private_chat:
+        now = get_current_datetime()
+        date = now["date"]
+        time = now["time"]
+        timezone = now["timezone"]
 
         telegram.send_message(
             chat_id=private_chat.telegram_id,
@@ -152,11 +101,37 @@ def handle_success():
                 f"on {date} at {time} {timezone}."
                 "\n\n"
                 "If it wasn't you, then detach this access with "
-                f"{CommandsNames.YD_REVOKE.value}"
+                f"{CommandName.YD_REVOKE.value}"
             )
         )
 
     return create_success_response()
+
+
+def handle_error():
+    """
+    Handles failed user authorization.
+    """
+    state = request.args["state"]
+    client = yandex_oauth.YandexOAuthAutoCodeClient()
+
+    try:
+        client.after_error_redirect(state)
+    except Exception:
+        # we do not care about any errors at that stage
+        pass
+
+    return create_error_response()
+
+
+def create_success_response():
+    """
+    :returns:
+    Rendered template for success page.
+    """
+    return render_template(
+        "telegram_bot/yd_auth/success.html"
+    )
 
 
 def create_error_response(
@@ -165,17 +140,21 @@ def create_error_response(
     raw_error_description: str = None
 ):
     """
-    :param error_code: Name of error for user friendly
-    information. If not specified, then defaults to
+    :param error_code:
+    Name of error for user friendly information.
+    If not specified, then defaults to
     `error` argument from request.
-    :param raw_error_title: Raw error title for
-    debugging purposes. If not specified, then defaults to
+    :param raw_error_title:
+    Raw error title for debugging purposes.
+    If not specified, then defaults to
     `error_code` argument.
-    :param raw_error_description: Raw error description
-    for debugging purposes. If not specified, then defaults to
+    :param raw_error_description:
+    Raw error description for debugging purposes.
+    If not specified, then defaults to
     `error_description` argument from request.
 
-    :returns: Rendered template for error page.
+    :returns:
+    Rendered template for error page.
     """
     possible_errors = {
         "access_denied": {
@@ -188,7 +167,7 @@ def create_error_response(
         "unauthorized_client": {
             "title": "Application is unavailable",
             "description": (
-                "There is a problems with the me. "
+                "There is a problems with me. "
                 "Try later please."
             )
         },
@@ -223,7 +202,7 @@ def create_error_response(
     error = request.args.get("error")
     error_description = request.args.get("error_description")
 
-    if (error_code is None):
+    if error_code is None:
         error_code = error
 
     error_info = possible_errors.get(error_code, {})
@@ -237,84 +216,3 @@ def create_error_response(
         raw_error_description=(raw_error_description or error_description),
         raw_state=state
     )
-
-
-def create_success_response():
-    """
-    :returns: Rendered template for success page.
-    """
-    return render_template(
-        "telegram_bot/yd_auth/success.html"
-    )
-
-
-def get_db_user():
-    """
-    - `insert_token` will be checked. If it is not valid,
-    an error will be thrown. You shouldn't clear any tokens
-    in case of error, because provided tokens is not known
-    to attacker (potential).
-    - you shouldn't try to avoid checking logic! It is really
-    unsafe to access DB user without `insert_token`.
-
-    :returns: User from DB based on incoming `state` from request.
-    This user have `yandex_disk_token` property which is
-    not `None`.
-
-    :raises InvalidCredentials: If `state` have invalid
-    data or user not found in DB.
-    :raises LinkExpired: Requested link is expired and
-    not valid anymore.
-    :raises InvalidInsertToken: Provided `insert_token`
-    is not valid.
-    """
-    base64_state = request.args["state"]
-    encoded_state = None
-    decoded_state = None
-
-    try:
-        encoded_state = base64.urlsafe_b64decode(
-            base64_state.encode()
-        ).decode()
-    except Exception:
-        raise InvalidCredentials()
-
-    try:
-        decoded_state = jwt.decode(
-            encoded_state,
-            current_app.secret_key.encode(),
-            algorithm="HS256"
-        )
-    except Exception:
-        raise InvalidCredentials()
-
-    incoming_user_id = decoded_state.get("user_id")
-    incoming_insert_token = decoded_state.get("insert_token")
-
-    if (
-        incoming_user_id is None or
-        incoming_insert_token is None
-    ):
-        raise InvalidCredentials()
-
-    db_user = UserQuery.get_user_by_id(int(incoming_user_id))
-
-    if (
-        db_user is None or
-        # for some reason `yandex_disk_token` not created,
-        # it is not intended behavior.
-        db_user.yandex_disk_token is None
-    ):
-        raise InvalidCredentials()
-
-    db_insert_token = None
-
-    try:
-        db_insert_token = db_user.yandex_disk_token.get_insert_token()
-    except Exception:
-        raise LinkExpired()
-
-    if (incoming_insert_token != db_insert_token):
-        raise InvalidInsertToken()
-
-    return db_user

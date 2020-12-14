@@ -39,3 +39,73 @@ def create_folder(user_token: str, **kwargs):
         data=kwargs,
         user_token=user_token
     )
+
+
+def publish(user_token: str, **kwargs):
+    """
+    https://yandex.ru/dev/disk/api/reference/publish-docpage/
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_disk_request(
+        http_method="PUT",
+        api_method="resources/publish",
+        data=kwargs,
+        user_token=user_token
+    )
+
+
+def unpublish(user_token: str, **kwargs):
+    """
+    https://yandex.ru/dev/disk/api/reference/publish-docpage/
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_disk_request(
+        http_method="PUT",
+        api_method="resources/unpublish",
+        data=kwargs,
+        user_token=user_token
+    )
+
+
+def get_disk_info(user_token: str, **kwargs):
+    """
+    https://yandex.ru/dev/disk/api/reference/capacity-docpage/
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_disk_request(
+        http_method="GET",
+        api_method="",
+        data=kwargs,
+        user_token=user_token
+    )
+
+
+def get_element_info(user_token: str, **kwargs):
+    """
+    https://yandex.ru/dev/disk/api/reference/meta.html/
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_disk_request(
+        http_method="GET",
+        api_method="resources",
+        data=kwargs,
+        user_token=user_token
+    )
+
+
+def get_element_public_info(user_token: str, **kwargs):
+    """
+    https://dev.yandex.net/disk-polygon/?lang=ru&tld=ru#!/v147disk47public47resources/GetPublicResource # noqa
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_disk_request(
+        http_method="GET",
+        api_method="public/resources",
+        data=kwargs,
+        user_token=user_token
+    )

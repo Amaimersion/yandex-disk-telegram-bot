@@ -1,1 +1,1 @@
-from .languages import SupportedLanguages
+from .languages import SupportedLanguage

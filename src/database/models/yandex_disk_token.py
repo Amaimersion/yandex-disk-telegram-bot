@@ -8,7 +8,7 @@ from cryptography.fernet import (
     InvalidToken as InvalidTokenFernetError
 )
 
-from src.database import db
+from src.extensions import db
 
 
 class YandexDiskToken(db.Model):
@@ -69,6 +69,7 @@ class YandexDiskToken(db.Model):
         db.Integer,
         db.ForeignKey("users.id"),
         unique=True,
+        index=True,
         nullable=False,
         comment="Tokens belongs to this user"
     )
