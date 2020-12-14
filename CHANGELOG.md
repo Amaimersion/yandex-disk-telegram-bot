@@ -1,4 +1,4 @@
-# 1.2.0
+# 1.2.0 (December 14, 2020)
 
 ## Telegram Bot
 
