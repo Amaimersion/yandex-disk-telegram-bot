@@ -1,5 +1,11 @@
 # 1.3.0
 
+## Project
+
+### Improved
+
+- Refactoring.
+
 
 # 1.2.0 (December 14, 2020)
 
