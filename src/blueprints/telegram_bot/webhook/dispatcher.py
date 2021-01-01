@@ -16,6 +16,7 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
     get_user_chat_data
 )
 from src.blueprints.telegram_bot._common.telegram_interface import (
+    Update as TelegramUpdate,
     Message as TelegramMessage
 )
 from src.blueprints.telegram_bot._common.command_names import CommandName
@@ -26,11 +27,9 @@ from .dispatcher_events import (
 )
 
 
-def intellectual_dispatch(
-    message: TelegramMessage
-) -> Callable:
+def intellectual_dispatch(update: TelegramUpdate) -> Callable:
     """
-    Intellectual dispatch to handlers of a message.
+    Intellectual dispatch to handlers of Telegram update.
     Provides support for stateful chat (if Redis is enabled).
 
     Priority of handlers:
@@ -70,6 +69,7 @@ def intellectual_dispatch(
     and `**kwargs`. You should call this function in order to run
     handlers (there can be multiple handlers in one return function).
     """
+    message = update.get_message()
     user_id = message.get_user().id
     chat_id = message.get_chat().id
     message_date = int(message.get_date().timestamp())

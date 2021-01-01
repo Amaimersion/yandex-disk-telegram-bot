@@ -27,12 +27,12 @@ def webhook():
     if raw_data is None:
         return make_error_response()
 
-    telegram_update = telegram_interface.Update(raw_data)
+    update = telegram_interface.Update(raw_data)
 
-    if not telegram_update.is_valid():
+    if not update.is_valid():
         return make_error_response()
 
-    message = telegram_update.get_message()
+    message = update.get_message()
 
     if not message.is_valid():
         return make_error_response()
@@ -42,6 +42,8 @@ def webhook():
     g.telegram_chat = message.get_chat()
     g.direct_dispatch = direct_dispatch
 
+    handler = intellectual_dispatch(update)
+
     # We call this handler and do not handle any errors.
     # We assume that all errors already was handeld by
     # handlers, loggers, etc.
@@ -50,7 +52,7 @@ def webhook():
     # again and again until it get 200 from a server.
     # So, it is important to always return 200 or return
     # 500 and expect same message again
-    intellectual_dispatch(message)()
+    handler()
 
     return make_success_response()
 
