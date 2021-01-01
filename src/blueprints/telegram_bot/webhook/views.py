@@ -24,17 +24,17 @@ def webhook():
         cache=False
     )
 
-    if (raw_data is None):
+    if raw_data is None:
         return make_error_response()
 
-    telegram_request = telegram_interface.Request(raw_data)
+    telegram_update = telegram_interface.Update(raw_data)
 
-    if not (telegram_request.is_valid()):
+    if not telegram_update.is_valid():
         return make_error_response()
 
-    message = telegram_request.get_message()
+    message = telegram_update.get_message()
 
-    if not (message.is_valid()):
+    if not message.is_valid():
         return make_error_response()
 
     g.telegram_message = message

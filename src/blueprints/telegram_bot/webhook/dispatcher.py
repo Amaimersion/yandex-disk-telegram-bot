@@ -72,7 +72,7 @@ def intellectual_dispatch(
     """
     user_id = message.get_user().id
     chat_id = message.get_chat().id
-    message_date = message.get_date()
+    message_date = int(message.get_date().timestamp())
     is_stateful_chat = stateful_chat_is_enabled()
     disposable_handler = None
     subscribed_handlers = None

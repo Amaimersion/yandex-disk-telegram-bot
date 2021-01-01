@@ -190,7 +190,7 @@ class AttachmentHandler(metaclass=ABCMeta):
         assumed as direct file URL.
         See https://core.telegram.org/bots/api/#available-types
         """
-        return message.raw_data.get(self.raw_data_key)
+        return message.get(self.raw_data_key)
 
     def check_message_health(
         self,
@@ -755,7 +755,7 @@ class PhotoHandler(AttachmentHandler):
         )
 
     def get_attachment(self, message: TelegramMessage):
-        photos = message.raw_data.get(self.raw_data_key, [])
+        photos = message.get(self.raw_data_key, [])
         biggest_photo = None
         biggest_pixels_count = -1
 
