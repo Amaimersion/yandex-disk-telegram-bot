@@ -105,3 +105,10 @@ def bytes_to_human_decimal(bytes_count: int) -> str:
     Bytes -> decimal representation.
     """
     return bytes_to_human_unit(bytes_count, 1000.0, "B")
+
+
+def get_str_bytes_length(value: str) -> int:
+    """
+    - source: https://stackoverflow.com/a/30686735/8445442
+    """
+    return len(value.encode("utf-8"))
