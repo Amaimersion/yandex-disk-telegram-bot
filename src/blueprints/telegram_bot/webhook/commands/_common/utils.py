@@ -9,7 +9,7 @@ from src.blueprints._common.utils import (
 from src.blueprints.telegram_bot._common.telegram_interface import (
     Message as TelegramMessage
 )
-from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     RouteSource
 )
 

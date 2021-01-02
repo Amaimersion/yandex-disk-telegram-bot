@@ -15,7 +15,7 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
 from src.blueprints.telegram_bot._common.command_names import (
     CommandName
 )
-from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent
 )
 from ._common.responses import (

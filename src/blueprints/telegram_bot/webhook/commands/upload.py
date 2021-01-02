@@ -28,7 +28,7 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
     stateful_chat_is_enabled,
     set_disposable_handler
 )
-from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent
 )
 from ._common.decorators import (

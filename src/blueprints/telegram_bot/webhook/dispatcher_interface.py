@@ -1,14 +1,13 @@
 """
 This code directly related to dispatcher (`dispatcher.py`).
-However, it was extracted into separate file to
-avoid circular imports.
+However, it was extracted into separate file to avoid circular imports.
 
 Many handlers using `DispatcherEvent`. Howerver, dispatcher
 itself imports these handlers. So, circular import occurs.
 Handlers may import entire dispatcher module, not only enum
 (`import dispatcher`). But i don't like this approach, so,
 dispatcher events were extracted into separate file.
-Same logic for another enums.
+Same logic for another interfaces.
 """
 
 
@@ -23,7 +22,7 @@ from src.blueprints.telegram_bot._common.command_names import CommandName
 
 class StringAutoName(Enum):
     """
-    `auto()` will return strings, not ints.
+    `auto()` will return strings, not int's.
     """
     @staticmethod
     def _generate_next_value_(name, start, count, last_values):

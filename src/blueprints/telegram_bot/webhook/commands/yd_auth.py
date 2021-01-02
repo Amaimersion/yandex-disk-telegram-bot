@@ -14,7 +14,7 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
     get_user_chat_data,
     delete_user_chat_data
 )
-from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent,
     RouteSource
 )

@@ -22,7 +22,7 @@ from src.blueprints.telegram_bot._common.telegram_interface import (
 )
 from src.blueprints.telegram_bot._common.command_names import CommandName
 from . import commands
-from .dispatcher_events import (
+from .dispatcher_interface import (
     DispatcherEvent,
     RouteSource,
     CallbackQueryDispatcherData
