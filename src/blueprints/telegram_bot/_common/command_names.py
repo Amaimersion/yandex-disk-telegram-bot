@@ -1,10 +1,17 @@
 from enum import Enum, unique
+from typing import Union
 
 
 @unique
 class CommandName(Enum):
     """
     Command supported by bot.
+
+    - in most cases you should use value of enum variable
+    directly, because it is actual command name. But if
+    you want to use short identificator (for callback query
+    data, for example), then you can get int ID of enum
+    variable using `get_index()`.
     """
     START = "/start"
     HELP = "/help"
@@ -31,3 +38,45 @@ class CommandName(Enum):
     ELEMENT_INFO = "/element_info"
     DISK_INFO = "/disk_info"
     COMMANDS_LIST = "/commands"
+
+    @staticmethod
+    def values():
+        return [i.value for i in CommandName]
+
+    @staticmethod
+    def get_index(name: str) -> Union[int, None]:
+        """
+        NOTE:
+        you shouldn't rely on index order!
+
+        :returns:
+        Index of that enum name.
+        `None` if name is unknown.
+        """
+        values = CommandName.values()
+
+        for i in range(len(values)):
+            if (values[i] == name):
+                return i
+
+        return None
+
+    @staticmethod
+    def get_name(index: int) -> Union[str, None]:
+        """
+        :returns:
+        Enum variable name.
+        `None` if index is outside of values array.
+
+        :raises:
+        In case if index is negative.
+        """
+        if (index < 0):
+            raise Exception("Negative index is not supported")
+
+        values = CommandName.values()
+
+        if (index >= len(values)):
+            return None
+
+        return values[index]

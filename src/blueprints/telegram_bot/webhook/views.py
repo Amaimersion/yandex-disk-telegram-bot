@@ -28,21 +28,12 @@ def webhook():
         return make_error_response()
 
     update = telegram_interface.Update(raw_data)
-
-    if not update.is_valid():
-        return make_error_response()
-
-    message = update.get_message()
-
-    if not message.is_valid():
-        return make_error_response()
-
-    g.telegram_message = message
-    g.telegram_user = message.get_user()
-    g.telegram_chat = message.get_chat()
-    g.direct_dispatch = direct_dispatch
-
     handler = intellectual_dispatch(update)
+
+    if not handler:
+        return make_error_response()
+
+    create_app_context(update)
 
     # We call this handler and do not handle any errors.
     # We assume that all errors already was handeld by
@@ -80,3 +71,42 @@ def make_success_response():
         },
         200
     ))
+
+
+def create_app_context(update: telegram_interface.Update):
+    """
+    Some app methods (decorators, for example) depends
+    on specific application context (`g.telegram_user`, for example).
+    This function will create needed application context.
+
+    NOTE:
+    you shouldn't use application context directly.
+    Use it only when there is really no way to access needed data.
+
+    - https://flask.palletsprojects.com/en/1.1.x/appcontext/
+    """
+    message = update.get_message()
+    callback_query = update.get_callback_query()
+
+    if (not message and callback_query):
+        message = callback_query.get_message()
+
+    g.telegram_message = None
+    g.telegram_callback_query = None
+    g.telegram_user = None
+    g.telegram_chat = None
+
+    if message:
+        g.telegram_message = message
+        g.telegram_user = message.get_user()
+        g.telegram_chat = message.get_chat()
+
+    if callback_query:
+        g.telegram_callback_query = callback_query
+
+        # if `callback_query` exists and `message` not,
+        # then `update.callback_query.from` will have
+        # actual result than `update.callback_query.message.from`.
+        g.telegram_user = callback_query.get_user()
+
+    g.direct_dispatch = direct_dispatch

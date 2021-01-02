@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timezone
 from typing import (
     List,
@@ -56,24 +57,42 @@ class Update(TelegramObject):
                 isinstance(
                     self.raw_data.get("edited_message"),
                     dict
+                ) or
+                isinstance(
+                    self.raw_data.get("callback_query"),
+                    dict
                 )
             )
         )
 
-    def get_message(self) -> "Message":
+    def get_message(self) -> Union["Message", None]:
         """
         - `message` or `edited_message` is used.
 
         :returns:
-        Telegram user object.
+        Telegram message if exists, `None` otherwise.
         """
         raw_data = (
             self.raw_data.get("message") or
             self.raw_data.get("edited_message")
         )
-        message = Message(raw_data)
 
-        return message
+        if raw_data:
+            return Message(raw_data)
+
+        return None
+
+    def get_callback_query(self) -> Union["CallbackQuery", None]:
+        """
+        :returns:
+        Telegram callback query if exists, `None` otherwise.
+        """
+        raw_data = self.raw_data.get("callback_query")
+
+        if raw_data:
+            return CallbackQuery(raw_data)
+
+        return None
 
 
 class Message(TelegramObject):
@@ -340,3 +359,101 @@ class Entity(TelegramObject):
         Entity is an URL.
         """
         return (self.type == "url")
+
+
+class CallbackQuery(TelegramObject):
+    """
+    - https://core.telegram.org/bots/api#callbackquery
+    """
+    @staticmethod
+    def serialize_data(data: Any) -> str:
+        """
+        Serializes data.
+
+        - note that you may also need to check bytes
+        length of serialized result, because Telegram
+        can have bytes length limit for serialized data.
+
+        :returns:
+        Result can be safely used for `data` of callback query.
+
+        :raises:
+        Raises an error if unable to serialize data.
+        """
+        return json.dumps(data)
+
+    @staticmethod
+    def deserialize_data(data: str) -> Any:
+        """
+        Deserializes data.
+
+        :returns:
+        Initial data that was serialized using `serialize_data()`.
+
+        :raises:
+        Raises an error if unable to deserialize data.
+        """
+        return json.loads(data)
+
+    @property
+    def id(self) -> str:
+        return self.raw_data["id"]
+
+    def is_valid(self) -> bool:
+        """
+        :returns:
+        Data is valid for further handling.
+        """
+        return (
+            isinstance(
+                self.raw_data.get("id"),
+                str
+            ) and
+            isinstance(
+                self.raw_data.get("from"),
+                dict
+            )
+        )
+
+    def get_user(self) -> User:
+        """
+        :returns:
+        Who sent this message.
+        """
+        raw_data = self.raw_data["from"]
+
+        return User(raw_data)
+
+    def get_data(self) -> Any:
+        """
+        NOTE:
+        "bad client can send arbitrary data in this field".
+
+        :returns:
+        Deserialized callback query data.
+        `None` if not presented.
+
+        :raises:
+        Raises an error if unable to deserialize data.
+        """
+        raw_data = self.raw_data.get("data")
+
+        if not raw_data:
+            return None
+
+        return CallbackQuery.deserialize_data(raw_data)
+
+    def get_message(self) -> Union[Message, None]:
+        """
+        :returns:
+        "Message with the callback button that originated the query.
+        Note that message content and message date will not be available
+        if the message is too old".
+        `None` will be returned if there is no message.
+        """
+        raw_data = self.raw_data.get("message")
+
+        if not raw_data:
+            return None
+
+        return Message(raw_data)

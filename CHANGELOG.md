@@ -6,6 +6,10 @@
 
 - Refactoring.
 
+### Added
+
+- Support for `callback_query` Telegram update.
+
 
 # 1.2.0 (December 14, 2020)
 

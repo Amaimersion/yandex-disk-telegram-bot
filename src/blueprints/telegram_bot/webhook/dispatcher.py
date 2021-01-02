@@ -17,22 +17,144 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
 )
 from src.blueprints.telegram_bot._common.telegram_interface import (
     Update as TelegramUpdate,
-    Message as TelegramMessage
+    Message as TelegramMessage,
+    CallbackQuery as TelegramCallbackQuery
 )
 from src.blueprints.telegram_bot._common.command_names import CommandName
 from . import commands
 from .dispatcher_events import (
     DispatcherEvent,
-    RouteSource
+    RouteSource,
+    CallbackQueryDispatcherData
 )
 
 
-def intellectual_dispatch(update: TelegramUpdate) -> Callable:
+class IntellectualDispatchResult:
     """
-    Intellectual dispatch to handlers of Telegram update.
-    Provides support for stateful chat (if Redis is enabled).
+    Result of intellectual dispatch that can be used
+    to route a Telegram update request.
+    """
+    def __init__(self):
+        # Each handler from that array will get its own dispatch.
+        # Specify name as `Union[CommandName, str]`.
+        # Order is matters
+        self.handler_names = deque()
 
-    Priority of handlers:
+        # Who initiated a route to that handler.
+        # If you specify at least one handler, then
+        # you MUST specify route source
+        self.route_source = None
+
+        # Pass any additional `kwargs` for each handler
+        self.kwargs = {}
+
+    def create_handler(self) -> Callable:
+        """
+        Creates handler that will handle this dispatch.
+
+        - creates separate handlers for each one from `self.handler_names`
+        - it is guaranteed that these parameters will be passed for
+        each handler through `kwargs`: `route_source`
+        - you can add your own `kwargs` through `self.kwargs`
+
+        :returns:
+        It is guaranteed that this handler will
+        not raise any exceptions. Function arguments
+        already configured, but you can provide your
+        own through `*args` and `**kwargs`.
+        You should  call this returned function in order
+        to run all handlers (there can be multiple handlers
+        that will handle current route).
+
+        :raises:
+        If at least one handler exists and there is no valid
+        `self.route_source`, then error will be thrown, because
+        `self.route_source` is mandatory.
+        """
+        if len(self.handler_names):
+            if self.route_source is None:
+                raise Exception("Route source is unknown")
+
+        def method(*args, **kwargs):
+            for handler_name in self.handler_names:
+                handler_method = direct_dispatch(handler_name)
+
+                try:
+                    handler_method(
+                        *args,
+                        **kwargs,
+                        **self.kwargs,
+                        route_source=self.route_source
+                    )
+                except Exception as error:
+                    print(
+                        f"{handler_name}: {error}",
+                        "\n",
+                        traceback.format_exc()
+                    )
+
+        return method
+
+
+def intellectual_dispatch(update: TelegramUpdate) -> Union[Callable, None]:
+    """
+    Implements intellectual dispatch of Telegram update request.
+
+    Strategy of dispatch:
+    1) if message exists, then it will be dispatched
+    2) if callback query exists, then it will be dispatched
+
+    See documentation of these dispatch methods for additional strategy:
+    - `message_dispatch`
+    - `callback_query_dispatch`
+
+    :returns:
+    It is guaranteed that most appropriate callable handler that
+    not raises an error will be returned. Function arguments already
+    configured, but you can also provide your own through `*args`
+    and `**kwargs`. Note that different dispatchers (message, callback query,
+    etc.) provide different arguments, so, if `kwargs['property']` exists
+    in dispatch result of one dispatch handler (message, for example), it
+    may not exists in dispatch result of another dispatch handler
+    (callback query, for example). You should call this function in order
+    to run all handlers for that Telegram update (there can be multiple
+    handlers in returned function). If unable to select handler for incoming
+    Telegram update for some reason, then `None` will be returned.
+
+    :raises:
+    Raises an error if unable to route incoming Telegram update.
+    """
+    if not update.is_valid():
+        return None
+
+    message = update.get_message()
+    callback_query = update.get_callback_query()
+    dispatch_result = None
+
+    if message:
+        dispatch_result = message_dispatch(message)
+
+    if (not dispatch_result and callback_query):
+        dispatch_result = callback_query_dispatch(callback_query)
+
+    if not dispatch_result:
+        return None
+
+    dispatch_result.kwargs["update"] = update
+    handler = dispatch_result.create_handler()
+
+    return handler
+
+
+def message_dispatch(
+    message: TelegramMessage
+) -> Union[IntellectualDispatchResult, None]:
+    """
+    Intellectual dispatch to handlers of Telegram message.
+
+    - provides support for stateful chat (if Redis is enabled).
+
+    Strategy of dispatch:
     1) if disposable handler exists and message events matches,
     then only that handler will be called and after removed.
     That disposable handler will be associated with message date.
@@ -50,26 +172,24 @@ def intellectual_dispatch(update: TelegramUpdate) -> Callable:
     5) guessing of command that user assumed based on
     content of message
 
+    If stateful chat not enabled, then № 1 and № 2 will be skipped.
+
     Events matching:
     - if at least one event matched, then that handler will be
     marked as "matched".
 
-    If stateful chat not enabled, then № 1 and № 2 will be skipped.
-
-    Note: there can be multiple handlers picked for single message.
+    Note: there can be multiple handlers selected for single message.
     Order of execution not determined.
 
     :param message:
     Incoming Telegram message.
 
     :returns:
-    It is guaranteed that most appropriate callable handler that
-    not raises an error will be returned. Function arguments already
-    configured, but you can also provided your own through `*args`
-    and `**kwargs`. You should call this function in order to run
-    handlers (there can be multiple handlers in one return function).
+    Dispatch result or `None` if unable to dispatch.
     """
-    message = update.get_message()
+    if not message.is_valid():
+        return None
+
     user_id = message.get_user().id
     chat_id = message.get_chat().id
     message_date = int(message.get_date().timestamp())
@@ -82,13 +202,12 @@ def intellectual_dispatch(update: TelegramUpdate) -> Callable:
         subscribed_handlers = get_subscribed_handlers(user_id, chat_id)
 
     message_events = (
-        detect_events(message) if (
+        detect_message_events(message) if (
             disposable_handler or
             subscribed_handlers
         ) else None
     )
-    handler_names = deque()
-    route_source = None
+    result = IntellectualDispatchResult()
 
     if disposable_handler:
         match = match_events(
@@ -97,13 +216,14 @@ def intellectual_dispatch(update: TelegramUpdate) -> Callable:
         )
 
         if match:
-            route_source = RouteSource.DISPOSABLE_HANDLER
-            handler_names.append(disposable_handler["name"])
+            result.route_source = RouteSource.DISPOSABLE_HANDLER
+            result.handler_names.append(disposable_handler["name"])
+
             delete_disposable_handler(user_id, chat_id)
 
     if (
         subscribed_handlers and
-        not handler_names
+        not result.handler_names
     ):
         for handler in subscribed_handlers:
             match = match_events(
@@ -112,20 +232,20 @@ def intellectual_dispatch(update: TelegramUpdate) -> Callable:
             )
 
             if match:
-                route_source = RouteSource.SUBSCRIBED_HANDLER
-                handler_names.append(handler["name"])
+                result.route_source = RouteSource.SUBSCRIBED_HANDLER
+                result.handler_names.append(handler["name"])
 
-    if not handler_names:
+    if not result.handler_names:
         command = message.get_entity_value("bot_command")
 
         if command:
-            route_source = RouteSource.DIRECT_COMMAND
-            handler_names.append(command)
+            result.route_source = RouteSource.DIRECT_COMMAND
+            result.handler_names.append(command)
 
     should_bind_command_to_date = (
         is_stateful_chat and
         (
-            route_source in
+            result.route_source in
             (
                 RouteSource.DISPOSABLE_HANDLER,
                 RouteSource.DIRECT_COMMAND
@@ -134,12 +254,12 @@ def intellectual_dispatch(update: TelegramUpdate) -> Callable:
     )
     should_get_command_by_date = (
         is_stateful_chat and
-        (not handler_names)
+        not result.handler_names
     )
 
     if should_bind_command_to_date:
         # we expect only one active command
-        command = handler_names[0]
+        command = result.handler_names[0]
 
         # we need to handle cases when user forwards
         # many separate messages (one with direct command and
@@ -165,35 +285,70 @@ def intellectual_dispatch(update: TelegramUpdate) -> Callable:
         )
 
         if command:
-            route_source = RouteSource.SAME_DATE_COMMAND
-            handler_names.append(command)
+            result.route_source = RouteSource.SAME_DATE_COMMAND
+            result.handler_names.append(command)
 
-    if not handler_names:
-        route_source = RouteSource.GUESSED_COMMAND
-        handler_names.append(guess_bot_command(message))
+    if not result.handler_names:
+        result.route_source = RouteSource.GUESSED_COMMAND
+        result.handler_names.append(guess_message_command(message))
 
-    def method(*args, **kwargs):
-        for handler_name in handler_names:
-            handler_method = direct_dispatch(handler_name)
+    result.kwargs["user_id"] = user_id
+    result.kwargs["chat_id"] = chat_id
+    result.kwargs["message"] = message
+    result.kwargs["message_events"] = message_events
 
-            try:
-                handler_method(
-                    *args,
-                    **kwargs,
-                    user_id=user_id,
-                    chat_id=chat_id,
-                    message=message,
-                    route_source=route_source,
-                    message_events=message_events
-                )
-            except Exception as error:
-                print(
-                    f"{handler_name}: {error}",
-                    "\n",
-                    traceback.format_exc()
-                )
+    return result
 
-    return method
+
+def callback_query_dispatch(
+    callback_query: TelegramCallbackQuery
+) -> Union[IntellectualDispatchResult, None]:
+    """
+    Intellectual dispatch to handlers of Telegram callback query.
+
+    NOTE:
+    you should use `CallbackQueryDispatcherData` interface to
+    pass data in `data` property of callback query. Any other
+    data format will be considered as invalid and will be rejected.
+
+    Strategy of dispatch:
+    1) read data and ensure it is valid
+    2) direct dispatch to all handlers that
+    specified under `handler_names` key
+
+    :param callback_query:
+    Incoming Telegram callback query.
+
+    :returns:
+    Dispatch result or `None` if unable to dispatch.
+    """
+    if not callback_query.is_valid():
+        return None
+
+    raw_data = None
+
+    try:
+        raw_data = callback_query.get_data()
+    except Exception as error:
+        print(error)
+        return None
+
+    if not CallbackQueryDispatcherData.data_is_valid(raw_data):
+        return None
+
+    data = CallbackQueryDispatcherData.decode_data(raw_data)
+    handler_names = data["handler_names"]
+    payload = data["payload"]
+    user = callback_query.get_user()
+
+    result = IntellectualDispatchResult()
+    result.route_source = RouteSource.CALLBACK_QUERY_DATA
+    result.handler_names.extend(handler_names)
+    result.kwargs["user_id"] = user.id
+    result.kwargs["callback_query"] = callback_query
+    result.kwargs["callback_query_data"] = payload
+
+    return result
 
 
 def direct_dispatch(
@@ -208,8 +363,7 @@ def direct_dispatch(
     :param command:
     Name of command to dispatch to.
     :param fallback:
-    Fallback handler that will be used in case
-    if command is unknown.
+    Fallback handler that will be used in case if command is unknown.
 
     :returns:
     It is guaranteed that some callable handler will be returned.
@@ -253,7 +407,7 @@ def direct_dispatch(
     return method
 
 
-def guess_bot_command(
+def guess_message_command(
     message: TelegramMessage,
     fallback: CommandName = CommandName.HELP
 ) -> str:
@@ -286,7 +440,7 @@ def guess_bot_command(
     return command.value
 
 
-def detect_events(
+def detect_message_events(
     message: TelegramMessage
 ) -> Set[str]:
     """
@@ -345,10 +499,7 @@ def detect_events(
     return events
 
 
-def match_events(
-    a: Set[str],
-    b: Set[str]
-) -> bool:
+def match_events(a: Set[str], b: Set[str]) -> bool:
     """
     Checks if two groups of events are matched.
 

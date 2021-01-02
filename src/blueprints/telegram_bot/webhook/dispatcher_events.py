@@ -13,6 +13,12 @@ Same logic for another enums.
 
 
 from enum import Enum, auto
+from typing import (
+    List,
+    Any
+)
+
+from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 class StringAutoName(Enum):
@@ -66,3 +72,86 @@ class RouteSource(Enum):
     SAME_DATE_COMMAND = auto()
     DIRECT_COMMAND = auto()
     GUESSED_COMMAND = auto()
+    CALLBACK_QUERY_DATA = auto()
+
+
+class CallbackQueryDispatcherData:
+    """
+    Dispatcher interface for data of callback query.
+
+    Data is a `dict` with following keys:
+    - `handler_names`: names of handlers that should
+    handle current data;
+    - `payload`: arbitrary data for every handler.
+
+    So, you should use `encode_data` and `decode_data`
+    in order dispatcher was able to create a route
+    for incoming callback data.
+
+    NOTE:
+    keep in mind that Telegram can have a length limit
+    for callback data.
+    """
+    # keep length of these keys as small as possible,
+    # because Telegram have length limit for callback data
+    handler_names_key = "H"
+    payload_key = "P"
+
+    @staticmethod
+    def encode_data(
+        handler_names: List[CommandName],
+        payload: Any
+    ) -> dict:
+        handler_names_key = CallbackQueryDispatcherData.handler_names_key
+        payload_key = CallbackQueryDispatcherData.payload_key
+        result = {}
+        handler_names_indexes = []
+
+        for handler_name in handler_names:
+            index = CommandName.get_index(handler_name.value)
+
+            if index is None:
+                raise Exception(f"Unknown handler name - {handler_name}")
+            else:
+                handler_names_indexes.append(index)
+
+        result[handler_names_key] = handler_names_indexes
+        result[payload_key] = payload
+
+        return result
+
+    @staticmethod
+    def decode_data(data: dict) -> dict:
+        handler_names_key = CallbackQueryDispatcherData.handler_names_key
+        payload_key = CallbackQueryDispatcherData.payload_key
+        handler_names_raw_data = data.get(handler_names_key)
+        handler_names = []
+
+        for index in handler_names_raw_data:
+            if isinstance(index, int):
+                handler_name = CommandName.get_name(index)
+
+                if handler_name is not None:
+                    handler_names.append(handler_name)
+
+        return {
+            "handler_names": handler_names,
+            "payload": data.get(payload_key)
+        }
+
+    @staticmethod
+    def data_is_valid(data: dict) -> bool:
+        handler_names_key = CallbackQueryDispatcherData.handler_names_key
+        payload_key = CallbackQueryDispatcherData.payload_key
+
+        return (
+            isinstance(
+                data,
+                dict
+            ) and
+            isinstance(
+                data.get(handler_names_key),
+                list
+            ) and
+            (payload_key in data)
+        )
