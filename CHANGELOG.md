@@ -5,6 +5,7 @@
 ### Added
 
 - "Report a problem" button for internal server error message.
+- Automatic redirect from authorization page to the bot.
 
 ## Project
 

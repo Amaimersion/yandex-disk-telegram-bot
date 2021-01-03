@@ -12,3 +12,8 @@ body {
   font-size: .85rem;
   font-style: italic;
 }
+
+.redirect-message {
+  font-size: .9rem;
+  font-style: italic;
+}
