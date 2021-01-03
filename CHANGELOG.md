@@ -1,5 +1,11 @@
 # 1.3.0
 
+## Telegram Bot
+
+### Added
+
+- "Report a problem" button for internal server error message.
+
 ## Project
 
 ### Improved

@@ -85,23 +85,40 @@ def cancel_command(
         "because of my internal error. "
         "Try later please."
     )
+    reply_markup = {}
+    url_for_issue = current_app.config.get('PROJECT_URL_FOR_ISSUE')
+
+    if url_for_issue:
+        reply_markup = {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": "Report a problem",
+                        "url": url_for_issue
+                    }
+                ]
+            ]
+        }
 
     if (edit_message is not None):
         telegram.edit_message_text(
             chat_id=chat_telegram_id,
             message_id=edit_message,
-            text=text
+            text=text,
+            reply_markup=reply_markup
         )
     elif (reply_to_message is not None):
         telegram.send_message(
             chat_id=chat_telegram_id,
             reply_to_message_id=reply_to_message,
-            text=text
+            text=text,
+            reply_markup=reply_markup
         )
     else:
         telegram.send_message(
             chat_id=chat_telegram_id,
-            text=text
+            text=text,
+            reply_markup=reply_markup
         )
 
 
