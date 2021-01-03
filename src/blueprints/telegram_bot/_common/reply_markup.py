@@ -10,6 +10,10 @@ from .telegram_interface import (
 )
 
 
+# Use this value if you don't want to send any payload
+EMPTY_PAYLOAD = CallbackQueryDispatcherData.empty_payload
+
+
 class TooBigCallbackDataError(Exception):
     """
     - https://core.telegram.org/bots/api#inlinekeyboardbutton

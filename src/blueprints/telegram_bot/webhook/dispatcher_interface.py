@@ -95,6 +95,7 @@ class CallbackQueryDispatcherData:
     # because Telegram have length limit for callback data
     handler_names_key = "H"
     payload_key = "P"
+    empty_payload = None
 
     @staticmethod
     def encode_data(
@@ -103,6 +104,7 @@ class CallbackQueryDispatcherData:
     ) -> dict:
         handler_names_key = CallbackQueryDispatcherData.handler_names_key
         payload_key = CallbackQueryDispatcherData.payload_key
+        empty_payload = CallbackQueryDispatcherData.empty_payload
         result = {}
         handler_names_indexes = []
 
@@ -115,7 +117,9 @@ class CallbackQueryDispatcherData:
                 handler_names_indexes.append(index)
 
         result[handler_names_key] = handler_names_indexes
-        result[payload_key] = payload
+
+        if (payload != empty_payload):
+            result[payload_key] = payload
 
         return result
 
@@ -141,7 +145,6 @@ class CallbackQueryDispatcherData:
     @staticmethod
     def data_is_valid(data: dict) -> bool:
         handler_names_key = CallbackQueryDispatcherData.handler_names_key
-        payload_key = CallbackQueryDispatcherData.payload_key
 
         return (
             isinstance(
@@ -151,6 +154,5 @@ class CallbackQueryDispatcherData:
             isinstance(
                 data.get(handler_names_key),
                 list
-            ) and
-            (payload_key in data)
+            )
         )
