@@ -380,7 +380,7 @@ class CallbackQuery(TelegramObject):
         :raises:
         Raises an error if unable to serialize data.
         """
-        return json.dumps(data)
+        return json.dumps(data, separators=(",", ":"))
 
     @staticmethod
     def deserialize_data(data: str) -> Any:
