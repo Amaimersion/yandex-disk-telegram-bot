@@ -81,7 +81,7 @@ class CallbackQueryDispatcherData:
     Data is a `dict` with following keys:
     - `handler_names`: names of handlers that should
     handle current data;
-    - `payload`: arbitrary data for every handler.
+    - `payload`: any serializable data for every handler.
 
     So, you should use `encode_data` and `decode_data`
     in order dispatcher was able to create a route
@@ -127,7 +127,7 @@ class CallbackQueryDispatcherData:
     def decode_data(data: dict) -> dict:
         handler_names_key = CallbackQueryDispatcherData.handler_names_key
         payload_key = CallbackQueryDispatcherData.payload_key
-        handler_names_raw_data = data.get(handler_names_key)
+        handler_names_raw_data = data.get(handler_names_key, [])
         handler_names = []
 
         for index in handler_names_raw_data:
