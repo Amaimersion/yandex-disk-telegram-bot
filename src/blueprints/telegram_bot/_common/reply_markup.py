@@ -24,6 +24,13 @@ def create_callback_data(
     """
     - don't interact with returned value directly
 
+    :param handler_names:
+    Dispatcher will dispatch subsequent callback requests
+    with this `payload` to these handlers.
+    :param payload:
+    Any additional data which should go along with
+    callback requests. Any serializable value is accepted.
+
     :returns:
     Value that can be used for `callback_data` property.
 
