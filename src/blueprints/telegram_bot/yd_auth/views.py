@@ -12,7 +12,7 @@ from src.blueprints.telegram_bot._common import yandex_oauth
 from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
-@bp.route("/yandex_disk_authorization")
+@bp.route("/yandex_disk_authorization/")
 def yd_auth():
     """
     Handles user redirect from Yandex.OAuth page

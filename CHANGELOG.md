@@ -17,6 +17,10 @@
 
 - Support for `callback_query` Telegram update.
 
+### Fixed
+
+- `/telegram_bot/yandex_disk_authorization` with trailing slash at the end (i.e., `/telegram_bot/yandex_disk_authorization/`) will be handled correctly.
+
 
 # 1.2.0 (December 14, 2020)
 
