@@ -7,7 +7,8 @@ from src.database import (
     User,
     UserQuery,
     Chat,
-    ChatQuery
+    ChatQuery,
+    UserSettings
 )
 from src.database.models import (
     ChatType
@@ -38,6 +39,9 @@ def register_guest(func):
             telegram_id=tg_user.id,
             is_bot=tg_user.is_bot,
             language=SupportedLanguage.get(tg_user.language_code or "")
+        )
+        UserSettings(
+            user=new_user
         )
         Chat(
             telegram_id=tg_chat.id,

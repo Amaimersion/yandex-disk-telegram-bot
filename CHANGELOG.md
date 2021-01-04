@@ -16,6 +16,7 @@
 ### Added
 
 - Support for `callback_query` Telegram update.
+- Support for user settings.
 
 ### Fixed
 

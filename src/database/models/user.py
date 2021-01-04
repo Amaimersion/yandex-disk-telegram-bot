@@ -79,6 +79,11 @@ class User(db.Model):
         back_populates="user",
         uselist=False
     )
+    settings = db.relationship(
+        "UserSettings",
+        back_populates="user",
+        uselist=False
+    )
 
     def __repr__(self):
         return f"<User {self.id}>"

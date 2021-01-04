@@ -9,6 +9,7 @@ from src.database import (
     User,
     Chat,
     YandexDiskToken,
+    UserSettings,
     UserQuery,
     ChatQuery,
     YandexDiskTokenQuery
@@ -75,9 +76,11 @@ def add_fake_users(count: int) -> None:
                 "Too many errors in a row"
             )
 
-        db.session.add(
-            User.create_fake()
-        )
+        user = User.create_fake()
+        settings = UserSettings.create_fake(user)
+
+        db.session.add(user)
+        db.session.add(settings)
 
         try:
             db.session.commit()
