@@ -1,9 +1,19 @@
 from datetime import datetime, timezone
+from enum import Enum
 
 from flask import (
     current_app,
     url_for
 )
+
+
+class EnumStrAutoName(Enum):
+    """
+    For `Enum`, `auto()` will return strings, not int's.
+    """
+    @staticmethod
+    def _generate_next_value_(name, start, count, last_values):
+        return str(count)
 
 
 def absolute_url_for(endpoint: str, **kwargs) -> str:

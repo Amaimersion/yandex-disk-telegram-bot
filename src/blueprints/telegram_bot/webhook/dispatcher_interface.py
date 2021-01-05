@@ -17,19 +17,11 @@ from typing import (
     Any
 )
 
+from src.blueprints._common.utils import EnumStrAutoName
 from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
-class StringAutoName(Enum):
-    """
-    `auto()` will return strings, not int's.
-    """
-    @staticmethod
-    def _generate_next_value_(name, start, count, last_values):
-        return str(count)
-
-
-class DispatcherEvent(StringAutoName):
+class DispatcherEvent(EnumStrAutoName):
     """
     An event that was detected and fired by dispatcher.
 
