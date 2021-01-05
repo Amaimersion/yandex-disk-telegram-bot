@@ -65,3 +65,12 @@ def send_photo(**kwargs):
         }
 
     return make_request("sendPhoto", data=kwargs, files=files)
+
+
+def answer_callback_query(**kwargs):
+    """
+    https://core.telegram.org/bots/api#answercallbackquery
+
+    - see `api/request.py` documentation for more.
+    """
+    return make_request("answerCallbackQuery", kwargs)
