@@ -7,6 +7,7 @@ touch $TEMP_FILE
 echo "{" >> $TEMP_FILE
 echo '"url": "'$2'",' >> $TEMP_FILE
 echo '"max_connections": '$3',' >> $TEMP_FILE
+echo '"drop_pending_updates": true,' >> $TEMP_FILE
 echo '"allowed_updates": ["message", "edited_message", "callback_query"]' >> $TEMP_FILE
 echo "}" >> $TEMP_FILE
 
