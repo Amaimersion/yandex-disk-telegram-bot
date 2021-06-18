@@ -415,9 +415,7 @@ class AttachmentHandler(metaclass=ABCMeta):
         user = g.db_user
         file_name = self.create_file_name(attachment, file)
         user_access_token = user.yandex_disk_token.get_access_token()
-        folder_path = current_app.config[
-            "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
-        ]
+        folder_path = (user.settings.default_upload_folder or "/")
         arguments = (
             folder_path,
             file_name,

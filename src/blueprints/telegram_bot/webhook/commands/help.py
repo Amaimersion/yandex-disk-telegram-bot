@@ -3,6 +3,9 @@ from collections import deque
 from flask import g, current_app
 
 from src.api import telegram
+from src.blueprints.telegram_bot._common.command_names import (
+    CommandName
+)
 from ._common.commands_content import (
     to_code,
     commands_html_content
@@ -27,9 +30,6 @@ def handle(*args, **kwargs):
 
 
 def create_help_html_text() -> str:
-    yd_upload_default_folder = current_app.config[
-        "YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER"
-    ]
     file_size_limit_in_mb = int(current_app.config[
         "TELEGRAM_API_MAX_FILE_SIZE"
     ] / 1024 / 1024)
@@ -43,9 +43,8 @@ def create_help_html_text() -> str:
         "\n\n"
         "Note:"
         "\n"
-        f"{bullet_char} for uploading "
-        f'"{to_code(yd_upload_default_folder)}" '
-        "folder is used by default,"
+        f"{bullet_char} you can change default upload folder "
+        f"using {CommandName.SETTINGS.value} command,"
         "\n"
         f"{bullet_char} maximum size of every upload "
         f"(except URL) is {file_size_limit_in_mb} MB."

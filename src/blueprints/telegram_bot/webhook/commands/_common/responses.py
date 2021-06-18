@@ -190,16 +190,23 @@ def request_absolute_path(chat_telegram_id: int) -> None:
     )
 
 
-def request_absolute_folder_name(chat_telegram_id: int) -> None:
+def request_absolute_folder_name(
+    chat_telegram_id: int,
+    folder_name="a folder name"
+) -> None:
     """
     Sends a message that asks a user to send an
     absolute path of folder.
+
+    :param folder_name:
+    Name of folder which will be used in a message.
+    See function source for template.
     """
     telegram.send_message(
         chat_id=chat_telegram_id,
         parse_mode="HTML",
         text=(
-            "Send a folder name."
+            f"Send {folder_name}."
             "\n\n"
             "It should starts from root directory, "
             "nested folders should be separated with "

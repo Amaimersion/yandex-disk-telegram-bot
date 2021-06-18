@@ -45,7 +45,7 @@ class UserAction(EnumStrAutoName):
     """
     What action did the user dispatch.
     """
-    pass
+    CHANGE_DEFAULT_UPLOAD_FOLDER = auto()
 
 
 class CallbackQueryData:
@@ -340,6 +340,68 @@ class UserActionHandler(metaclass=ABCMeta):
         db.session.commit()
 
 
+class ChangeDefaultUploadFolderHandler(UserActionHandler):
+    """
+    Changing of default upload folder.
+    """
+    @property
+    def user_action(self):
+        return UserAction.CHANGE_DEFAULT_UPLOAD_FOLDER
+
+    @property
+    def disposable_handler_events(self):
+        return (
+            DispatcherEvent.PLAIN_TEXT.value,
+            DispatcherEvent.BOT_COMMAND.value,
+            DispatcherEvent.HASHTAG.value,
+            DispatcherEvent.EMAIL.value
+        )
+
+    def on_callback_query_data(self, data: CallbackQueryData) -> None:
+        request_absolute_folder_name(
+            data.chat_id,
+            "a new path of default upload folder"
+        )
+
+    def on_disposable_handler(self, data: DisposableHandlerData) -> None:
+        old_value = data.user_settings.default_upload_folder
+        new_value = data.message_text
+        need_to_change = (old_value != new_value)
+        need_to_send_current_settings = False
+        response_text = ""
+
+        if need_to_change:
+            try:
+                data.user_settings.default_upload_folder = new_value
+                self.db_commit()
+            except Exception as error:
+                print(error)
+                return cancel_command(data.chat_id)
+
+            response_text = (
+                "Success."
+                "\n"
+                f"<code>{old_value}</code> was changed to "
+                f"<code>{new_value}</code>"
+            )
+            need_to_send_current_settings = True
+        else:
+            response_text = "Success."
+
+        telegram.send_message(
+            chat_id=data.chat_id,
+            parse_mode="HTML",
+            text=response_text
+        )
+
+        if need_to_send_current_settings:
+            send_current_settings(
+                data.chat_id,
+                data.user,
+                data.last_message_id
+            )
+
+
 @register_guest
 @get_db_data
 def handle(*args, **kwargs):
@@ -438,7 +500,11 @@ def get_user_action_handler(
     Most appropriate handler that matches to `user_action_value`.
     `None` will be returned if nothing matches.
     """
-    handlers = {}
+    handlers = {
+        UserAction.CHANGE_DEFAULT_UPLOAD_FOLDER.value: (
+            ChangeDefaultUploadFolderHandler
+        )
+    }
     ActionHandler = handlers.get(user_action_value)
     handler = ActionHandler()
 
@@ -473,6 +539,7 @@ def send_current_settings(
     If specified, then that message will be
     edited instead of sending new one.
     """
+    settings: UserSettings = user.settings
     yo_client = YandexOAuthClient()
     yd_access = False
 
@@ -480,6 +547,9 @@ def send_current_settings(
         yd_access = True
 
     text = (
+        "<b>Default upload folder:</b> "
+        f"<code>{settings.default_upload_folder}</code>"
+        "\n"
         "<b>Preferred language:</b> "
         f"{user.language.name}"
         "\n"
@@ -487,7 +557,17 @@ def send_current_settings(
         f"{'Given' if yd_access else 'Revoked'}"
     )
     reply_markup = {
-        "inline_keyboard": []
+        "inline_keyboard": [
+            [
+                {
+                    "text": "Change default upload folder",
+                    "callback_data": create_callback_data(
+                        [CommandName.SETTINGS],
+                        UserAction.CHANGE_DEFAULT_UPLOAD_FOLDER.value
+                    )
+                }
+            ]
+        ]
     }
     kwargs = {
         "parse_mode": "HTML",

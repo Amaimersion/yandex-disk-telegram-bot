@@ -248,10 +248,6 @@ class Config:
     # then request will be blocked maximum for (5 * 2) seconds.
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 2
 
-    # in this folder files will be uploaded by default
-    # if user not specified custom folder.
-    YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER = "Telegram Bot"
-
     # endregion
 
     # region Google Analytics
