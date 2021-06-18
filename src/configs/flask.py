@@ -152,6 +152,20 @@ class Config:
     # This value is for `/space_info` worker.
     RUNTIME_SPACE_INFO_WORKER_TIMEOUT = 5
 
+    # After what time `/settings` handler should forget
+    # about user last action.
+    # For example, user called `/settings` command, then
+    # clicked on "Change default upload folder" button.
+    # Bot will wait for next message (new folder name) and
+    # store some additional data (last action of that user).
+    # If user not sent any message in N seconds, then bot
+    # will clear all data about user last action and user
+    # have to click again on "Change default upload folder" button.
+    # In seconds.
+    # Set to 0 to disable expiration.
+    # Applied only if Redis is enabled
+    RUNTIME_SETTINGS_LAST_ACTION_EXPIRE = 60 * 60 * 24 * 1
+
     # endregion
 
     # region Flask
