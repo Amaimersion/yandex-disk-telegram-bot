@@ -4,10 +4,6 @@ ___
 
 # 1.3.0
 
-### Improved
-
-- Refactoring.
-
 ### Added
 
 - Support for `callback_query` Telegram update.
@@ -16,7 +12,9 @@ ___
 
 ### Changed
 
+- Big refactoring.
 - Changelog splitted into two files: one for end users and one for developers.
+- Changelog will no longer contain `Improved` section. It will be merged with `Changed` section.
 
 ### Fixed
 
