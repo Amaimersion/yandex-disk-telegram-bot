@@ -35,6 +35,7 @@
   - [Heroku](#heroku)
     - [First time](#first-time)
     - [What's next](#whats-next)
+- [Version naming](#version-naming)
 - [Contribution](#contribution)
 - [License](#license)
 
@@ -403,6 +404,15 @@ heroku scale worker=1
 #### What's next
 
 You should do steps № 7, 9 and 10 every time when you want to push changes.
+
+
+## Version naming
+
+This project uses following structure for version naming: `<MAJOR CHANGES>.<BIG CHANGES>.<SMALL CHANGES>`.
+
+- "Major changes" usually means really cardinal changes. Such changes may require from developers to set up application again, inspect new technical stack and app architecture. It is certainly incompatible with the earlier application code.
+- "Big changes" usually means new features, big changes or long-awaited bug fixes. Such changes may require big time to test and complete. Main development workflow goes here.
+- "Small changes" usually means some small changes or fast bug fixes. Most likely every version will contain small amount of changes.
 
 
 ## Contribution

@@ -12,6 +12,7 @@ ___
 
 - Support for `callback_query` Telegram update.
 - Support for user settings.
+- Information about project version naming.
 
 ### Changed
 
