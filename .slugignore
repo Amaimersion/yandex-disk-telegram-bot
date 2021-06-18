@@ -3,6 +3,7 @@
 .env.example
 .flake8
 CHANGELOG.md
+CHANGELOG.APP.md
 LICENSE
 README.md
 
