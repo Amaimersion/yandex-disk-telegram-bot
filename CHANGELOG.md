@@ -4,26 +4,26 @@ ___
 
 # 1.3.0
 
-### Added
+## Added
 
 - Ability to change default upload folder using `/settings` command.
 - "Report a problem" button for internal server error message.
 - Automatic redirect from authorization page to the bot.
 
-### Changed
+## Changed
 
 - Changelog splitted into two files: one for end users and one for developers.
 
 
 # 1.2.0 (December 14, 2020)
 
-### Improved
+## Improved
 
 - Text of some bot responses.
 - Formatting of help message.
 - `/upload`: multiple items will be handled at a same time, not one by one.
 
-### Added
+## Added
 
 - `/public_upload_photo`, `/public_upload_file`, `/public_upload_audio`, `/public_upload_video`, `/public_upload_voice`, `/public_upload_url`: uploading of files and then publishing them.
 - `/publish`: publishing of files or folders.
@@ -38,7 +38,7 @@ ___
 - Now you can send many attachments as a one group and add single command. This command will be applied to all attachments of that group.
 - Help messages for each upload command will be sended when there are no suitable input data.
 
-### Changed
+## Changed
 
 - `/create_folder`: now it will wait for folder name if you send empty command, not deny operation.
 - `/upload`: on success it will return information about uploaded file, not plain status.
@@ -46,7 +46,7 @@ ___
 - `/upload_url`: result name will not contain parameters, queries and fragments.
 - `/upload_voice`: result name will be ISO 8601 date, but without `T` separator (for example, `2020-11-24 09:57:46+00:00`), not ID from Telegram.
 
-### Fixed
+## Fixed
 
 - `/create_folder`: fixed a bug when bot could remove `/create_folder` occurrences from folder name.
 - `/create_folder`: fixed a bug when bot don't send any responses on invalid folder name.
@@ -56,14 +56,14 @@ ___
 
 # 1.1.0 (May 9, 2020)
 
-### Improved
+## Improved
 
 - Text of most bot responses.
 - Text of authorization HTML pages.
 - Style of authorization HTML pages.
 - When uploading, bot will update single message instead of sending new one every time with operation status.
 
-### Added
+## Added
 
 - `/upload_url`: uploading of file using direct URL.
 - Privacy Policy and Terms & Conditions.
@@ -71,7 +71,7 @@ ___
 - Buttons with useful links in `/help` command.
 - "Report a problem" link in error authorization HTML page.
 
-### Changed
+## Changed
 
 - Title.
 - Description.
@@ -79,7 +79,7 @@ ___
 - Favicon.
 - Button with URL instead of plain text with URL in `/grant_access` command.
 
-### Fixed
+## Fixed
 
 - A bug when sometimes "I can't track operation status of this anymore. Perform manual checking." message could appear even if operation was completed.
 - A bug when empty `/create_folder` was successfully handled.

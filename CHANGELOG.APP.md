@@ -4,32 +4,32 @@ ___
 
 # 1.3.0
 
-### Added
+## Added
 
 - Support for `callback_query` Telegram update.
 - Support for user settings.
 - Information about project version naming.
 
-### Changed
+## Changed
 
 - Big refactoring.
 - Changelog splitted into two files: one for end users and one for developers.
 - Changelog will no longer contain `Improved` section. It will be merged with `Changed` section.
 
-### Fixed
+## Fixed
 
 - `/telegram_bot/yandex_disk_authorization` with trailing slash at the end (i.e., `/telegram_bot/yandex_disk_authorization/`) will be handled correctly.
 
 
 # 1.2.0 (December 14, 2020)
 
-### Improved
+## Improved
 
 - Upgrade `python` to 3.8.5.
 - All requirements upgraded to latest version.
 - Big refactoring.
 
-### Added
+## Added
 
 - Stateful chat support. Now bot can store custom user data (in different namespaces: user, chat, user in chat); determine Telegram message types; register single use handler (call once for message) with optional timeout for types of message; subscribe handlers with optional timeout for types of messages.
 - [Console Client](https://yandex.ru/dev/oauth/doc/dg/reference/console-client.html) Yandex.OAuth method. By default it is disabled, and default one is [Auto Code Client](https://yandex.ru/dev/oauth/doc/dg/reference/auto-code-client.html/).
@@ -39,12 +39,12 @@ ___
 - Debug configuration for VSCode.
 - DB: add indexes for frequent using columns.
 
-### Changed
+## Changed
 
 - Redirect to favicon will be handled by nginx.
 - Biggest photo (from single photo file) will be selected based on total pixels count, not based on height.
 
-### Fixed
+## Fixed
 
 - A bug when new user (didn't use any command before) used `/revoke_access` command and it led to request crash (500).
 - Situation: Telegram send an update, the server sent back a 500; Telegram will send same update again and again until it get 200 from a server, but server always returns 500. Such sitations can occur, for example, when user initiated a command and blocked the bot - bot can't send message to user in this case (it gets 403 from Telegram API, so, server raises error because it is an unexpected error and should be logged). Now it is fixed and the bot always send back 200, even for such error situations.
@@ -52,20 +52,20 @@ ___
 
 # 1.1.0 (May 9, 2020)
 
-### Improved
+## Improved
 
 - Big refactoring of everything.
 - File structure.
 - Upgrade `gevent` to 1.5.0.
 
-### Added
+## Added
 
 - `SERVER_NAME` environment variable.
 - Google Analytics in authorization pages.
 - Templates for issues and pull requests.
 - `robots.txt`.
 
-### Changed
+## Changed
 
 - Decreased size of slug on Heroku by removing unused files and folders.
 - Decreased number of seconds for Yandex.OAuth request timeout.
