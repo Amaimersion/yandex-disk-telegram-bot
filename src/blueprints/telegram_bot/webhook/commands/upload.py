@@ -32,8 +32,7 @@ from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent
 )
 from ._common.decorators import (
-    yd_access_token_required,
-    get_db_data
+    yd_access_token_required
 )
 from ._common.responses import (
     abort_command,
@@ -332,7 +331,6 @@ class AttachmentHandler(metaclass=ABCMeta):
         )
 
     @yd_access_token_required
-    @get_db_data
     def init_upload(self, *args, **kwargs) -> None:
         """
         Initializes uploading process of message attachment.

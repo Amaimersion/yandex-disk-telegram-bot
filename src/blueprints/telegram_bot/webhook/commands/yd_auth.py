@@ -19,8 +19,7 @@ from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     RouteSource
 )
 from ._common.decorators import (
-    register_guest,
-    get_db_data
+    register_guest
 )
 from ._common.responses import (
     request_private_chat,
@@ -30,7 +29,6 @@ from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 @register_guest
-@get_db_data
 def handle(*args, **kwargs):
     """
     Handles `/grant_access` command.

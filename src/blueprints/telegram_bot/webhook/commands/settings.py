@@ -30,8 +30,7 @@ from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent
 )
 from ._common.decorators import (
-    register_guest,
-    get_db_data
+    register_guest
 )
 from ._common.responses import (
     request_private_chat,
@@ -403,7 +402,6 @@ class ChangeDefaultUploadFolderHandler(UserActionHandler):
 
 
 @register_guest
-@get_db_data
 def handle(*args, **kwargs):
     """
     Handles `/settings` command.

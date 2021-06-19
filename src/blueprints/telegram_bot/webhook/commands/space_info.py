@@ -18,13 +18,11 @@ from src.blueprints.telegram_bot._common.command_names import (
 )
 from ._common.responses import cancel_command
 from ._common.decorators import (
-    yd_access_token_required,
-    get_db_data
+    yd_access_token_required
 )
 
 
 @yd_access_token_required
-@get_db_data
 def handle(*args, **kwargs):
     """
     Handles `/space_info` command.

@@ -15,6 +15,7 @@ ___
 - Big refactoring.
 - Changelog splitted into two files: one for end users and one for developers.
 - Changelog will no longer contain `Improved` section. It will be merged with `Changed` section.
+- DB data about incoming Telegram user will be fetched on every request, before dispatching of request to appropriate handler.
 
 ## Fixed
 

@@ -22,14 +22,12 @@ from ._common.responses import (
     request_absolute_folder_name
 )
 from ._common.decorators import (
-    yd_access_token_required,
-    get_db_data
+    yd_access_token_required
 )
 from ._common.utils import extract_absolute_path
 
 
 @yd_access_token_required
-@get_db_data
 def handle(*args, **kwargs):
     message = kwargs.get(
         "message",

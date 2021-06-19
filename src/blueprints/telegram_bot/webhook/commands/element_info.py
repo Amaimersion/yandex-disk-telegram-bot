@@ -24,8 +24,7 @@ from ._common.responses import (
     send_yandex_disk_error
 )
 from ._common.decorators import (
-    yd_access_token_required,
-    get_db_data
+    yd_access_token_required
 )
 from ._common.utils import (
     extract_absolute_path,
@@ -34,7 +33,6 @@ from ._common.utils import (
 
 
 @yd_access_token_required
-@get_db_data
 def handle(*args, **kwargs):
     """
     Handles `/element_info` command.

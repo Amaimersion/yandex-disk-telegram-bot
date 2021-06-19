@@ -62,32 +62,6 @@ def register_guest(func):
     return wrapper
 
 
-def get_db_data(func):
-    """
-    Gets data from DB based on `g.telegram_user` and
-    `g.telegram_chat`. Data can be `None` if incoming
-    data not exists in DB.
-
-    DB data will be available as: `g.db_user`,
-    `g.db_chat`, `g.db_private_chat`.
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        g.db_user = UserQuery.get_user_by_telegram_id(
-            g.telegram_user.id
-        )
-        g.db_chat = ChatQuery.get_chat_by_telegram_id(
-            g.telegram_chat.id
-        )
-        g.db_private_chat = ChatQuery.get_private_chat(
-            g.db_user.id
-        )
-
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
 def yd_access_token_required(func):
     """
     Checks if incoming user have Yandex.Disk access token.

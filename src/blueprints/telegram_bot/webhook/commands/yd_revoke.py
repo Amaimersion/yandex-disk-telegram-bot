@@ -5,7 +5,6 @@ from src.api import telegram
 from src.blueprints._common.utils import get_current_datetime
 from src.blueprints.telegram_bot._common.yandex_oauth import YandexOAuthClient
 from ._common.decorators import (
-    get_db_data,
     register_guest
 )
 from ._common.responses import (
@@ -22,7 +21,6 @@ class YandexOAuthRemoveClient(YandexOAuthClient):
 
 
 @register_guest
-@get_db_data
 def handle(*args, **kwargs):
     """
     Handles `/revoke_access` command.

@@ -4,6 +4,13 @@ from flask import (
     make_response
 )
 
+from src.database import (
+    User,
+    UserQuery,
+    Chat,
+    ChatQuery,
+    UserSettings
+)
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 from src.blueprints.telegram_bot._common import telegram_interface
 from .dispatcher import intellectual_dispatch, direct_dispatch
@@ -28,12 +35,13 @@ def webhook():
         return make_error_response()
 
     update = telegram_interface.Update(raw_data)
+
+    create_app_context(update)
+
     handler = intellectual_dispatch(update)
 
     if not handler:
         return make_error_response()
-
-    create_app_context(update)
 
     # We call this handler and do not handle any errors.
     # We assume that all errors already was handeld by
@@ -83,6 +91,9 @@ def create_app_context(update: telegram_interface.Update):
     you shouldn't use application context directly.
     Use it only when there is really no way to access needed data.
 
+    NOTE:
+    some data may be not always available. Check it before usage.
+
     - https://flask.palletsprojects.com/en/1.1.x/appcontext/
     """
     message = update.get_message()
@@ -91,10 +102,15 @@ def create_app_context(update: telegram_interface.Update):
     if (not message and callback_query):
         message = callback_query.get_message()
 
+    # all possible properties in global context with defaults
     g.telegram_message = None
     g.telegram_callback_query = None
     g.telegram_user = None
     g.telegram_chat = None
+    g.db_user = None
+    g.db_chat = None
+    g.db_private_chat = None
+    g.direct_dispatch = direct_dispatch
 
     if message:
         g.telegram_message = message
@@ -109,4 +125,15 @@ def create_app_context(update: telegram_interface.Update):
         # actual result than `update.callback_query.message.from`.
         g.telegram_user = callback_query.get_user()
 
-    g.direct_dispatch = direct_dispatch
+    if g.telegram_user:
+        g.db_user = UserQuery.get_user_by_telegram_id(
+            g.telegram_user.id
+        )
+        g.db_private_chat = ChatQuery.get_private_chat(
+            g.db_user.id
+        )
+
+    if g.telegram_chat:
+        g.db_chat = ChatQuery.get_chat_by_telegram_id(
+            g.telegram_chat.id
+        )
