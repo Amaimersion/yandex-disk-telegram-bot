@@ -88,7 +88,8 @@ class UserActionHandler(metaclass=ABCMeta):
     """
     Base class for action handlers.
 
-    - stateful chat is required to be enabled
+    - if you want to use "disposable handler" feature,
+    then stateful chat should be enabled
     """
     @staticmethod
     def set_last_action(
@@ -215,31 +216,23 @@ class UserActionHandler(metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def disposable_handler_events(self) -> Tuple[DispatcherEvent]:
+    def disposable_handler_events(self) -> Union[Tuple[DispatcherEvent], None]:
         """
         :returns:
         At what events disposable handler should be called.
         For example, next plain text message should be
-        redirected to that handler.
+        redirected to that handler. Specify `None` to
+        disable disposable handler.
         """
         pass
 
-    @abstractmethod
-    def on_callback_query_data(self, data: CallbackQueryData) -> None:
+    @property
+    def disposable_handler_is_enabled(self) -> bool:
         """
-        Will be called when user will press on callback query button.
-        Actual logic should go here.
+        :returns:
+        This handler will use "disposable handler" feature.
         """
-        pass
-
-    @abstractmethod
-    def on_disposable_handler(self, data: DisposableHandlerData) -> None:
-        """
-        Will be called when dispatcher will call this
-        handler as disposable handler.
-        Actual logic should go here.
-        """
-        pass
+        return (self.disposable_handler_events is not None)
 
     def handle_callback_query_data(self, data: CallbackQueryData) -> None:
         """
@@ -256,24 +249,33 @@ class UserActionHandler(metaclass=ABCMeta):
         """
         Will be called before handling of callback query button.
         """
-        self.set_last_action(
-            data.user.telegram_id,
-            data.chat_id,
-            self.user_action.value
-        )
-        self.set_last_message_id(
-            data.user.telegram_id,
-            data.chat_id,
-            data.message_id
-        )
-        self.set_disposable_handler(
-            data.user.telegram_id,
-            data.chat_id,
-            self.disposable_handler_events
-        )
+        if self.disposable_handler_is_enabled:
+            self.set_last_action(
+                data.user.telegram_id,
+                data.chat_id,
+                self.user_action.value
+            )
+            self.set_last_message_id(
+                data.user.telegram_id,
+                data.chat_id,
+                data.message_id
+            )
+            self.set_disposable_handler(
+                data.user.telegram_id,
+                data.chat_id,
+                self.disposable_handler_events
+            )
+
         self.answer_callback_query(
             data.callback_query_id
         )
+
+    def on_callback_query_data(self, data: CallbackQueryData) -> None:
+        """
+        Will be called when user will press on callback query button.
+        Actual logic should go here.
+        """
+        pass
 
     def after_callback_query_data(self, data: CallbackQueryData) -> None:
         """
@@ -300,6 +302,14 @@ class UserActionHandler(metaclass=ABCMeta):
             data.user.telegram_id,
             data.chat_id
         )
+
+    def on_disposable_handler(self, data: DisposableHandlerData) -> None:
+        """
+        Will be called when dispatcher will call this
+        handler as disposable handler.
+        Actual logic should go here.
+        """
+        pass
 
     def after_disposable_handler(self, data: DisposableHandlerData) -> None:
         """
