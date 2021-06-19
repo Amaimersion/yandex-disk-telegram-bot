@@ -7,6 +7,7 @@ ___
 ## Added
 
 - Ability to change default upload folder using `/settings` command.
+- "Public upload by default" setting. If enabled, then when you don't specify any command in message, message content (photo, video, etc) will be uploaded and published. If disabled, then message content just will be uploaded. By default disabled.
 - "Report a problem" button for internal server error message.
 - Automatic redirect from authorization page to the bot.
 

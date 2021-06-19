@@ -45,6 +45,8 @@ class UserAction(EnumStrAutoName):
     What action did the user dispatch.
     """
     CHANGE_DEFAULT_UPLOAD_FOLDER = auto()
+    ENABLE_PUBLIC_UPLOAD_BY_DEFAULT = auto()
+    DISABLE_PUBLIC_UPLOAD_BY_DEFAULT = auto()
 
 
 class CallbackQueryData:
@@ -411,6 +413,75 @@ class ChangeDefaultUploadFolderHandler(UserActionHandler):
             )
 
 
+class ChangePublicUploadByDefaultHandler(UserActionHandler):
+    """
+    Changing of default uploading method.
+
+    - "default" means when user didn't specified any commands
+    - uploading can be either public or private
+
+    Don't use this class directly, use it only as a parent class.
+    """
+    @property
+    def user_action(self):
+        raise NotImplementedError()
+
+    @property
+    def disposable_handler_events(self):
+        return None
+
+    def on_callback_query_data(self, data: CallbackQueryData) -> None:
+        enable_public_uploading = (
+            self.user_action ==
+            UserAction.ENABLE_PUBLIC_UPLOAD_BY_DEFAULT
+        )
+        old_value = data.user.settings.public_upload_by_default
+        new_value = (True if enable_public_uploading else False)
+        need_to_change = (old_value != new_value)
+
+        if need_to_change:
+            try:
+                data.user.settings.public_upload_by_default = new_value
+                self.db_commit()
+            except Exception as error:
+                print(error)
+                return cancel_command(data.chat_id)
+
+        response_text = (
+            f"{'Public' if enable_public_uploading else 'Private'} uploading "
+            "will be used by default when you don't specify any commands."
+        )
+
+        telegram.send_message(
+            chat_id=data.chat_id,
+            parse_mode="HTML",
+            text=response_text
+        )
+        send_current_settings(
+            data.chat_id,
+            data.user,
+            data.message_id
+        )
+
+
+class EnablePublicUploadByDefaultHandler(ChangePublicUploadByDefaultHandler):
+    """
+    See `ChangePublicUploadByDefaultHandler` documentation.
+    """
+    @property
+    def user_action(self):
+        return UserAction.ENABLE_PUBLIC_UPLOAD_BY_DEFAULT
+
+
+class DisablePublicUploadByDefaultHandler(ChangePublicUploadByDefaultHandler):
+    """
+    See `ChangePublicUploadByDefaultHandler` documentation.
+    """
+    @property
+    def user_action(self):
+        return UserAction.DISABLE_PUBLIC_UPLOAD_BY_DEFAULT
+
+
 @register_guest
 def handle(*args, **kwargs):
     """
@@ -511,6 +582,12 @@ def get_user_action_handler(
     handlers = {
         UserAction.CHANGE_DEFAULT_UPLOAD_FOLDER.value: (
             ChangeDefaultUploadFolderHandler
+        ),
+        UserAction.ENABLE_PUBLIC_UPLOAD_BY_DEFAULT.value: (
+            EnablePublicUploadByDefaultHandler
+        ),
+        UserAction.DISABLE_PUBLIC_UPLOAD_BY_DEFAULT.value: (
+            DisablePublicUploadByDefaultHandler
         )
     }
     ActionHandler = handlers.get(user_action_value)
@@ -558,6 +635,9 @@ def send_current_settings(
         "<b>Default upload folder:</b> "
         f"<code>{settings.default_upload_folder}</code>"
         "\n"
+        "<b>Public upload by default:</b> "
+        f"{'Yes' if settings.public_upload_by_default else 'No'}"
+        "\n"
         "<b>Preferred language:</b> "
         f"{user.language.name}"
         "\n"
@@ -572,6 +652,22 @@ def send_current_settings(
                     "callback_data": create_callback_data(
                         [CommandName.SETTINGS],
                         UserAction.CHANGE_DEFAULT_UPLOAD_FOLDER.value
+                    )
+                }
+            ],
+            [
+                {
+                    "text": "Disable public upload by default",
+                    "callback_data": create_callback_data(
+                        [CommandName.SETTINGS],
+                        UserAction.DISABLE_PUBLIC_UPLOAD_BY_DEFAULT.value
+                    )
+                } if settings.public_upload_by_default else
+                {
+                    "text": "Enable public upload by default",
+                    "callback_data": create_callback_data(
+                        [CommandName.SETTINGS],
+                        UserAction.ENABLE_PUBLIC_UPLOAD_BY_DEFAULT.value
                     )
                 }
             ]

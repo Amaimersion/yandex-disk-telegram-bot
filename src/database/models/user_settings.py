@@ -35,6 +35,15 @@ class UserSettings(db.Model):
         default="Telegram Bot",
         comment="By default, files will be uploaded in this folder"
     )
+    public_upload_by_default = db.Column(
+        db.Boolean,
+        nullable=True,
+        default=False,
+        comment=(
+            "Until user explicitly specifies, public uploading "
+            "will be used by default instead of private one"
+        )
+    )
 
     # Relationships
     user = db.relationship(

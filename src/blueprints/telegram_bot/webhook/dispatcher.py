@@ -6,7 +6,7 @@ from typing import (
 from collections import deque
 import traceback
 
-from flask import current_app
+from flask import current_app, g
 from src.blueprints.telegram_bot._common.stateful_chat import (
     stateful_chat_is_enabled,
     get_disposable_handler,
@@ -423,19 +423,49 @@ def guess_message_command(
     """
     command = fallback
     raw_data = message.raw_data
+    user = g.db_user
+    user_settings = user.settings
+    public_upload_by_default = False
+
+    if g.db_user:
+        public_upload_by_default = user_settings.public_upload_by_default
 
     if ("photo" in raw_data):
-        command = CommandName.UPLOAD_PHOTO
+        command = (
+            CommandName.PUBLIC_UPLOAD_PHOTO
+            if public_upload_by_default else
+            CommandName.UPLOAD_PHOTO
+        )
     elif ("document" in raw_data):
-        command = CommandName.UPLOAD_FILE
+        command = (
+            CommandName.PUBLIC_UPLOAD_FILE
+            if public_upload_by_default else
+            CommandName.UPLOAD_FILE
+        )
     elif ("audio" in raw_data):
-        command = CommandName.UPLOAD_AUDIO
+        command = (
+            CommandName.PUBLIC_UPLOAD_AUDIO
+            if public_upload_by_default else
+            CommandName.UPLOAD_AUDIO
+        )
     elif ("video" in raw_data):
-        command = CommandName.UPLOAD_VIDEO
+        command = (
+            CommandName.PUBLIC_UPLOAD_VIDEO
+            if public_upload_by_default else
+            CommandName.UPLOAD_VIDEO
+        )
     elif ("voice" in raw_data):
-        command = CommandName.UPLOAD_VOICE
+        command = (
+            CommandName.PUBLIC_UPLOAD_VOICE
+            if public_upload_by_default else
+            CommandName.UPLOAD_VOICE
+        )
     elif (message.get_entity_value("url") is not None):
-        command = CommandName.UPLOAD_URL
+        command = (
+            CommandName.PUBLIC_UPLOAD_URL
+            if public_upload_by_default else
+            CommandName.UPLOAD_URL
+        )
 
     return command.value
 
