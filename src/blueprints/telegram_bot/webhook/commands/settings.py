@@ -638,9 +638,6 @@ def send_current_settings(
         "<b>Public upload by default:</b> "
         f"{'Yes' if settings.public_upload_by_default else 'No'}"
         "\n"
-        "<b>Preferred language:</b> "
-        f"{user.language.name}"
-        "\n"
         "<b>Yandex.Disk Access:</b> "
         f"{'Given' if yd_access else 'Revoked'}"
     )
