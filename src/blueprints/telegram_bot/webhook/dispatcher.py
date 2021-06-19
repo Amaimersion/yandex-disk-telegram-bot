@@ -424,11 +424,10 @@ def guess_message_command(
     command = fallback
     raw_data = message.raw_data
     user = g.db_user
-    user_settings = user.settings
     public_upload_by_default = False
 
-    if g.db_user:
-        public_upload_by_default = user_settings.public_upload_by_default
+    if user:
+        public_upload_by_default = user.settings.public_upload_by_default
 
     if ("photo" in raw_data):
         command = (

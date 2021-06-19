@@ -92,7 +92,8 @@ def create_app_context(update: telegram_interface.Update):
     Use it only when there is really no way to access needed data.
 
     NOTE:
-    some data may be not always available. Check it before usage.
+    some data (for example, DB) may be not always available.
+    Check for it before actual usage.
 
     - https://flask.palletsprojects.com/en/1.1.x/appcontext/
     """
@@ -129,11 +130,15 @@ def create_app_context(update: telegram_interface.Update):
         g.db_user = UserQuery.get_user_by_telegram_id(
             g.telegram_user.id
         )
-        g.db_private_chat = ChatQuery.get_private_chat(
-            g.db_user.id
-        )
 
     if g.telegram_chat:
         g.db_chat = ChatQuery.get_chat_by_telegram_id(
             g.telegram_chat.id
+        )
+
+    # if it is new user (not yet registered in DB), then
+    # DB data will be `None` for that user
+    if g.db_user:
+        g.db_private_chat = ChatQuery.get_private_chat(
+            g.db_user.id
         )
