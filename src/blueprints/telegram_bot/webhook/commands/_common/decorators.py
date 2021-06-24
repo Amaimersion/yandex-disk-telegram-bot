@@ -37,11 +37,11 @@ def register_guest(func):
 
         new_user = User(
             telegram_id=tg_user.id,
-            is_bot=tg_user.is_bot,
-            language=SupportedLanguage.get(tg_user.language_code or "")
+            is_bot=tg_user.is_bot
         )
         UserSettings(
-            user=new_user
+            user=new_user,
+            language=SupportedLanguage.get(tg_user.language_code or "")
         )
         Chat(
             telegram_id=tg_chat.id,

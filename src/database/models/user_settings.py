@@ -1,6 +1,7 @@
 from sqlalchemy.sql import func
 
 from src.extensions import db
+from src.localization import SupportedLanguage
 
 
 class UserSettings(db.Model):
@@ -29,6 +30,12 @@ class UserSettings(db.Model):
     )
 
     # Settings columns
+    language = db.Column(
+        db.Enum(SupportedLanguage),
+        default=SupportedLanguage.EN,
+        nullable=True,
+        comment="Preferred language of user"
+    )
     default_upload_folder = db.Column(
         db.String,
         nullable=True,
@@ -72,6 +79,7 @@ class UserSettings(db.Model):
             datetime_start=user.create_date,
             tzinfo=None
         )
+        result.language = fake.random_element(list(SupportedLanguage))
         result.default_upload_folder = fake.file_path()
 
         return result
