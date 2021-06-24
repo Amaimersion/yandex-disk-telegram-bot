@@ -81,5 +81,6 @@ class UserSettings(db.Model):
         )
         result.language = fake.random_element(list(SupportedLanguage))
         result.default_upload_folder = fake.file_path()
+        result.public_upload_by_default = fake.random_element([True, False])
 
         return result
