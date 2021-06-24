@@ -1,7 +1,7 @@
 from sqlalchemy.sql import func
 
 from src.extensions import db
-from src.localization import SupportedLanguage
+from src.i18n import SupportedLanguage
 
 
 class UserSettings(db.Model):

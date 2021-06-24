@@ -3,4 +3,4 @@ from flask_babel import (
     lazy_gettext
 )
 
-from .languages import SupportedLanguage
+from .l10n import SupportedLanguage
