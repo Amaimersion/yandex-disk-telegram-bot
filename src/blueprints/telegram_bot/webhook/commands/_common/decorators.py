@@ -21,9 +21,7 @@ from .responses import cancel_command
 def register_guest(func):
     """
     If incoming Telegram user doesn't exists in DB,
-    then that user will be created and saved.
-
-    - rows will be created in next tables: `users`, `chats`
+    then that user and all related data will be created and saved.
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
