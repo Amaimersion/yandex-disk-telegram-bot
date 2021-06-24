@@ -1,6 +1,5 @@
-from flask_babel import (
+from .l10n import (
+    SupportedLanguage,
     gettext,
     lazy_gettext
 )
-
-from .l10n import SupportedLanguage
