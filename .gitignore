@@ -4,6 +4,7 @@
 **/temp.*
 *.sqlite
 *.sqlite-journal
+**/*.mo
 
 # Folders
 __pycache__

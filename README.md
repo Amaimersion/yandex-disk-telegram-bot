@@ -30,6 +30,9 @@
   - [Expose local server](#expose-local-server)
     - [What the app uses](#what-the-app-uses-3)
     - [What you should use](#what-you-should-use-2)
+  - [Translations](#translations)
+    - [What the app uses](#what-the-app-uses-4)
+    - [How to use that](#how-to-use-that-1)
 - [Deployment](#deployment)
   - [Before](#before)
   - [Heroku](#heroku)
@@ -296,6 +299,32 @@ source ./scripts/ngrok/set_webhook.sh <TELEGRAM_API_BOT_TOKEN>
 ```
 
 Where `<TELEGRAM_API_BOT_TOKEN>` is your Telegram bot API token for specific environment (you can have different bots for different environments).
+
+### Translations
+
+#### What the app uses
+
+Translations are built on top of `Babel`, which provides support for GNU `gettext`.
+
+#### How to use that
+
+If you want to enable translations, then before server start you should compile existing raw translations:
+
+```shell
+python manage.py compile-translations
+```
+
+If you want to update existing translations to match actual app state, then run this, edit changed lines in translations files, and recompile updated translations:
+
+```shell
+python manage.py update-translations
+```
+
+If you want to add translations for new language, then run this, fill translations file, and recompile updated translations:
+
+```shell
+python manage.py init-translations <SMALL LETTERS LANGUAGE CODE>
+```
 
 
 ## Deployment

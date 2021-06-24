@@ -16,7 +16,8 @@ from .extensions import (
     db,
     migrate,
     redis_client,
-    task_queue
+    task_queue,
+    babel
 )
 from .blueprints import (
     telegram_bot_blueprint,
@@ -65,6 +66,9 @@ def configure_extensions(app: Flask) -> None:
 
     # Migration
     migrate.init_app(app, db)
+
+    # i18n
+    babel.init_app(app)
 
     # Redis
     redis_client.init_app(app)

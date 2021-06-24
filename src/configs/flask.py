@@ -186,6 +186,13 @@ class Config:
 
     # endregion
 
+    # region Babel
+
+    BABEL_DEFAULT_LOCALE = "en"
+    BABEL_TRANSLATION_DIRECTORIES = "../translations"
+
+    # endregion
+
     # region Redis
 
     REDIS_URL = os.getenv("REDIS_URL")

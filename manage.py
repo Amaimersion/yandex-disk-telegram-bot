@@ -1,3 +1,4 @@
+import os
 from functools import wraps
 
 import click
@@ -250,6 +251,131 @@ def clear_db(context: dict) -> None:
     context.invoke(clear_users)
     context.invoke(clear_chats)
     context.invoke(clear_yd_tokens)
+
+
+@cli.command()
+def update_translations() -> None:
+    """
+    Updates existing translations to match app state.
+    """
+    translation_directories = os.path.join(
+        os.getcwd(),
+        "src",
+        app.config['BABEL_TRANSLATION_DIRECTORIES']
+    )
+    translation_directories_exists = os.path.exists(
+        translation_directories
+    )
+    translation_directories_empty = (
+        len(os.listdir(translation_directories)) == 0
+    ) if translation_directories_exists else True
+    translation_directories_valid = (
+        translation_directories_exists and
+        not translation_directories_empty
+    )
+
+    if not translation_directories_valid:
+        click.echo(
+            "Translations directories not valid. "
+            "Initialize at least one language first"
+        )
+
+        return
+
+    temp_file = "messages.pot"
+    extract_command = (
+        "pybabel extract -F babel.cfg -k lazy_gettext "
+        f"-o {temp_file} ."
+    )
+    update_command = (
+        f"pybabel update -i {temp_file} "
+        f"-d {translation_directories}"
+    )
+
+    if os.system(extract_command):
+        return
+
+    if os.system(update_command):
+        return
+
+    os.remove(temp_file)
+
+    click.echo("Done")
+
+
+@cli.command()
+def compile_translations() -> None:
+    """
+    Compiles existing translations.
+    """
+    translation_directories = os.path.join(
+        os.getcwd(),
+        "src",
+        app.config['BABEL_TRANSLATION_DIRECTORIES']
+    )
+    translation_directories_exists = os.path.exists(
+        translation_directories
+    )
+    translation_directories_empty = (
+        len(os.listdir(translation_directories)) == 0
+    ) if translation_directories_exists else True
+    translation_directories_valid = (
+        translation_directories_exists and
+        not translation_directories_empty
+    )
+
+    if not translation_directories_valid:
+        click.echo(
+            "Translations directories not valid. "
+            "Initialize at least one language first"
+        )
+
+        return
+
+    compile_command = (
+        f"pybabel compile -d {translation_directories} --statistics"
+    )
+
+    if os.system(compile_command):
+        return
+
+    click.echo("Done")
+
+
+@cli.command()
+@click.argument(
+    "language_code",
+    required=True
+)
+def init_translations(language_code: str) -> None:
+    """
+    Initialize new language to use for translations.
+
+    LANGUAGE_CODE is the IETF language tag.
+    """
+    temp_file = "messages.pot"
+    translation_directories = (
+        "src/"
+        f"{app.config['BABEL_TRANSLATION_DIRECTORIES']}"
+    )
+    extract_command = (
+        "pybabel extract -F babel.cfg -k lazy_gettext "
+        f"-o {temp_file} ."
+    )
+    update_command = (
+        f"pybabel init -i {temp_file} "
+        f"-d {translation_directories} -l {language_code}"
+    )
+
+    if os.system(extract_command):
+        return
+
+    if os.system(update_command):
+        return
+
+    os.remove(temp_file)
+
+    click.echo("Done")
 
 
 if (__name__ == "__main__"):
