@@ -45,6 +45,9 @@ def get_locale() -> str:
     """
     result = None
     have_db_data = (
+        # `hasattr` should be used because request
+        # can came not only from `webhook` blueprint
+        hasattr(g, "db_user") and
         g.db_user and
         g.db_user.settings and
         g.db_user.settings.language
@@ -53,9 +56,9 @@ def get_locale() -> str:
     if have_db_data:
         result = g.db_user.settings.language.value
     elif request.accept_languages:
-        result = request.accept_languages.best_match([
-            SupportedLanguage.EN.value
-        ])
+        result = request.accept_languages.best_match(
+            [lang.value for lang in SupportedLanguage]
+        )
 
     if result is None:
         result = SupportedLanguage.EN.value
