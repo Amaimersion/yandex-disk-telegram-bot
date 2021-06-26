@@ -15,10 +15,6 @@ ___
 
 - Changelog splitted into two files: one for end users and one for developers.
 
-## Removed
-
-- "Preferred language" from `/settings` response, because at the moment there is no support of any other language.
-
 
 # 1.2.0 (December 14, 2020)
 
