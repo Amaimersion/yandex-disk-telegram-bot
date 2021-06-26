@@ -1,4 +1,5 @@
 import os
+import glob
 from functools import wraps
 
 import click
@@ -282,10 +283,16 @@ def update_translations() -> None:
 
         return
 
+    # https://github.com/python-babel/babel/issues/53
+    files_to_translate = " ".join([
+        *glob.glob("src/**/*.py", recursive=True),
+        *glob.glob("src/**/*.html", recursive=True)
+    ])
+
     temp_file = "messages.pot"
     extract_command = (
         "pybabel extract -F babel.cfg -k lazy_gettext "
-        f"-o {temp_file} ."
+        f"-o {temp_file} {files_to_translate}"
     )
     update_command = (
         f"pybabel update -i {temp_file} "
@@ -353,6 +360,12 @@ def init_translations(language_code: str) -> None:
 
     LANGUAGE_CODE is the IETF language tag.
     """
+    # https://github.com/python-babel/babel/issues/53
+    files_to_translate = " ".join([
+        *glob.glob("src/**/*.py", recursive=True),
+        *glob.glob("src/**/*.html", recursive=True)
+    ])
+
     temp_file = "messages.pot"
     translation_directories = (
         "src/"
@@ -360,7 +373,7 @@ def init_translations(language_code: str) -> None:
     )
     extract_command = (
         "pybabel extract -F babel.cfg -k lazy_gettext "
-        f"-o {temp_file} ."
+        f"-o {temp_file} {files_to_translate}"
     )
     update_command = (
         f"pybabel init -i {temp_file} "
