@@ -30,6 +30,7 @@ class SupportedLanguage(Enum):
         """
         ietf_tag = ietf_tag.lower()
         languages = {
+            # All not specified countries
             "en": SupportedLanguage.EN
         }
 
