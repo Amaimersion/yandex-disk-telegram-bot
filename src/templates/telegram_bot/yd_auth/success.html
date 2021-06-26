@@ -20,11 +20,11 @@
 {% block main %}
   <main data-status="success">
     <h1>
-      Success
+      {{ gettext('Success') }}
     </h1>
 
     <p>
-      You've successfully granted an access to {{ config["PROJECT_APP_NAME"] }}.
+      {{ gettext("You've successfully granted an access to %(project_name)s.", project_name=config["PROJECT_APP_NAME"]) }}
     </p>
 
     <p

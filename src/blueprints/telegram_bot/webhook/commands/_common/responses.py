@@ -3,6 +3,7 @@ from enum import IntEnum, unique
 from flask import current_app
 
 from src.api import telegram
+from src.i18n import gettext
 
 
 @unique
@@ -31,18 +32,21 @@ def abort_command(
     that message will be used for reply message.
     """
     texts = {
-        AbortReason.UNKNOWN: (
+        AbortReason.UNKNOWN: gettext(
             "I can't handle this because something is wrong."
         ),
-        AbortReason.NO_SUITABLE_DATA: (
+        AbortReason.NO_SUITABLE_DATA: gettext(
             "I can't handle this because "
             "you didn't send any suitable data "
             "for that command."
         ),
-        AbortReason.EXCEED_FILE_SIZE_LIMIT: (
+        AbortReason.EXCEED_FILE_SIZE_LIMIT: gettext(
             "I can't handle file of such a large size. "
             "At the moment my limit is "
-            f"{current_app.config['TELEGRAM_API_MAX_FILE_SIZE'] / 1024 / 1024} MB." # noqa
+            "%(limit_in_mb)s MB.",
+            limit_in_mb=(
+                current_app.config['TELEGRAM_API_MAX_FILE_SIZE'] / 1024 / 1024
+            )
         )
     }
     text = texts[reason]
@@ -80,7 +84,7 @@ def cancel_command(
     - if `reply_to_message` Telegram ID specified, then
     that message will be used for reply message.
     """
-    text = (
+    text = gettext(
         "At the moment i can't process this "
         "because of my internal error. "
         "Try later please."
@@ -93,7 +97,7 @@ def cancel_command(
             "inline_keyboard": [
                 [
                     {
-                        "text": "Report a problem",
+                        "text": gettext("Report a problem"),
                         "url": url_for_issue
                     }
                 ]
@@ -128,7 +132,7 @@ def request_private_chat(chat_telegram_id: int) -> None:
     """
     telegram.send_message(
         chat_id=chat_telegram_id,
-        text=(
+        text=gettext(
             "I need to send you your secret information, "
             "but i don't know any private chat with you. "
             "First, contact me through private chat (direct message). "
@@ -151,13 +155,15 @@ def send_yandex_disk_error(
     :param reply_to_message_id:
     If specified, then sended message will be a reply message.
     """
+    unknown_error_text = gettext("Unknown")
     kwargs = {
         "chat_id": chat_telegram_id,
         "parse_mode": "HTML",
-        "text": (
+        "text": gettext(
             "<b>Yandex.Disk Error</b>"
             "\n\n"
-            f"{error_text or 'Unknown'}"
+            "%(error_text)s",
+            error_text=(error_text or unknown_error_text)
         )
     }
 
@@ -172,20 +178,27 @@ def request_absolute_path(chat_telegram_id: int) -> None:
     Sends a message that asks a user to send an
     absolute path (folder or file).
     """
+    separator = "/"
+    path_1 = "Telegram Bot/kittens and raccoons"
+    path_2 = "/Telegram Bot/kittens and raccoons/musya.jpg"
+
     telegram.send_message(
         chat_id=chat_telegram_id,
         parse_mode="HTML",
-        text=(
+        text=gettext(
             "Send a full path."
             "\n\n"
             "It should starts from root directory, "
             "nested folders should be separated with "
-            '"<code>/</code>" character. '
+            '"<code>%(separator)s</code>" character. '
             "In short, i expect an absolute path to the item."
             "\n\n"
-            "Example: <code>Telegram Bot/kittens and raccoons</code>"
+            "Example: <code>%(path_1)s</code>"
             "\n"
-            "Example: <code>/Telegram Bot/kittens and raccoons/musya.jpg</code>" # noqa
+            "Example: <code>%(path_2)s</code>",
+            separator=separator,
+            path_1=path_1,
+            path_2=path_2
         )
     )
 
@@ -202,17 +215,23 @@ def request_absolute_folder_name(
     Name of folder which will be used in a message.
     See function source for template.
     """
+    separator = "/"
+    path_1 = "Telegram Bot/kittens and raccoons"
+
     telegram.send_message(
         chat_id=chat_telegram_id,
         parse_mode="HTML",
-        text=(
-            f"Send {folder_name}."
+        text=gettext(
+            "Send %(folder_name)s."
             "\n\n"
             "It should starts from root directory, "
             "nested folders should be separated with "
-            '"<code>/</code>" character. '
+            '"<code>%(separator)s</code>" character. '
             "In short, i expect a full path."
             "\n\n"
-            "Example: <code>Telegram Bot/kittens and raccoons</code>"
+            "Example: <code>%(path_1)s</code>",
+            folder_name=folder_name,
+            separator=separator,
+            path_1=path_1
         )
     )

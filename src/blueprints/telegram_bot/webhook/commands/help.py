@@ -3,6 +3,7 @@ from collections import deque
 from flask import g, current_app
 
 from src.api import telegram
+from src.i18n import gettext
 from src.blueprints.telegram_bot._common.command_names import (
     CommandName
 )
@@ -33,23 +34,27 @@ def create_help_html_text() -> str:
     file_size_limit_in_mb = int(current_app.config[
         "TELEGRAM_API_MAX_FILE_SIZE"
     ] / 1024 / 1024)
-    bullet_char = "•"
-    text = deque()
-
-    text.append(
+    bullet_char = gettext("•")
+    message = gettext(
         "You can interact with "
         '<a href="https://disk.yandex.com">Yandex.Disk</a> '
         "by using me. To control me send following commands."
         "\n\n"
         "Note:"
         "\n"
-        f"{bullet_char} you can change default upload folder "
-        f"using {CommandName.SETTINGS.value} command,"
+        "%(bullet_char)s you can change default upload folder "
+        "using %(settings_command)s command,"
         "\n"
-        f"{bullet_char} maximum size of every upload "
-        f"(except URL) is {file_size_limit_in_mb} MB."
-        "\n"
+        "%(bullet_char)s maximum size of every upload "
+        "(except URL) is %(file_size_limit_in_mb)s MB."
+        "\n",
+        bullet_char=bullet_char,
+        settings_command=CommandName.SETTINGS.value,
+        file_size_limit_in_mb=file_size_limit_in_mb
     )
+    text = deque()
+
+    text.append(message)
 
     for group in commands_html_content:
         group_name = group["name"]
@@ -57,7 +62,10 @@ def create_help_html_text() -> str:
         group_added = False
 
         text.append(
-            f"<b>{group_name}</b>"
+            gettext(
+                "<b>%(group_name)s</b>",
+                group_name=group_name
+            )
         )
 
         for command in commands:
@@ -65,9 +73,13 @@ def create_help_html_text() -> str:
             help_message = command.get("help")
 
             if help_message:
-                text.append(
-                    f"{bullet_char} {command_name} — {help_message}."
+                message = gettext(
+                    "%(bullet_char)s %(command_name)s — %(help_message)s.",
+                    bullet_char=bullet_char,
+                    command_name=command_name,
+                    help_message=help_message
                 )
+                text.append(message)
                 group_added = True
 
         if group_added:

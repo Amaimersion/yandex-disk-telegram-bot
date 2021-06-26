@@ -3,6 +3,7 @@ from collections import deque
 from flask import g, current_app
 
 from src.api import telegram
+from src.i18n import gettext
 from src.blueprints._common.utils import bytes_to_human_binary
 from src.blueprints.telegram_bot._common.yandex_disk import (
     get_disk_info,
@@ -55,50 +56,71 @@ def create_disk_info_html_text(info: dict) -> str:
 
         if "display_name" in data:
             text.append(
-                f"<b>User — Name:</b> {data['display_name']}"
+                gettext(
+                    "<b>User — Name:</b> %(display_name)s",
+                    display_name=data["display_name"]
+                )
             )
 
         if "login" in data:
             text.append(
-                f"<b>User — Login:</b> {data['login']}"
+                gettext(
+                    "<b>User — Login:</b> %(login)s",
+                    login=data["login"]
+                )
             )
 
         if "country" in data:
             text.append(
-                f"<b>User — Country:</b> {data['country']}"
+                gettext(
+                    "<b>User — Country:</b> %(country)s",
+                    country=data["country"]
+                )
             )
 
     if "is_paid" in info:
-        value = "?"
+        value = gettext("?")
 
         if info["is_paid"]:
-            value = "Yes"
+            value = gettext("Yes")
         else:
-            value = "No"
+            value = gettext("No")
 
         text.append(
-            f"<b>Paid:</b> {value}"
+            gettext(
+                "<b>Paid:</b> %(status)s",
+                status=value
+            )
         )
 
     if "total_space" in info:
         value = bytes_to_string(info["total_space"])
 
         text.append(
-            f"<b>Total space:</b> {value}"
+            gettext(
+                "<b>Total space:</b> %(value)s",
+                value=value
+            )
         )
 
     if "used_space" in info:
         value = bytes_to_string(info["used_space"])
 
         text.append(
-            f"<b>Used space:</b> {value}"
+            gettext(
+                "<b>Used space:</b> %(value)s",
+                value=value
+            )
         )
 
     if "trash_size" in info:
         value = bytes_to_string(info["trash_size"])
 
         text.append(
-            f"<b>Trash size:</b> {value}"
+            gettext(
+                "<b>Trash size:</b> %(value)s",
+                value=value
+            )
         )
 
     if (
@@ -114,24 +136,31 @@ def create_disk_info_html_text(info: dict) -> str:
         value = bytes_to_string(bytes_count)
 
         text.append(
-            f"<b>Free space:</b> {value}"
+            gettext(
+                "<b>Free space:</b> %(value)s",
+                value=value
+            )
         )
 
     if "max_file_size" in info:
         value = bytes_to_string(info["max_file_size"])
 
         text.append(
-            f"<b>Maximum file size:</b> {value}"
+            gettext(
+                "<b>Maximum file size:</b> %(value)s",
+                value=value
+            )
         )
 
     return "\n".join(text)
 
 
 def bytes_to_string(bytes_count: int) -> str:
-    value = f"{bytes_count:,} bytes"
+    bytes_word = gettext("bytes")
+    value = f"{bytes_count:,} {bytes_word}"
 
     if (bytes_count >= 1000):
         decimal = bytes_to_human_binary(bytes_count)
-        value = f"{decimal} ({bytes_count:,} bytes)"
+        value = f"{decimal} ({bytes_count:,} {bytes_word})"
 
     return value

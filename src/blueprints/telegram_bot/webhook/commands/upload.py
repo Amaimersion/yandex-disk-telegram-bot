@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 from flask import g, current_app
 
 from src.api import telegram
+from src.i18n import gettext
 from src.extensions import task_queue
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common import youtube_dl
@@ -432,7 +433,7 @@ class AttachmentHandler(metaclass=ABCMeta):
         self.reply_to_message(
             message_id,
             chat_id,
-            "Status: pending",
+            gettext("Status: pending"),
             False
         )
 
@@ -527,12 +528,15 @@ class AttachmentHandler(metaclass=ABCMeta):
                             )
                         except Exception as error:
                             print(error)
-                            text_content.append(
+                            message = gettext(
                                 "\n"
                                 "Failed to publish. Type to do it:"
                                 "\n"
-                                f"{CommandName.PUBLISH.value} {full_path}"
+                                "%(publish_command)s %(full_path)s",
+                                publish_command=CommandName.PUBLISH.value,
+                                full_path=full_path
                             )
+                            text_content.append(message)
 
                     info = None
 
@@ -544,19 +548,23 @@ class AttachmentHandler(metaclass=ABCMeta):
                         )
                     except Exception as error:
                         print(error)
-                        text_content.append(
+                        message = gettext(
                             "\n"
                             "Failed to get information. Type to do it:"
                             "\n"
-                            f"{CommandName.ELEMENT_INFO.value} {full_path}"
+                            "%(element_info_command)s %(full_path)s",
+                            element_info_command=CommandName.ELEMENT_INFO.value, # noqa
+                            full_path=full_path
                         )
+                        text_content.append(message)
 
                     if text_content:
-                        text_content.append(
+                        message = gettext(
                             "It is successfully uploaded, "
                             "but i failed to perform some actions. "
                             "You need to execute them manually."
                         )
+                        text_content.append(message)
                         text_content.reverse()
 
                     if info:
@@ -575,7 +583,10 @@ class AttachmentHandler(metaclass=ABCMeta):
                     # because `upload_status` can be a same
                     upload_status = status["status"]
                     text_content.append(
-                        f"Status: {upload_status}"
+                        gettext(
+                            "Status: %(upload_status)s",
+                            upload_status=upload_status
+                        )
                     )
 
                 text = "\n".join(text_content)
@@ -587,7 +598,7 @@ class AttachmentHandler(metaclass=ABCMeta):
                     is_html_text
                 )
         except YandexAPICreateFolderError as error:
-            error_text = str(error) or (
+            error_text = str(error) or gettext(
                 "I can't create default upload folder "
                 "due to an unknown Yandex.Disk error."
             )
@@ -598,7 +609,7 @@ class AttachmentHandler(metaclass=ABCMeta):
                 message_id
             )
         except YandexAPIUploadFileError as error:
-            error_text = str(error) or (
+            error_text = str(error) or gettext(
                 "I can't upload this due "
                 "to an unknown Yandex.Disk error."
             )
@@ -609,12 +620,14 @@ class AttachmentHandler(metaclass=ABCMeta):
                 message_id
             )
         except YandexAPIExceededNumberOfStatusChecksError:
-            error_text = (
+            error_text = gettext(
                 "I can't track operation status of "
                 "this anymore. It can be uploaded "
                 "after a while. Type to check:"
                 "\n"
-                f"{CommandName.ELEMENT_INFO.value} {full_path}"
+                "%(element_info_command)s %(full_path)s",
+                element_info_command=CommandName.ELEMENT_INFO.value,
+                full_path=full_path
             )
 
             return self.reply_to_message(
@@ -739,16 +752,23 @@ class PhotoHandler(AttachmentHandler):
         ]
 
     def create_help_message(self):
-        return (
+        publish_action = gettext("and publish")
+        text = gettext(
             "Send a photos that you want to upload"
-            f"{' and publish' if self.public_upload else ''}."
+            "%(publish_action)s."
             "\n\n"
             "Note:"
             "\n"
             "- original name will be not saved"
             "\n"
-            "- original quality and size will be decreased"
+            "- original quality and size will be decreased",
+            publish_action=(
+                f" {publish_action}" if
+                self.public_upload else ""
+            )
         )
+
+        return text
 
     def get_attachment(self, message: TelegramMessage):
         photos = message.get(self.raw_data_key, [])
@@ -800,16 +820,23 @@ class FileHandler(AttachmentHandler):
         ]
 
     def create_help_message(self):
-        return (
+        publish_action = gettext("and publish")
+        text = gettext(
             "Send a files that you want to upload"
-            f"{' and publish' if self.public_upload else ''}."
+            "%(publish_action)s."
             "\n\n"
             "Note:"
             "\n"
             "- original name will be saved"
             "\n"
-            "- original quality and size will be saved"
+            "- original quality and size will be saved",
+            publish_action=(
+                f" {publish_action}" if
+                self.public_upload else ""
+            )
         )
+
+        return text
 
     def get_mime_type(self, attachment):
         # file name already contains type
@@ -848,9 +875,10 @@ class AudioHandler(AttachmentHandler):
         ]
 
     def create_help_message(self):
-        return (
+        publish_action = gettext("and publish")
+        text = gettext(
             "Send a music that you want to upload"
-            f"{' and publish' if self.public_upload else ''}."
+            "%(publish_action)s."
             "\n\n"
             "Note:"
             "\n"
@@ -858,8 +886,14 @@ class AudioHandler(AttachmentHandler):
             "\n"
             "- original quality and size will be saved"
             "\n"
-            "- original type may be changed"
+            "- original type may be changed",
+            publish_action=(
+                f" {publish_action}" if
+                self.public_upload else ""
+            )
         )
+
+        return text
 
     def create_file_name(self, attachment, file):
         name = file["file_unique_id"]
@@ -910,9 +944,10 @@ class VideoHandler(AttachmentHandler):
         ]
 
     def create_help_message(self):
-        return (
+        publish_action = gettext("and publish")
+        text = gettext(
             "Send a video that you want to upload"
-            f"{' and publish' if self.public_upload else ''}."
+            "%(publish_action)s."
             "\n\n"
             "Note:"
             "\n"
@@ -920,8 +955,14 @@ class VideoHandler(AttachmentHandler):
             "\n"
             "- original quality and size will be saved"
             "\n"
-            "- original type may be changed"
+            "- original type may be changed",
+            publish_action=(
+                f" {publish_action}" if
+                self.public_upload else ""
+            )
         )
+
+        return text
 
 
 class VoiceHandler(AttachmentHandler):
@@ -956,10 +997,17 @@ class VoiceHandler(AttachmentHandler):
         ]
 
     def create_help_message(self):
-        return (
+        publish_action = gettext("and publish")
+        text = gettext(
             "Send a voice message that you want to upload"
-            f"{' and publish' if self.public_upload else ''}."
+            "%(publish_action)s.",
+            publish_action=(
+                f" {publish_action}" if
+                self.public_upload else ""
+            )
         )
+
+        return text
 
     def create_file_name(self, attachment, file):
         return get_current_iso_datetime(sep=" ")
@@ -997,16 +1045,23 @@ class DirectURLHandler(AttachmentHandler):
         ]
 
     def create_help_message(self):
-        return (
+        publish_action = gettext("and publish")
+        text = gettext(
             "Send a direct URL to file that you want to upload"
-            f"{' and publish' if self.public_upload else ''}."
+            "%(publish_action)s."
             "\n\n"
             "Note:"
             "\n"
             "- original name from URL will be saved"
             "\n"
-            "- original quality and size will be saved"
+            "- original quality and size will be saved",
+            publish_action=(
+                f" {publish_action}" if
+                self.public_upload else ""
+            )
         )
+
+        return text
 
     def get_attachment(self, message: TelegramMessage):
         return message.get_entity_value(self.raw_data_key)
@@ -1056,9 +1111,10 @@ class IntellectualURLHandler(DirectURLHandler):
         handler.init_upload(*args, **kwargs)
 
     def create_help_message(self):
-        return (
+        publish_action = gettext("and publish")
+        text = gettext(
             "Send an URL to resource that you want to upload"
-            f"{' and publish' if self.public_upload else ''}."
+            "%(publish_action)s."
             "\n\n"
             "Note:"
             "\n"
@@ -1076,8 +1132,14 @@ class IntellectualURLHandler(DirectURLHandler):
             "text, page, etc. Not everything will work as you expect, "
             "but some URL's will"
             "\n"
-            "- i'm using youtube-dl, if that means anything to you (:"
+            "- i'm using youtube-dl, if that means anything to you (:",
+            publish_action=(
+                f" {publish_action}" if
+                self.public_upload else ""
+            )
         )
+
+        return text
 
     def get_attachment(self, message: TelegramMessage):
         self.input_url = super().get_attachment(message)

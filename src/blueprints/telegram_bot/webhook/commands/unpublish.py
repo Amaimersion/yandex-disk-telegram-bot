@@ -1,6 +1,7 @@
 from flask import g, current_app
 
 from src.api import telegram
+from src.i18n import gettext
 from src.blueprints.telegram_bot._common.yandex_disk import (
     unpublish_item,
     YandexAPIUnpublishItemError,
@@ -88,5 +89,5 @@ def handle(*args, **kwargs):
 
     telegram.send_message(
         chat_id=chat_id,
-        text="Unpublished"
+        text=gettext("Unpublished")
     )

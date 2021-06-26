@@ -6,6 +6,7 @@ from flask import (
 
 from src.api import telegram
 from src.database import ChatQuery
+from src.i18n import gettext
 from src.blueprints._common.utils import get_current_datetime
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 from src.blueprints.telegram_bot._common import yandex_oauth
@@ -94,14 +95,17 @@ def handle_success():
         telegram.send_message(
             chat_id=private_chat.telegram_id,
             parse_mode="HTML",
-            text=(
+            text=gettext(
                 "<b>Access to Yandex.Disk Granted</b>"
                 "\n\n"
                 "My access was attached to your Telegram account "
-                f"on {date} at {time} {timezone}."
+                "on %(date)s at %(time)s %(timezone)s."
                 "\n\n"
-                "If it wasn't you, then detach this access with "
-                f"{CommandName.YD_REVOKE.value}"
+                "If it wasn't you, then detach this access with %(command)s",
+                date=date,
+                time=time,
+                timezone=timezone,
+                command=CommandName.YD_REVOKE.value
             )
         )
 
@@ -158,40 +162,40 @@ def create_error_response(
     """
     possible_errors = {
         "access_denied": {
-            "title": "Access Denied",
-            "description": (
+            "title": gettext("Access Denied"),
+            "description": gettext(
                 "You refused to grant me "
                 "access to your Yandex.Disk."
             )
         },
         "unauthorized_client": {
-            "title": "Application is unavailable",
-            "description": (
+            "title": gettext("Application is unavailable"),
+            "description": gettext(
                 "There is a problems with me. "
                 "Try later please."
             )
         },
         "invalid_credentials": {
-            "title": "Invalid credentials",
-            "description": "Your credentials is not valid."
+            "title": gettext("Invalid credentials"),
+            "description": gettext("Your credentials is not valid.")
         },
         "invalid_insert_token": {
-            "title": "Invalid credentials",
-            "description": (
+            "title": gettext("Invalid credentials"),
+            "description": gettext(
                 "Your credentials is not valid anymore. "
                 "Request a new authorization link."
             )
         },
         "link_expired": {
-            "title": "Authorization link has expired",
-            "description": (
+            "title": gettext("Authorization link has expired"),
+            "description": gettext(
                 "Your authorization link has expired. "
                 "Request a new one."
             )
         },
         "internal_server_error": {
-            "title": "Internal server error",
-            "description": (
+            "title": gettext("Internal server error"),
+            "description": gettext(
                 "At the moment i can't handle you "
                 "because of my internal error. "
                 "Try later please."

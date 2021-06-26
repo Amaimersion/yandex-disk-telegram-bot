@@ -8,6 +8,7 @@ from plotly.io import to_image
 
 from src.extensions import task_queue
 from src.api import telegram
+from src.i18n import gettext
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common.yandex_disk import (
     get_disk_info,
@@ -42,7 +43,7 @@ def handle(*args, **kwargs):
     # is fine and result will be sent soon
     sended_message = telegram.send_message(
         chat_id=chat_id,
-        text="Generating..."
+        text=gettext("Generating...")
     )
     sended_message_id = sended_message["content"]["message_id"]
 
@@ -65,7 +66,10 @@ def handle(*args, **kwargs):
         caption=current_utc_date
     )
     filename = f"{to_filename(current_iso_date)}.jpg"
-    file_caption = f"Yandex.Disk space at {current_utc_date}"
+    file_caption = gettext(
+        "Yandex.Disk space at %(current_utc_date)s",
+        current_utc_date=current_utc_date
+    )
     arguments = (
         jpeg_image,
         filename,
@@ -110,12 +114,13 @@ def create_space_chart(
     total_space = b_to_gb(total_space)
     used_space = b_to_gb(used_space)
     trash_size = b_to_gb(trash_size)
-
+    gb_text = gettext("GB")
+    total_text = gettext("Total")
     chart = Pie(
         labels=[
-            "Used Space",
-            "Trash Size",
-            "Free Space"
+            gettext("Used Space"),
+            gettext("Trash Size"),
+            gettext("Free Space")
         ],
         values=[
             used_space,
@@ -123,9 +128,9 @@ def create_space_chart(
             free_space
         ],
         text=[
-            "Used",
-            "Trash",
-            "Free"
+            gettext("Used"),
+            gettext("Trash"),
+            gettext("Free")
         ],
         marker={
             "colors": [
@@ -141,7 +146,8 @@ def create_space_chart(
         direction="clockwise",
         texttemplate=(
             "%{text}<br />"
-            "<b>%{value:.2f} GB</b><br />"
+            "<b>%{value:.2f} "
+            f"{gb_text}</b><br />"
             "%{percent}"
         ),
         textposition="outside",
@@ -161,8 +167,8 @@ def create_space_chart(
                     "align": "center",
                     "showarrow": False,
                     "text": (
-                        "Total<br />"
-                        f"<b>{total_space:.2f} GB</b><br />"
+                        f"{total_text}<br />"
+                        f"<b>{total_space:.2f} {gb_text}</b><br />"
                         "100%"
                     )
                 }

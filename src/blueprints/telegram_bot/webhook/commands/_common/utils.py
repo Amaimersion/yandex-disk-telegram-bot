@@ -2,6 +2,7 @@ from typing import Union
 from collections import deque
 import json
 
+from src.i18n import gettext
 from src.blueprints._common.utils import (
     convert_iso_datetime,
     bytes_to_human_decimal
@@ -70,38 +71,48 @@ def create_element_info_html_text(
 
     if "name" in info:
         text.append(
-            f"<b>Name:</b> {info['name']}"
+            gettext(
+                "<b>Name:</b> %(name)s",
+                name=info["name"]
+            )
         )
 
     if "type" in info:
         incoming_type = info["type"].lower()
-        value = "Unknown"
+        value = gettext("Unknown")
 
         if (incoming_type == "dir"):
-            value = "Folder"
+            value = gettext("Folder")
         elif (incoming_type == "file"):
             if "media_type" in info:
                 value = info["media_type"]
             else:
-                value = "File"
+                value = gettext("File")
 
             if "mime_type" in info:
                 value = f"{value} ({info['mime_type']})"
 
         text.append(
-            f"<b>Type:</b> {value}"
+            gettext(
+                "<b>Type:</b> %(type)s",
+                type=value
+            )
         )
 
     if "size" in info:
         bytes_count = info["size"]
-        value = f"{bytes_count:,} bytes"
+        bytes_text = gettext("bytes")
+        value = f"{bytes_count:,} {bytes_text}"
 
         if (bytes_count >= 1000):
             decimal = bytes_to_human_decimal(bytes_count)
-            value = f"{decimal} ({bytes_count:,} bytes)"
+            value = f"{decimal} ({bytes_count:,} {bytes_text})"
 
         text.append(
-            f"<b>Size:</b> {value}"
+            gettext(
+                "<b>Size:</b> %(size)s",
+                size=value
+            )
         )
 
     if (
@@ -110,8 +121,13 @@ def create_element_info_html_text(
     ):
         value = convert_iso_datetime(info["created"])
         text.append(
-            "<b>Created:</b> "
-            f"{value['date']} {value['time']} {value['timezone']}"
+            gettext(
+                "<b>Created:</b> "
+                "%(date)s %(time)s %(timezone)s",
+                date=value['date'],
+                time=value['time'],
+                timezone=value['timezone']
+            )
         )
 
     if (
@@ -120,8 +136,13 @@ def create_element_info_html_text(
     ):
         value = convert_iso_datetime(info["modified"])
         text.append(
-            "<b>Modified:</b> "
-            f"{value['date']} {value['time']} {value['timezone']}"
+            gettext(
+                "<b>Modified:</b> "
+                "%(date)s %(time)s %(timezone)s",
+                date=value['date'],
+                time=value['time'],
+                timezone=value['timezone']
+            )
         )
 
     if (
@@ -129,8 +150,11 @@ def create_element_info_html_text(
         ("path" in info)
     ):
         text.append(
-            "<b>Full path:</b> "
-            f"<code>{info['path']}</code>"
+            gettext(
+                "<b>Full path:</b> "
+                "<code>%(path)s</code>",
+                path=info["path"]
+            )
         )
 
     if (
@@ -138,8 +162,11 @@ def create_element_info_html_text(
         ("origin_path" in info)
     ):
         text.append(
-            "<b>Origin path:</b> "
-            f"<code>{info['origin_path']}</code>"
+            gettext(
+                "<b>Origin path:</b> "
+                "<code>%(path)s</code>",
+                path=info["origin_path"]
+            )
         )
 
     if (
@@ -147,12 +174,18 @@ def create_element_info_html_text(
         ("total" in info["_embedded"])
     ):
         text.append(
-            f"<b>Total elements:</b> {info['_embedded']['total']}"
+            gettext(
+                "<b>Total elements:</b> %(count)s",
+                count=info["_embedded"]["total"]
+            )
         )
 
     if "public_url" in info:
         text.append(
-            f"<b>Public URL:</b> {info['public_url']}"
+            gettext(
+                "<b>Public URL:</b> %(url)s",
+                url=info["public_url"]
+            )
         )
 
     if (
@@ -160,7 +193,10 @@ def create_element_info_html_text(
         ("views_count" in info)
     ):
         text.append(
-            f"<b>Views:</b> {info['views_count']}"
+            gettext(
+                "<b>Views:</b> %(count)s",
+                count=info["views_count"]
+            )
         )
 
     if (
@@ -185,7 +221,10 @@ def create_element_info_html_text(
             value = login
 
         text.append(
-            f"<b>Owner:</b> {value}"
+            gettext(
+                "<b>Owner:</b> %(owner)s",
+                owner=value
+            )
         )
 
     if (
@@ -195,37 +234,46 @@ def create_element_info_html_text(
         data = info["share"]
 
         if "is_owned" in data:
-            value = "No"
+            value = gettext("No")
 
             if data["is_owned"]:
-                value = "Yes"
+                value = gettext("Yes")
 
             text.append(
-                f"<b>Shared access — Owner:</b> {value}"
+                gettext(
+                    "<b>Shared access — Owner:</b> %(status)s",
+                    status=value
+                )
             )
 
         if "rights" in data:
             value = data["rights"].lower()
 
             if (value == "rw"):
-                value = "Full access"
+                value = gettext("Full access")
             elif (value == "r"):
-                value = "Read"
+                value = gettext("Read")
             elif (value == "w"):
-                value = "Write"
+                value = gettext("Write")
 
             text.append(
-                f"<b>Shared access — Rights:</b> {value}"
+                gettext(
+                    "<b>Shared access — Rights:</b> %(rights)s",
+                    rights=value
+                )
             )
 
         if "is_root" in data:
-            value = "No"
+            value = gettext("No")
 
             if data["is_root"]:
-                value = "Yes"
+                value = gettext("Yes")
 
             text.append(
-                f"<b>Shared access — Root:</b> {value}"
+                gettext(
+                    "<b>Shared access — Root:</b> %(status)s",
+                    status=value
+                )
             )
 
     if (
@@ -235,18 +283,27 @@ def create_element_info_html_text(
     ):
         exif = json.dumps(info["exif"], indent=4)
         text.append(
-            "<b>EXIF:</b> "
-            f"<code>{exif}</code>"
+            gettext(
+                "<b>EXIF:</b> "
+                "<code>%(exif)s</code>",
+                exif=exif
+            )
         )
 
     if "sha256" in info:
         text.append(
-            f"<b>SHA-256:</b> {info['sha256']}"
+            gettext(
+                "<b>SHA-256:</b> %(value)s",
+                value=info["sha256"]
+            )
         )
 
     if "md5" in info:
         text.append(
-            f"<b>MD5:</b> {info['md5']}"
+            gettext(
+                "<b>MD5:</b> %(value)s",
+                value=info["md5"]
+            )
         )
 
     return "\n".join(text)

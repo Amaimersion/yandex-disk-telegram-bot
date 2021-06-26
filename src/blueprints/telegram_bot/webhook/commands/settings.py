@@ -5,6 +5,7 @@ from typing import Any, Tuple, Union
 from flask import g, current_app
 
 from src.api import telegram
+from src.i18n import gettext
 from src.extensions import db
 from src.database import User, UserSettings
 from src.blueprints._common.utils import EnumStrAutoName
@@ -371,7 +372,7 @@ class ChangeDefaultUploadFolderHandler(UserActionHandler):
     def on_callback_query_data(self, data: CallbackQueryData) -> None:
         request_absolute_folder_name(
             data.chat_id,
-            "a new path of default upload folder"
+            gettext("a new path of default upload folder")
         )
 
     def on_disposable_handler(self, data: DisposableHandlerData) -> None:
@@ -389,15 +390,17 @@ class ChangeDefaultUploadFolderHandler(UserActionHandler):
                 print(error)
                 return cancel_command(data.chat_id)
 
-            response_text = (
+            response_text = gettext(
                 "Success."
                 "\n"
-                f"<code>{old_value}</code> was changed to "
-                f"<code>{new_value}</code>"
+                "<code>%(old_value)s</code> was changed to "
+                "<code>%(new_value)s</code>",
+                old_value=old_value,
+                new_value=new_value
             )
             need_to_send_current_settings = True
         else:
-            response_text = "Success."
+            response_text = gettext("Success.")
 
         telegram.send_message(
             chat_id=data.chat_id,
@@ -447,9 +450,16 @@ class ChangePublicUploadByDefaultHandler(UserActionHandler):
                 print(error)
                 return cancel_command(data.chat_id)
 
-        response_text = (
-            f"{'Public' if enable_public_uploading else 'Private'} uploading "
-            "will be used by default when you don't specify any commands."
+        public_name = gettext("Public")
+        private_name = gettext("Private")
+        response_text = gettext(
+            "%(upload_name)s uploading will be used "
+            "by default when you don't specify any commands.",
+            upload_name=(
+                public_name if
+                enable_public_uploading else
+                private_name
+            )
         )
 
         telegram.send_message(
@@ -626,26 +636,37 @@ def send_current_settings(
     """
     settings: UserSettings = user.settings
     yo_client = YandexOAuthClient()
-    yd_access = False
+    have_yd_access = False
 
     if yo_client.have_valid_access_token(user):
-        yd_access = True
+        have_yd_access = True
 
-    text = (
+    yes = gettext("Yes")
+    no = gettext("No")
+    given = gettext("Given")
+    revoked = gettext("Revoked")
+    text = gettext(
         "<b>Default upload folder:</b> "
-        f"<code>{settings.default_upload_folder}</code>"
+        "<code>%(default_upload_folder)s</code>"
         "\n"
         "<b>Public upload by default:</b> "
-        f"{'Yes' if settings.public_upload_by_default else 'No'}"
+        "%(public_upload_by_default)s"
         "\n"
         "<b>Yandex.Disk Access:</b> "
-        f"{'Given' if yd_access else 'Revoked'}"
+        "%(yd_access)s",
+        default_upload_folder=settings.default_upload_folder,
+        public_upload_by_default=(
+            yes if
+            settings.public_upload_by_default else
+            no
+        ),
+        yd_access=(given if have_yd_access else revoked)
     )
     reply_markup = {
         "inline_keyboard": [
             [
                 {
-                    "text": "Change default upload folder",
+                    "text": gettext("Change default upload folder"),
                     "callback_data": create_callback_data(
                         [CommandName.SETTINGS],
                         UserAction.CHANGE_DEFAULT_UPLOAD_FOLDER.value
@@ -654,14 +675,14 @@ def send_current_settings(
             ],
             [
                 {
-                    "text": "Disable public upload by default",
+                    "text": gettext("Disable public upload by default"),
                     "callback_data": create_callback_data(
                         [CommandName.SETTINGS],
                         UserAction.DISABLE_PUBLIC_UPLOAD_BY_DEFAULT.value
                     )
                 } if settings.public_upload_by_default else
                 {
-                    "text": "Enable public upload by default",
+                    "text": gettext("Enable public upload by default"),
                     "callback_data": create_callback_data(
                         [CommandName.SETTINGS],
                         UserAction.ENABLE_PUBLIC_UPLOAD_BY_DEFAULT.value

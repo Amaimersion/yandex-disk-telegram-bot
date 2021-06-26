@@ -2,6 +2,7 @@ from flask import g
 
 from src.extensions import db
 from src.api import telegram
+from src.i18n import gettext
 from src.blueprints._common.utils import get_current_datetime
 from src.blueprints.telegram_bot._common.yandex_oauth import YandexOAuthClient
 from ._common.decorators import (
@@ -62,10 +63,11 @@ def handle(*args, **kwargs):
 def message_dont_have_access_token(chat_id: int) -> None:
     telegram.send_message(
         chat_id=chat_id,
-        text=(
+        text=gettext(
             "You don't granted me access to your Yandex.Disk."
             "\n"
-            f"You can do that with {CommandName.YD_AUTH.value}"
+            "You can do that with %(yd_auth_command)s",
+            yd_auth_command=CommandName.YD_AUTH.value
         )
     )
 
@@ -80,16 +82,20 @@ def message_access_token_removed(chat_id: int) -> None:
         chat_id=chat_id,
         parse_mode="HTML",
         disable_web_page_preview=True,
-        text=(
+        text=gettext(
             "<b>Access to Yandex.Disk Revoked</b>"
             "\n\n"
             "You successfully revoked my access to your Yandex.Disk "
-            f"on {date} at {time} {timezone}."
+            "on %(date)s at %(time)s %(timezone)s."
             "\n\n"
             "Don't forget to do that in your "
             '<a href="https://passport.yandex.ru/profile">Yandex Profile</a>.'
             "\n"
-            f"To grant access again use {CommandName.YD_AUTH.value}"
+            "To grant access again use %(yd_auth_command)s",
+            date=date,
+            time=time,
+            timezone=timezone,
+            yd_auth_command=CommandName.YD_AUTH.value
         )
     )
 

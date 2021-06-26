@@ -1,6 +1,7 @@
 from flask import g, current_app
 
 from src.api import telegram
+from src.i18n import gettext
 from src.blueprints.telegram_bot._common.yandex_disk import (
     create_folder,
     YandexAPICreateFolderError,
@@ -87,11 +88,14 @@ def handle(*args, **kwargs):
     text = None
 
     if (last_status_code == 201):
-        text = "Created"
+        text = gettext("Created")
     elif (last_status_code == 409):
-        text = "Already exists"
+        text = gettext("Already exists")
     else:
-        text = f"Unknown operation status: {last_status_code}"
+        text = gettext(
+            "Unknown operation status: %(last_status_code)s",
+            last_status_code=last_status_code
+        )
 
     telegram.send_message(
         chat_id=chat_id,

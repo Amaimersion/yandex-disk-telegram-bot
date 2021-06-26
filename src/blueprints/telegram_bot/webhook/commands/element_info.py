@@ -1,6 +1,7 @@
 from flask import g, current_app
 
 from src.extensions import task_queue
+from src.i18n import gettext
 from src.api import telegram
 from src.api.yandex import make_photo_preview_request
 from src.blueprints.telegram_bot._common.yandex_disk import (
@@ -106,7 +107,7 @@ def handle(*args, **kwargs):
         params["reply_markup"] = {
             "inline_keyboard": [[
                 {
-                    "text": "Download",
+                    "text": gettext("Download"),
                     "url": download_url
                 }
             ]]
