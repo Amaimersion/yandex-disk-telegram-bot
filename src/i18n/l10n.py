@@ -72,8 +72,8 @@ def gettext(text: str, **kwargs) -> str:
 
     Based on GNU gettext. If translation not available,
     then provided text will be used instead. Should be used
-    only inside of request. To use this outside of request,
-    see `lazy_gettext`.
+    only inside of request (for example, on function call to
+    handle request). To use this outside of request, see `lazy_gettext`.
 
     NOTE:
     to use template strings, you should use old way of substitution.
@@ -89,5 +89,7 @@ def lazy_gettext(text: str, **kwargs) -> str:
 
     From Flask-Babel documentation:
     "Lazy strings will not be evaluated until they are actually used".
+
+    For example, it can be used to define constants on application startup.
     """
     return babel_lazy_gettext(text, **kwargs)
