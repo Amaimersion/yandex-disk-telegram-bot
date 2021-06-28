@@ -101,11 +101,12 @@ def handle_success():
                 "My access was attached to your Telegram account "
                 "on %(date)s at %(time)s %(timezone)s."
                 "\n\n"
-                "If it wasn't you, then detach this access with %(command)s",
+                "If it wasn't you, then detach this access with "
+                "%(yd_revoke_command)s",
                 date=date,
                 time=time,
                 timezone=timezone,
-                command=CommandName.YD_REVOKE.value
+                yd_revoke_command=CommandName.YD_REVOKE.value
             )
         )
 
