@@ -15,7 +15,7 @@ class UserSettings(db.Model):
     __tablename__ = "user_settings"
 
     # Metadata columns
-    user_id = db.Column(
+    user_id: int = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
         primary_key=True,
@@ -30,19 +30,19 @@ class UserSettings(db.Model):
     )
 
     # Settings columns
-    language = db.Column(
+    language: SupportedLanguage = db.Column(
         db.Enum(SupportedLanguage),
         default=SupportedLanguage.EN,
         nullable=True,
         comment="Preferred language of user"
     )
-    default_upload_folder = db.Column(
+    default_upload_folder: str = db.Column(
         db.String,
         nullable=True,
         default="Telegram Bot",
         comment="By default, files will be uploaded in this folder"
     )
-    public_upload_by_default = db.Column(
+    public_upload_by_default: bool = db.Column(
         db.Boolean,
         nullable=True,
         default=False,

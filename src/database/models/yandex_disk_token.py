@@ -19,37 +19,37 @@ class YandexDiskToken(db.Model):
     __tablename__ = "yandex_disk_tokens"
 
     # Columns
-    id = db.Column(
+    id: int = db.Column(
         db.Integer,
         primary_key=True
     )
-    _access_token = db.Column(
+    _access_token: str = db.Column(
         "access_token",
         db.String,
         nullable=True,
         default=null(),
         comment="Encrypted Y.D. OAuth token"
     )
-    access_token_type = db.Column(
+    access_token_type: str = db.Column(
         db.String,
         nullable=True,
         default=null(),
         comment="Type of access token"
     )
-    access_token_expires_in = db.Column(
+    access_token_expires_in: int = db.Column(
         db.BigInteger,
         nullable=True,
         default=null(),
         comment="Access token lifetime in seconds"
     )
-    _refresh_token = db.Column(
+    _refresh_token: str = db.Column(
         "refresh_token",
         db.String,
         nullable=True,
         default=null(),
         comment="Encrypted Y.D. refresh token to use to update access token"
     )
-    _insert_token = db.Column(
+    _insert_token: str = db.Column(
         "insert_token",
         db.String,
         nullable=True,
@@ -59,13 +59,13 @@ class YandexDiskToken(db.Model):
             "i.e., you shouldn't insert values if you don't know insert token"
         )
     )
-    insert_token_expires_in = db.Column(
+    insert_token_expires_in: int = db.Column(
         db.BigInteger,
         nullable=True,
         default=null(),
         comment="Insert token lifetime in seconds"
     )
-    user_id = db.Column(
+    user_id: int = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
         unique=True,

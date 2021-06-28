@@ -38,23 +38,23 @@ class Chat(db.Model):
     __tablename__ = "chats"
 
     # Columns
-    id = db.Column(
+    id: int = db.Column(
         db.Integer,
         primary_key=True
     )
-    telegram_id = db.Column(
+    telegram_id: int = db.Column(
         db.BigInteger,
         unique=True,
         index=True,
         nullable=False,
         comment="Unique ID to identificate chat in Telegram"
     )
-    type = db.Column(
+    type: ChatType = db.Column(
         db.Enum(ChatType),
         nullable=False,
         comment="Type of Telegram chat"
     )
-    user_id = db.Column(
+    user_id: int = db.Column(
         db.Integer,
         db.ForeignKey("users.id"),
         nullable=False,

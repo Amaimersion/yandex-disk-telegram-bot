@@ -27,7 +27,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     # Columns
-    id = db.Column(
+    id: int = db.Column(
         db.Integer,
         primary_key=True
     )
@@ -42,19 +42,19 @@ class User(db.Model):
         onupdate=func.now(),
         nullable=False
     )
-    telegram_id = db.Column(
+    telegram_id: int = db.Column(
         db.Integer,
         unique=True,
         index=True,
         nullable=False,
         comment="Unique ID to identificate user in Telegram"
     )
-    is_bot = db.Column(
+    is_bot: bool = db.Column(
         db.Boolean,
         nullable=False,
         comment="User is bot in Telegram"
     )
-    group = db.Column(
+    group: UserGroup = db.Column(
         db.Enum(UserGroup),
         default=UserGroup.USER,
         nullable=False,
