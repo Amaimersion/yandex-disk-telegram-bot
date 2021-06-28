@@ -5,7 +5,7 @@ from typing import Any, Tuple, Union
 from flask import g, current_app
 
 from src.api import telegram
-from src.i18n import gettext
+from src.i18n import gettext, SupportedLanguage
 from src.extensions import db
 from src.database import User, UserSettings
 from src.blueprints._common.utils import EnumStrAutoName
@@ -48,6 +48,8 @@ class UserAction(EnumStrAutoName):
     CHANGE_DEFAULT_UPLOAD_FOLDER = auto()
     ENABLE_PUBLIC_UPLOAD_BY_DEFAULT = auto()
     DISABLE_PUBLIC_UPLOAD_BY_DEFAULT = auto()
+    CHANGE_LANGUAGE = auto()
+    CHANGE_LANGUAGE_TO_EN = auto()
 
 
 class CallbackQueryData:
@@ -492,6 +494,93 @@ class DisablePublicUploadByDefaultHandler(ChangePublicUploadByDefaultHandler):
         return UserAction.DISABLE_PUBLIC_UPLOAD_BY_DEFAULT
 
 
+class ChangeLanguageHandler(UserActionHandler):
+    """
+    initializes changing of preferred language for interaction.
+    """
+    @property
+    def user_action(self):
+        return UserAction.CHANGE_LANGUAGE
+
+    @property
+    def disposable_handler_events(self):
+        return None
+
+    def on_callback_query_data(self, data: CallbackQueryData) -> None:
+        text = gettext(
+            "Choose a new language from the list below:"
+        )
+        reply_markup = {
+            "inline_keyboard": [
+                [
+                    {
+                        "text": gettext("English"),
+                        "callback_data": create_callback_data(
+                            [CommandName.SETTINGS],
+                            UserAction.CHANGE_LANGUAGE_TO_EN.value
+                        )
+                    }
+                ]
+            ]
+        }
+
+        telegram.edit_message_text(
+            chat_id=data.chat_id,
+            message_id=data.message_id,
+            text=text,
+            reply_markup=reply_markup
+        )
+
+
+class ChangeLanguageToHandler(UserActionHandler):
+    """
+    Changing of preferred language for interaction.
+
+    Don't use this class directly, use it only as a parent class.
+    """
+    @property
+    def user_action(self):
+        raise NotImplementedError()
+
+    @property
+    def disposable_handler_events(self):
+        return None
+
+    def on_callback_query_data(self, data: CallbackQueryData) -> None:
+        action_to_language_map = {
+            UserAction.CHANGE_LANGUAGE_TO_EN.value: SupportedLanguage.EN
+        }
+        old_value: SupportedLanguage = data.user.settings.language
+        new_value: SupportedLanguage = action_to_language_map.get(
+            self.user_action.value,
+            old_value
+        )
+        need_to_change = (old_value != new_value)
+
+        if need_to_change:
+            try:
+                data.user.settings.language = new_value
+                self.db_commit()
+            except Exception as error:
+                print(error)
+                return cancel_command(data.chat_id)
+
+        send_current_settings(
+            data.chat_id,
+            data.user,
+            data.message_id
+        )
+
+
+class ChangeLanguageToEnHandler(ChangeLanguageToHandler):
+    """
+    See `ChangeLanguageToHandler` documentation.
+    """
+    @property
+    def user_action(self):
+        return UserAction.CHANGE_LANGUAGE_TO_EN
+
+
 @register_guest
 def handle(*args, **kwargs):
     """
@@ -598,6 +687,12 @@ def get_user_action_handler(
         ),
         UserAction.DISABLE_PUBLIC_UPLOAD_BY_DEFAULT.value: (
             DisablePublicUploadByDefaultHandler
+        ),
+        UserAction.CHANGE_LANGUAGE.value: (
+            ChangeLanguageHandler
+        ),
+        UserAction.CHANGE_LANGUAGE_TO_EN.value: (
+            ChangeLanguageToEnHandler
         )
     }
     ActionHandler = handlers.get(user_action_value)
@@ -652,6 +747,9 @@ def send_current_settings(
         "<b>Public upload by default:</b> "
         "%(public_upload_by_default)s"
         "\n"
+        "<b>Language:</b> "
+        "%(language)s"
+        "\n"
         "<b>Yandex.Disk Access:</b> "
         "%(yd_access)s",
         default_upload_folder=settings.default_upload_folder,
@@ -660,6 +758,7 @@ def send_current_settings(
             settings.public_upload_by_default else
             no
         ),
+        language=settings.language.value,
         yd_access=(given if have_yd_access else revoked)
     )
     reply_markup = {
@@ -686,6 +785,15 @@ def send_current_settings(
                     "callback_data": create_callback_data(
                         [CommandName.SETTINGS],
                         UserAction.ENABLE_PUBLIC_UPLOAD_BY_DEFAULT.value
+                    )
+                }
+            ],
+            [
+                {
+                    "text": gettext("Change language"),
+                    "callback_data": create_callback_data(
+                        [CommandName.SETTINGS],
+                        UserAction.CHANGE_LANGUAGE.value
                     )
                 }
             ]
