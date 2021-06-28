@@ -50,6 +50,7 @@ class UserAction(EnumStrAutoName):
     DISABLE_PUBLIC_UPLOAD_BY_DEFAULT = auto()
     CHANGE_LANGUAGE = auto()
     CHANGE_LANGUAGE_TO_EN = auto()
+    CHANGE_LANGUAGE_TO_RU = auto()
 
 
 class CallbackQueryData:
@@ -520,6 +521,15 @@ class ChangeLanguageHandler(UserActionHandler):
                             UserAction.CHANGE_LANGUAGE_TO_EN.value
                         )
                     }
+                ],
+                [
+                    {
+                        "text": "Русский",
+                        "callback_data": create_callback_data(
+                            [CommandName.SETTINGS],
+                            UserAction.CHANGE_LANGUAGE_TO_RU.value
+                        )
+                    }
                 ]
             ]
         }
@@ -548,7 +558,8 @@ class ChangeLanguageToHandler(UserActionHandler):
 
     def on_callback_query_data(self, data: CallbackQueryData) -> None:
         action_to_language_map = {
-            UserAction.CHANGE_LANGUAGE_TO_EN.value: SupportedLanguage.EN
+            UserAction.CHANGE_LANGUAGE_TO_EN.value: SupportedLanguage.EN,
+            UserAction.CHANGE_LANGUAGE_TO_RU.value: SupportedLanguage.RU
         }
         old_value: SupportedLanguage = data.user.settings.language
         new_value: SupportedLanguage = action_to_language_map.get(
@@ -579,6 +590,15 @@ class ChangeLanguageToEnHandler(ChangeLanguageToHandler):
     @property
     def user_action(self):
         return UserAction.CHANGE_LANGUAGE_TO_EN
+
+
+class ChangeLanguageToRuHandler(ChangeLanguageToHandler):
+    """
+    See `ChangeLanguageToHandler` documentation.
+    """
+    @property
+    def user_action(self):
+        return UserAction.CHANGE_LANGUAGE_TO_RU
 
 
 @register_guest
@@ -693,6 +713,9 @@ def get_user_action_handler(
         ),
         UserAction.CHANGE_LANGUAGE_TO_EN.value: (
             ChangeLanguageToEnHandler
+        ),
+        UserAction.CHANGE_LANGUAGE_TO_RU.value: (
+            ChangeLanguageToRuHandler
         )
     }
     ActionHandler = handlers.get(user_action_value)

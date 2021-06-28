@@ -16,6 +16,7 @@ class SupportedLanguage(Enum):
     """
     # values should be same as babel values
     EN = "en"
+    RU = "ru"
 
     @staticmethod
     def get(ietf_tag: str) -> "SupportedLanguage":
@@ -31,7 +32,19 @@ class SupportedLanguage(Enum):
         ietf_tag = ietf_tag.lower()
         languages = {
             # All not specified countries
-            "en": SupportedLanguage.EN
+            "en": SupportedLanguage.EN,
+
+            # Russia
+            "ru": SupportedLanguage.RU,
+            "ru-ru": SupportedLanguage.RU,
+
+            # Ukraine
+            "uk": SupportedLanguage.RU,
+            "uk-ua": SupportedLanguage.RU,
+
+            # Belarus
+            "be": SupportedLanguage.RU,
+            "be-by": SupportedLanguage.RU
         }
 
         return languages.get(ietf_tag, SupportedLanguage.EN)
