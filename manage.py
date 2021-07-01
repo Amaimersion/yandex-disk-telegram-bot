@@ -295,7 +295,7 @@ def update_translations() -> None:
         f"-o {temp_file} {files_to_translate}"
     )
     update_command = (
-        f"pybabel update -i {temp_file} "
+        f"pybabel update -i {temp_file} --no-fuzzy-matching "
         f"-d {translation_directories}"
     )
 
