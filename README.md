@@ -258,7 +258,7 @@ It is highly recommended that you run at least one worker.
 1. Make sure `REDIS_URL` is specified.
 2. Open separate terminal window.
 3. Activate `venv` and set environment variables.
-4. Run: `python worker.py`
+4. Run: `python manage.py run-worker`
 
 These steps will run one worker instance. Count of workers depends on your expected server load. For `development` environment recommend count is 2.
 

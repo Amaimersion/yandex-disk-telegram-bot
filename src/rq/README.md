@@ -1,6 +1,22 @@
 # RQ (Redis Queue)
 
 
+## How to run worker
+
+Any of these methods:
+
+```shell
+python worker.py
+```
+
+```python
+from worker import run_worker
+
+if __name__ == "__main__":
+  run_worker()
+```
+
+
 ## How to run background tasks
 
 You can just do that directly:

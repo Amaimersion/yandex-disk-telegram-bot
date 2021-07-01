@@ -16,6 +16,9 @@ from src.database import (
     ChatQuery,
     YandexDiskTokenQuery
 )
+from src.rq.worker import (
+    run_worker as run_rq_worker
+)
 
 
 app = create_app("development")
@@ -389,6 +392,14 @@ def init_translations(language_code: str) -> None:
     os.remove(temp_file)
 
     click.echo("Done")
+
+
+@cli.command()
+def run_worker():
+    """
+    Runs single worker for background tasks.
+    """
+    run_rq_worker()
 
 
 if (__name__ == "__main__"):

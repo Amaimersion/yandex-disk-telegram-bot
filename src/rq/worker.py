@@ -8,7 +8,7 @@ from rq import Worker, Queue, Connection
 from src.app import create_app
 
 
-def main():
+def run_worker():
     """
     Creates single RQ worker and runs it.
 
@@ -57,4 +57,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run_worker()
