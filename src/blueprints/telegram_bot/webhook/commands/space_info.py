@@ -7,6 +7,7 @@ from plotly.express import colors
 from plotly.io import to_image
 
 from src.extensions import task_queue
+from src.rq import prepare_task, run_task
 from src.api import telegram
 from src.i18n import gettext
 from src.blueprints._common.utils import get_current_iso_datetime
@@ -82,10 +83,15 @@ def handle(*args, **kwargs):
         job_timeout = current_app.config[
             "RUNTIME_SPACE_INFO_WORKER_TIMEOUT"
         ]
+        prepare_data = prepare_task()
 
         task_queue.enqueue(
-            send_photo,
-            args=arguments,
+            run_task,
+            kwargs={
+                "f": send_photo,
+                "args": arguments,
+                "prepare_data": prepare_data
+            },
             description=CommandName.SPACE_INFO.value,
             job_timeout=job_timeout,
             result_ttl=0,

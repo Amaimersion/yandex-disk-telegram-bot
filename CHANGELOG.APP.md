@@ -18,6 +18,7 @@ ___
 - Changelog will no longer contain `Improved` section. It will be merged with `Changed` section.
 - DB data about incoming Telegram user will be fetched on every request, before dispatching of request to appropriate handler.
 - `language` column moved from `User` model to `UserSettings`.
+- Background tasks will have copy of request `g` data.
 
 ## Fixed
 

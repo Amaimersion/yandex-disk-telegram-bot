@@ -1,6 +1,7 @@
 from flask import g, current_app
 
 from src.extensions import task_queue
+from src.rq import prepare_task, run_task
 from src.i18n import gettext
 from src.api import telegram
 from src.api.yandex import make_photo_preview_request
@@ -137,10 +138,15 @@ def handle(*args, **kwargs):
             ttl = current_app.config[
                 "RUNTIME_ELEMENT_INFO_WORKER_TTL"
             ]
+            prepare_data = prepare_task()
 
             task_queue.enqueue(
-                send_preview,
-                args=arguments,
+                run_task,
+                kwargs={
+                    "f": send_preview,
+                    "args": arguments,
+                    "prepare_data": prepare_data
+                },
                 description=CommandName.ELEMENT_INFO.value,
                 job_timeout=job_timeout,
                 ttl=ttl,

@@ -7,6 +7,7 @@ from flask import g, current_app
 
 from src.api import telegram
 from src.i18n import gettext
+from src.rq import prepare_task, run_task
 from src.extensions import task_queue
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common import youtube_dl
@@ -450,10 +451,15 @@ class AttachmentHandler(metaclass=ABCMeta):
             failure_ttl = current_app.config[
                 "RUNTIME_UPLOAD_WORKER_FAILURE_TTL"
             ]
+            task_data = prepare_task()
 
             task_queue.enqueue(
-                self.start_upload,
-                args=arguments,
+                run_task,
+                kwargs={
+                    "f": self.start_upload,
+                    "args": arguments,
+                    "prepare_data": task_data
+                },
                 description=self.telegram_command,
                 job_timeout=job_timeout,
                 ttl=ttl,
