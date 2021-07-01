@@ -205,7 +205,7 @@ def request_absolute_path(chat_telegram_id: int) -> None:
 
 def request_absolute_folder_name(
     chat_telegram_id: int,
-    folder_name="a folder name"
+    folder_name=None
 ) -> None:
     """
     Sends a message that asks a user to send an
@@ -215,6 +215,9 @@ def request_absolute_folder_name(
     Name of folder which will be used in a message.
     See function source for template.
     """
+    if folder_name is None:
+        folder_name = gettext("a folder name")
+
     separator = "/"
     path_1 = "Telegram Bot/kittens and raccoons"
 

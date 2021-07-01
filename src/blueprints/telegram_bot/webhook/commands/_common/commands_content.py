@@ -156,7 +156,7 @@ commands_html_content = (
         )
     },
     {
-        "name": "Yandex.Disk Access",
+        "name": lazy_gettext("Yandex.Disk Access"),
         "commands": (
             {
                 "name": CommandName.YD_AUTH.value,
@@ -173,7 +173,7 @@ commands_html_content = (
         )
     },
     {
-        "name": "Settings",
+        "name": lazy_gettext("Settings"),
         "commands": (
             {
                 "name": CommandName.SETTINGS.value,
@@ -184,7 +184,7 @@ commands_html_content = (
         )
     },
     {
-        "name": "Information",
+        "name": lazy_gettext("Information"),
         "commands": (
             {
                 "name": CommandName.ABOUT.value,

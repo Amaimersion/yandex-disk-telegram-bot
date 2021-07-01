@@ -966,7 +966,11 @@ msgstr ""
 "Пример: <code>%(path_1)s</code>\n"
 "Пример: <code>%(path_2)s</code>"
 
-#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:224
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:219
+msgid "a folder name"
+msgstr "имя папки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:227
 #, python-format
 msgid ""
 "Send %(folder_name)s.\n"
@@ -1109,6 +1113,10 @@ msgstr "получить информацию об оставшемся мест
 msgid "get information about your Yandex.Disk"
 msgstr "получить информацию о вашем Яндекс.Диске"
 
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:159
+msgid "Yandex.Disk Access"
+msgstr "Доступ к Яндекс.Диску"
+
 #: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:163
 msgid "grant me access to your Yandex.Disk"
 msgstr "предоставить мне доступ к вашему Яндекс.Диску"
@@ -1117,9 +1125,17 @@ msgstr "предоставить мне доступ к вашему Яндек�
 msgid "revoke my access to your Yandex.Disk"
 msgstr "отозвать мой доступ к вашему Яндекс.Диску"
 
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:176
+msgid "Settings"
+msgstr "Настройки"
+
 #: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:180
 msgid "edit your settings"
 msgstr "изменить ваши настройки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:187
+msgid "Information"
+msgstr "Информация"
 
 #: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:191
 msgid "read about me"
