@@ -1,6 +1,11 @@
 from enum import Enum, unique
 
-from flask import g, request
+from flask import (
+    g,
+    request,
+    has_app_context,
+    has_request_context
+)
 from flask_babel import (
     gettext as babel_gettext,
     lazy_gettext as babel_lazy_gettext
@@ -51,31 +56,42 @@ class SupportedLanguage(Enum):
 
 
 @babel.localeselector
-def get_locale() -> str:
+def localeselector() -> str:
     """
     Selects locale for incoming request that Babel will use.
 
     - most appropriate language will be selected
     """
-    result = None
+    # default locale is EN
+    result = SupportedLanguage.EN.value
+
+    # in some places, for example in background tasks,
+    # app context (`g`, etc.) not always available, thus
+    # usage of missing app context will produce error
+    have_app_context = has_app_context()
+
+    # same as `have_app_context`, but for request context
+    have_request_context = has_request_context()
+
+    # selection of locale depends on specific DB data,
+    # which not always exists, because request can came
+    # not only from Telegram `webhook` blueprint, but
+    # also from different places which not provide DB data
     have_db_data = (
-        # `hasattr` should be used because request
-        # can came not only from `webhook` blueprint
         hasattr(g, "db_user") and
         g.db_user and
         g.db_user.settings and
         g.db_user.settings.language
     )
 
-    if have_db_data:
-        result = g.db_user.settings.language.value
-    elif request.accept_languages:
-        result = request.accept_languages.best_match(
-            [lang.value for lang in SupportedLanguage]
-        )
-
-    if result is None:
-        result = SupportedLanguage.EN.value
+    if have_app_context:
+        if have_db_data:
+            result = g.db_user.settings.language.value
+        elif have_request_context:
+            if request.accept_languages:
+                result = request.accept_languages.best_match(
+                    [lang.value for lang in SupportedLanguage]
+                )
 
     return result
 
