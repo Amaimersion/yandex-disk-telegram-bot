@@ -1,7 +1,6 @@
 from flask import g, current_app
 
-from src.extensions import task_queue
-from src.rq import prepare_task, run_task
+from src.rq import task_queue, prepare_task, run_task
 from src.i18n import gettext
 from src.api import telegram
 from src.api.yandex import make_photo_preview_request

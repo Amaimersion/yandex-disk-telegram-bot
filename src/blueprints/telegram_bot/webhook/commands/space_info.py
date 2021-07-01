@@ -6,8 +6,7 @@ from plotly.graph_objects import Pie, Figure
 from plotly.express import colors
 from plotly.io import to_image
 
-from src.extensions import task_queue
-from src.rq import prepare_task, run_task
+from src.rq import task_queue, prepare_task, run_task
 from src.api import telegram
 from src.i18n import gettext
 from src.blueprints._common.utils import get_current_iso_datetime

@@ -7,8 +7,7 @@ from flask import g, current_app
 
 from src.api import telegram
 from src.i18n import gettext
-from src.rq import prepare_task, run_task
-from src.extensions import task_queue
+from src.rq import task_queue, prepare_task, run_task
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common import youtube_dl
 from src.blueprints.telegram_bot._common.telegram_interface import (
