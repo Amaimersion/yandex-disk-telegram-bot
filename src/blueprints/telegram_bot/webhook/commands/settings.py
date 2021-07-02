@@ -511,11 +511,13 @@ class ChangeLanguageHandler(UserActionHandler):
         text = gettext(
             "Choose a new language from the list below:"
         )
+
+        # keep language names as native, don't use l10n for them
         reply_markup = {
             "inline_keyboard": [
                 [
                     {
-                        "text": gettext("English"),
+                        "text": "English",
                         "callback_data": create_callback_data(
                             [CommandName.SETTINGS],
                             UserAction.CHANGE_LANGUAGE_TO_EN.value
