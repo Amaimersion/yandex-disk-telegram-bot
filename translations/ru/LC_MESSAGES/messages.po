@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-02 16:52+0300\n"
+"POT-Creation-Date: 2021-07-02 17:09+0300\n"
 "PO-Revision-Date: 2021-06-26 20:32+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -318,33 +318,29 @@ msgstr ""
 msgid "Choose a new language from the list below:"
 msgstr "Выберите новый язык из списка ниже:"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:518
-msgid "English"
-msgstr "Английский"
-
 #: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:240
 #: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:270
 #: src/blueprints/telegram_bot/webhook/commands/disk_info.py:85
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:762
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:764
 msgid "Yes"
 msgstr "Да"
 
 #: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:237
 #: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:267
 #: src/blueprints/telegram_bot/webhook/commands/disk_info.py:87
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:763
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:765
 msgid "No"
 msgstr "Нет"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:764
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:766
 msgid "Given"
 msgstr "Предоставлен"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:765
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:767
 msgid "Revoked"
 msgstr "Отозван"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:785
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:787
 #, python-format
 msgid ""
 "<b>Default upload folder:</b> <code>%(default_upload_folder)s</code>\n"
@@ -358,19 +354,19 @@ msgstr ""
 "<b>Язык:</b> %(language)s\n"
 "<b>Доступ к Яндекс.Диску:</b> %(yd_access)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:791
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:793
 msgid "Change default upload folder"
 msgstr "Изменить папку загрузки по умолчанию"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:800
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:802
 msgid "Disable public upload by default"
 msgstr "Выключить публичную загрузку по умолчанию"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:807
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:809
 msgid "Enable public upload by default"
 msgstr "Включить публичную загрузку по умолчанию"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:816
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:818
 msgid "Change language"
 msgstr "Изменить язык"
 
