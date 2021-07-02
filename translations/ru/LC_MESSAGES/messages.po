@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-02 17:09+0300\n"
+"POT-Creation-Date: 2021-07-02 17:38+0300\n"
 "PO-Revision-Date: 2021-06-26 20:32+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -18,6 +18,22 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.9.1\n"
+
+#: src/blueprints/telegram_bot/_common/yandex_disk.py:267
+msgid "success"
+msgstr "успешно"
+
+#: src/blueprints/telegram_bot/_common/yandex_disk.py:269
+msgid "in progress"
+msgstr "в процессе"
+
+#: src/blueprints/telegram_bot/_common/yandex_disk.py:271
+msgid "failed"
+msgstr "ошибка"
+
+#: src/blueprints/telegram_bot/_common/yandex_disk.py:275
+msgid "unknown"
+msgstr "неизвестно"
 
 #: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:287
 #: src/blueprints/telegram_bot/yd_auth/views.py:98
