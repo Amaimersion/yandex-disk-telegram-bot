@@ -15,6 +15,7 @@ ___
 ## Changed
 
 - Changelog splitted into two files: one for end users and one for developers.
+- `/disk_info`, `/space_info`: change order of information from "Used space", "Trash size", "Free space" to "Used space", "Free space", "Trash size".
 
 ## Fixed
 

@@ -113,16 +113,6 @@ def create_disk_info_html_text(info: dict) -> str:
             )
         )
 
-    if "trash_size" in info:
-        value = bytes_to_string(info["trash_size"])
-
-        text.append(
-            gettext(
-                "<b>Trash size:</b> %(value)s",
-                value=value
-            )
-        )
-
     if (
         ("total_space" in info) and
         ("used_space" in info) and
@@ -138,6 +128,16 @@ def create_disk_info_html_text(info: dict) -> str:
         text.append(
             gettext(
                 "<b>Free space:</b> %(value)s",
+                value=value
+            )
+        )
+
+    if "trash_size" in info:
+        value = bytes_to_string(info["trash_size"])
+
+        text.append(
+            gettext(
+                "<b>Trash size:</b> %(value)s",
                 value=value
             )
         )

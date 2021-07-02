@@ -124,24 +124,24 @@ def create_space_chart(
     chart = Pie(
         labels=[
             gettext("Used Space"),
-            gettext("Trash Size"),
-            gettext("Free Space")
+            gettext("Free Space"),
+            gettext("Trash Size")
         ],
         values=[
             used_space,
-            trash_size,
-            free_space
+            free_space,
+            trash_size
         ],
         text=[
             gettext("Used"),
-            gettext("Trash"),
-            gettext("Free")
+            gettext("Free"),
+            gettext("Trash")
         ],
         marker={
             "colors": [
                 colors.sequential.Rainbow[3],
-                colors.sequential.Rainbow[8],
-                colors.sequential.Rainbow[5]
+                colors.sequential.Rainbow[5],
+                colors.sequential.Rainbow[8]
             ],
             "line": {
                 "width": 0.2
