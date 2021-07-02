@@ -54,6 +54,19 @@ class SupportedLanguage(Enum):
 
         return languages.get(ietf_tag, SupportedLanguage.EN)
 
+    def to_native_name(self) -> str:
+        """
+        :returns:
+        Lowercased language name in native language.
+        For example, `EN` instance will return `english`.
+        """
+        code_to_name = {
+            SupportedLanguage.EN: "english",
+            SupportedLanguage.RU: "русский"
+        }
+
+        return code_to_name.get(self)
+
 
 @babel.localeselector
 def localeselector() -> str:
