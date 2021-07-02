@@ -84,7 +84,9 @@ def yd_access_token_required(func):
             (user.yandex_disk_token is None) or
             (not user.yandex_disk_token.have_access_token())
         ):
-            return g.direct_dispatch(CommandName.YD_AUTH)()
+            # `*args` and `**kwargs` contains data from dispatcher
+            # and also should be passed to handler
+            return g.direct_dispatch(CommandName.YD_AUTH)(*args, **kwargs)
 
         return func(*args, **kwargs)
 

@@ -368,6 +368,8 @@ def direct_dispatch(
     :returns:
     It is guaranteed that some callable handler will be returned.
     It is handler for incoming command and you should call this.
+    Note that this handler will not know any dispatcher arguments.
+    You may want to pass it manually.
     """
     if isinstance(command, CommandName):
         command = command.value
