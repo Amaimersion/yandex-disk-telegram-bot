@@ -1126,7 +1126,7 @@ class IntellectualURLHandler(DirectURLHandler):
             "- for direct URL's to file original name, "
             "quality and size will be saved"
             "\n"
-            "- for URL's to some resource best name amd "
+            "- for URL's to some resource best name and "
             "best possible quality will be selected"
             "\n"
             "- i will try to guess what resource you actually assumed. "
