@@ -5,6 +5,7 @@ from collections import deque
 from flask import current_app
 
 from src.api import yandex
+from src.i18n import gettext
 
 
 # region Exceptions
@@ -240,6 +241,41 @@ def yandex_operation_is_failed(data: dict) -> bool:
     )
 
 
+def yandex_operation_is_in_progress(data: dict) -> bool:
+    """
+    :returns:
+    Yandex response contains status which
+    indicates that operation is in progress.
+    """
+    return (
+        ("status" in data) and
+        (data["status"] == "in-progress")
+    )
+
+
+def get_yandex_operation_text(data: dict) -> str:
+    """
+    :param data:
+    Yandex response which contains
+    data about operation status.
+
+    :returns:
+    Text status of Yandex operation which
+    can be used to display to user.
+    """
+    if yandex_operation_is_success(data):
+        return gettext("success")
+    elif yandex_operation_is_in_progress(data):
+        return gettext("in progress")
+    elif yandex_operation_is_failed(data):
+        return gettext("failed")
+
+    return data.get(
+        "status",
+        gettext("unknown")
+    )
+
+
 # endregion
 
 
@@ -454,6 +490,7 @@ def upload_file_with_url(
         is_success = yandex_operation_is_success(operation_status)
         is_failed = yandex_operation_is_failed(operation_status)
         is_completed = (is_success or is_failed)
+        operation_status_text = get_yandex_operation_text(operation_status)
         attempt += 1
         too_many_attempts = (attempt >= max_attempts)
 
@@ -462,10 +499,7 @@ def upload_file_with_url(
                 "success": is_success,
                 "failed": is_failed,
                 "completed": (is_success or is_failed),
-                "status": operation_status.get(
-                    "status",
-                    "unknown"
-                )
+                "status": operation_status_text
             }
 
     if is_error:
