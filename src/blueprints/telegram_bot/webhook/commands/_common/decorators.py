@@ -14,6 +14,7 @@ from src.database.models import (
     ChatType
 )
 from src.i18n import SupportedLanguage
+from src.blueprints.telegram_bot.webhook.app_context import init_app_context
 from src.blueprints.telegram_bot._common.command_names import CommandName
 from .responses import cancel_command
 
@@ -54,6 +55,11 @@ def register_guest(func):
         except Exception as e:
             print(e)
             return cancel_command(tg_chat.id)
+
+        # we need to re-init global app context in order to
+        # update old data with new data about user from DB.
+        # That data will be available instantly to next handlers
+        init_app_context()
 
         return func(*args, **kwargs)
 

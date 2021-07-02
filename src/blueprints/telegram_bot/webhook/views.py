@@ -6,7 +6,7 @@ from flask import (
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 from src.blueprints.telegram_bot._common import telegram_interface
 from .dispatcher import intellectual_dispatch
-from .app_context import create_app_context
+from .app_context import init_app_context
 
 
 @bp.route("/webhook", methods=["POST"])
@@ -29,7 +29,7 @@ def webhook():
 
     update = telegram_interface.Update(raw_data)
 
-    create_app_context(update)
+    init_app_context(update)
 
     handler = intellectual_dispatch(update)
 

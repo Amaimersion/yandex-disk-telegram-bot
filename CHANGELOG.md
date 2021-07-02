@@ -16,6 +16,10 @@ ___
 
 - Changelog splitted into two files: one for end users and one for developers.
 
+## Fixed
+
+- A bug when bot sometimes could not respond of very first message of unregistered user. Such messages were a commands that require access to Yandex.Disk.
+
 
 # 1.2.0 (December 14, 2020)
 
