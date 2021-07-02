@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-06-29 19:24+0300\n"
+"POT-Creation-Date: 2021-07-02 16:52+0300\n"
 "PO-Revision-Date: 2021-06-26 20:32+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -95,7 +95,7 @@ msgstr ""
 msgid "Status: pending"
 msgstr "Статус: ожидание"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:531
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:536
 #, python-format
 msgid ""
 "\n"
@@ -106,7 +106,7 @@ msgstr ""
 "Не удалось опубликовать. Чтобы сделать это вручную, отправьте:\n"
 "%(publish_command)s %(full_path)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:551
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:556
 #, python-format
 msgid ""
 "\n"
@@ -117,7 +117,7 @@ msgstr ""
 "Не удалось получить информацию. Чтобы сделать это вручную, отправьте:\n"
 "%(element_info_command)s %(full_path)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:562
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:567
 msgid ""
 "It is successfully uploaded, but i failed to perform some actions. You "
 "need to execute them manually."
@@ -125,22 +125,22 @@ msgstr ""
 "Это успешно загружено, но мне не удалось выполнить некоторые действия. "
 "Вам нужно выполнить их вручную."
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:586
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:591
 #, python-format
 msgid "Status: %(upload_status)s"
 msgstr "Статус: %(upload_status)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:601
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:606
 msgid "I can't create default upload folder due to an unknown Yandex.Disk error."
 msgstr ""
 "Я не могу создать папку загрузки по умолчанию из-за неизвестной ошибки "
 "Яндекс.Диска."
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:612
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:617
 msgid "I can't upload this due to an unknown Yandex.Disk error."
 msgstr "Я не могу загрузить это из-за неизвестной ошибки Яндекс.Диска."
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:623
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:628
 #, python-format
 msgid ""
 "I can't track operation status of this anymore. It can be uploaded after "
@@ -151,17 +151,17 @@ msgstr ""
 "через некоторое время. Чтобы проверить статус вручную, отправьте:\n"
 "%(element_info_command)s %(full_path)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:755
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:823
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:878
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:947
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:1000
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:1048
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:1114
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:760
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:828
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:883
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:952
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1005
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1053
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1119
 msgid "and publish"
 msgstr "и опубликовать"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:765
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:770
 #, python-format
 msgid ""
 "Send a photos that you want to upload%(publish_action)s.\n"
@@ -176,7 +176,7 @@ msgstr ""
 "- исходное имя не будет сохранено\n"
 "- исходное качество и размер будут снижены"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:833
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:838
 #, python-format
 msgid ""
 "Send a files that you want to upload%(publish_action)s.\n"
@@ -191,7 +191,7 @@ msgstr ""
 "- исходное имя будет сохранено\n"
 "- исходное качество и размер будут сохранены"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:890
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:895
 #, python-format
 msgid ""
 "Send a music that you want to upload%(publish_action)s.\n"
@@ -208,7 +208,7 @@ msgstr ""
 "- исходное качество и размер будут сохранены\n"
 "- исходный тип может быть изменен"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:959
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:964
 #, python-format
 msgid ""
 "Send a video that you want to upload%(publish_action)s.\n"
@@ -225,14 +225,14 @@ msgstr ""
 "- исходное качество и размер будут сохранены\n"
 "- исходный тип может быть изменен"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:1004
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1009
 #, python-format
 msgid "Send a voice message that you want to upload%(publish_action)s."
 msgstr ""
 "Отправьте голосовое сообщение, которое вы хотите "
 "загрузить%(publish_action)s."
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:1058
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1063
 #, python-format
 msgid ""
 "Send a direct URL to file that you want to upload%(publish_action)s.\n"
@@ -248,14 +248,14 @@ msgstr ""
 "- исходное имя по ссылке будет сохранено\n"
 "- исходное качество и размер будут сохранены"
 
-#: src/blueprints/telegram_bot/webhook/commands/upload.py:1136
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1141
 #, python-format
 msgid ""
 "Send an URL to resource that you want to upload%(publish_action)s.\n"
 "\n"
 "Note:\n"
 "- for direct URL's to file original name, quality and size will be saved\n"
-"- for URL's to some resource best name amd best possible quality will be "
+"- for URL's to some resource best name and best possible quality will be "
 "selected\n"
 "- i will try to guess what resource you actually assumed. For example, "
 "you can send URL to YouTube video or Twitch clip, and video from that URL"
@@ -698,35 +698,35 @@ msgstr "Создание..."
 msgid "Yandex.Disk space at %(current_utc_date)s"
 msgstr "Информация о размере Яндекс.Диска на %(current_utc_date)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:117
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:122
 msgid "GB"
 msgstr "ГБ"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:118
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:123
 msgid "Total"
 msgstr "Всего"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:121
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:126
 msgid "Used Space"
 msgstr "Используемое место"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:122
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:127
 msgid "Trash Size"
 msgstr "Размер корзины"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:123
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:128
 msgid "Free Space"
 msgstr "Свободное место"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:131
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:136
 msgid "Used"
 msgstr "Использовано"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:132
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:137
 msgid "Trash"
 msgstr "Корзина"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:133
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:138
 msgid "Free"
 msgstr "Свободно"
 
