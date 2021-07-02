@@ -511,13 +511,14 @@ class ChangeLanguageHandler(UserActionHandler):
         text = gettext(
             "Choose a new language from the list below:"
         )
-
-        # keep language names as native, don't use l10n for them
         reply_markup = {
             "inline_keyboard": [
                 [
                     {
-                        "text": "English",
+                        "text": (
+                            SupportedLanguage.EN
+                            .to_native_name().title()
+                        ),
                         "callback_data": create_callback_data(
                             [CommandName.SETTINGS],
                             UserAction.CHANGE_LANGUAGE_TO_EN.value
@@ -526,7 +527,10 @@ class ChangeLanguageHandler(UserActionHandler):
                 ],
                 [
                     {
-                        "text": "Русский",
+                        "text": (
+                            SupportedLanguage.RU
+                            .to_native_name().title()
+                        ),
                         "callback_data": create_callback_data(
                             [CommandName.SETTINGS],
                             UserAction.CHANGE_LANGUAGE_TO_RU.value
@@ -765,6 +769,10 @@ def send_current_settings(
     no = gettext("No")
     given = gettext("Given")
     revoked = gettext("Revoked")
+    language_name = (
+        settings.language
+        .to_native_name().title()
+    )
     text = gettext(
         "<b>Default upload folder:</b> "
         "<code>%(default_upload_folder)s</code>"
@@ -783,7 +791,7 @@ def send_current_settings(
             settings.public_upload_by_default else
             no
         ),
-        language=settings.language.value,
+        language=language_name,
         yd_access=(given if have_yd_access else revoked)
     )
     reply_markup = {
