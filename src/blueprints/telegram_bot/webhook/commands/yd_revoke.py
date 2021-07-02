@@ -33,7 +33,7 @@ def handle(*args, **kwargs):
     if private_chat is None:
         incoming_chat_id = kwargs.get(
             "chat_id",
-            g.db_chat.telegram_id
+            g.telegram_chat.id
         )
 
         return request_private_chat(incoming_chat_id)
