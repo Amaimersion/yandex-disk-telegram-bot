@@ -40,6 +40,7 @@
     - [What's next](#whats-next)
 - [Version naming](#version-naming)
 - [Contribution](#contribution)
+  - [Translations](#translations-1)
 - [License](#license)
 
 
@@ -447,6 +448,24 @@ This project uses following structure for version naming: `<MAJOR CHANGES>.<BIG 
 ## Contribution
 
 Feel free to use [issues](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new). [Pull requests](https://github.com/Amaimersion/yandex-disk-telegram-bot/compare) are also always welcome!
+
+### Translations
+
+If you want to translate this app, then you will need to perform following steps:
+
+1. Make sure you [installed](#installation) the project.
+
+2. Run:
+
+```shell
+python manage.py init-translations <LANGUAGE CODE>
+```
+
+3. Fill new translation file that is located at `translations/<LANGUAGE CODE>/LC_MESSAGES/messages.po`.
+
+Next step is not mandatory for you and can be performed by project owner. You can just create a PR with result from step up to № 3. However, next changes are required in order to enable new translation.
+
+4. Make code changes according to these commits: [d6bc3fe](https://github.com/Amaimersion/yandex-disk-telegram-bot/commit/d6bc3fe3ff8ebdab9d390b88c7f26bd5f609f434), [9a34008](https://github.com/Amaimersion/yandex-disk-telegram-bot/commit/9a34008f4dae537790a210e4fc30388fbb3c25b6). Actual code may be slightly different.
 
 
 ## License
