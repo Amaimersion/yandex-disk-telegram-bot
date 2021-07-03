@@ -25,7 +25,7 @@ def upgrade():
         batch_op.drop_column('language')
 
     op.execute(
-        'UPDATE user_settings SET language = "EN"'
+        "UPDATE user_settings SET language = 'EN'"
     )
 
     # ### end Alembic commands ###
@@ -40,7 +40,7 @@ def downgrade():
         batch_op.drop_column('language')
 
     op.execute(
-        'UPDATE users SET language = "EN"'
+        "UPDATE users SET language = 'EN'"
     )
 
     # ### end Alembic commands ###

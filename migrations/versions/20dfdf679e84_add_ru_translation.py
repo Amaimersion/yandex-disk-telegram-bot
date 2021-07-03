@@ -15,24 +15,91 @@ down_revision = '5b1c342f1989'
 branch_labels = None
 depends_on = None
 
+# Describing of enum
 enum_name = "supportedlanguage"
+temp_enum_name = f"_{enum_name}"
 old_values = ("EN",)
-new_values = old_values + ("RU",)
+new_values = ("RU", *old_values)
+downgrade_to = ("RU", "EN") # on downgrade convert [0] to [1]
+old_type = sa.Enum(*old_values, name=enum_name)
+new_type = sa.Enum(*new_values, name=enum_name)
+temp_type = sa.Enum(*new_values, name=temp_enum_name)
+
+# Describing of table
+table_name = "user_settings"
+columm_name = "language"
+temp_column = sa.sql.table(
+    table_name,
+    sa.Column(
+        columm_name,
+        new_type,
+        nullable=False
+    )
+)
 
 
 def upgrade():
-    with op.batch_alter_table("user_settings") as batch_op:
-        batch_op.alter_column("language",
-            existing_type=sa.Enum(*old_values, name=enum_name),
-            type_=sa.Enum(*new_values, name=enum_name),
-            existing_nullable=True
+    """
+    Based on https://stackoverflow.com/a/14845740/8445442
+    """
+    temp_type.create(op.get_bind(), checkfirst=False)
+
+    with op.batch_alter_table(table_name) as batch_op:
+        batch_op.alter_column(
+            columm_name,
+            existing_type=old_type,
+            type_=temp_type,
+            existing_nullable=False,
+            postgresql_using=f'{columm_name}::text::{temp_enum_name}'
         )
+
+    old_type.drop(op.get_bind(), checkfirst=False)
+    new_type.create(op.get_bind(), checkfirst=False)
+
+    with op.batch_alter_table(table_name) as batch_op:
+        batch_op.alter_column(
+            columm_name,
+            existing_type=temp_type,
+            type_=new_type,
+            existing_nullable=False,
+            postgresql_using=f'{columm_name}::text::{enum_name}'
+        )
+
+    temp_type.drop(op.get_bind(), checkfirst=False)
 
 
 def downgrade():
-    with op.batch_alter_table("user_settings") as batch_op:
-        batch_op.alter_column("language",
-            existing_type=sa.Enum(*new_values, name=enum_name),
-            type_=sa.Enum(*old_values, name=enum_name),
-            existing_nullable=True
+    """
+    Based on https://stackoverflow.com/a/14845740/8445442
+    """
+    # old enum don't have new value anymore,
+    # so we should replace it with somewhat of old values
+    op.execute(
+        f"UPDATE {table_name} SET {columm_name} = '{downgrade_to[1]}' "
+        f"WHERE {columm_name} = '{downgrade_to[0]}'"
+    )
+
+    temp_type.create(op.get_bind(), checkfirst=False)
+
+    with op.batch_alter_table(table_name) as batch_op:
+        batch_op.alter_column(
+            columm_name,
+            existing_type=new_type,
+            type_=temp_type,
+            existing_nullable=False,
+            postgresql_using=f'{columm_name}::text::{temp_enum_name}'
         )
+
+    new_type.drop(op.get_bind(), checkfirst=False)
+    old_type.create(op.get_bind(), checkfirst=False)
+
+    with op.batch_alter_table(table_name) as batch_op:
+        batch_op.alter_column(
+            columm_name,
+            existing_type=temp_type,
+            type_=old_type,
+            existing_nullable=False,
+            postgresql_using=f'{columm_name}::text::{enum_name}'
+        )
+
+    temp_type.drop(op.get_bind(), checkfirst=False)

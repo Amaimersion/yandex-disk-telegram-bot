@@ -25,6 +25,7 @@ ___
 ## Fixed
 
 - `/telegram_bot/yandex_disk_authorization` with trailing slash at the end (i.e., `/telegram_bot/yandex_disk_authorization/`) will be handled correctly.
+- Invalid DB migrations for PostgreSQL. More specifically, these migrations didn't really change enum values. That bug was not noticeable, because new enum values wasn't actually used at all. For SQLite everything was ok. To fix invalid PostgreSQL schema, run `flask db downgrade 358b1cefda13 && flask db upgrade`. You will not lose your current data (at the moment of `20dfdf679e84` migration).
 
 
 # 1.2.0 (December 14, 2020)
