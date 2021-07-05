@@ -33,7 +33,7 @@ temp_column = sa.sql.table(
     sa.Column(
         columm_name,
         new_type,
-        nullable=False
+        nullable=True
     )
 )
 
@@ -49,7 +49,7 @@ def upgrade():
             columm_name,
             existing_type=old_type,
             type_=temp_type,
-            existing_nullable=False,
+            existing_nullable=True,
             postgresql_using=f'{columm_name}::text::{temp_enum_name}'
         )
 
@@ -61,7 +61,7 @@ def upgrade():
             columm_name,
             existing_type=temp_type,
             type_=new_type,
-            existing_nullable=False,
+            existing_nullable=True,
             postgresql_using=f'{columm_name}::text::{enum_name}'
         )
 
@@ -86,7 +86,7 @@ def downgrade():
             columm_name,
             existing_type=new_type,
             type_=temp_type,
-            existing_nullable=False,
+            existing_nullable=True,
             postgresql_using=f'{columm_name}::text::{temp_enum_name}'
         )
 
@@ -98,7 +98,7 @@ def downgrade():
             columm_name,
             existing_type=temp_type,
             type_=old_type,
-            existing_nullable=False,
+            existing_nullable=True,
             postgresql_using=f'{columm_name}::text::{enum_name}'
         )
 
