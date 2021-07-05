@@ -33,14 +33,6 @@ so we will have to use "" in next queries.
 Normally you can write without them
 """
 columm_name = "group"
-temp_column = sa.sql.table(
-    table_name,
-    sa.Column(
-        columm_name,
-        new_type,
-        nullable=False
-    )
-)
 
 
 def upgrade():

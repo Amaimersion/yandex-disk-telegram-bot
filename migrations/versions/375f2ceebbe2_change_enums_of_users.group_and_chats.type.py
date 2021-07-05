@@ -43,14 +43,6 @@ def upgrade_users():
     # Describing of table
     table_name = "users"
     columm_name = "group"
-    temp_column = sa.sql.table(
-        table_name,
-        sa.Column(
-            columm_name,
-            new_type,
-            nullable=False
-        )
-    )
 
     temp_type.create(op.get_bind(), checkfirst=False)
 
@@ -95,14 +87,6 @@ def downgrade_users():
     # Describing of table
     table_name = "users"
     columm_name = "group"
-    temp_column = sa.sql.table(
-        table_name,
-        sa.Column(
-            columm_name,
-            new_type,
-            nullable=False
-        )
-    )
 
     # old enum don't have new value anymore,
     # so we should replace it with somewhat of old values
@@ -154,14 +138,6 @@ def upgrade_chats():
     # Describing of table
     table_name = "chats"
     columm_name = "type"
-    temp_column = sa.sql.table(
-        table_name,
-        sa.Column(
-            columm_name,
-            new_type,
-            nullable=False
-        )
-    )
 
     temp_type.create(op.get_bind(), checkfirst=False)
 
@@ -206,14 +182,6 @@ def downgrade_chats():
     # Describing of table
     table_name = "chats"
     columm_name = "type"
-    temp_column = sa.sql.table(
-        table_name,
-        sa.Column(
-            columm_name,
-            new_type,
-            nullable=False
-        )
-    )
 
     # old enum don't have new value anymore,
     # so we should replace it with somewhat of old values

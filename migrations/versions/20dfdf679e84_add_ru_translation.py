@@ -28,14 +28,6 @@ temp_type = sa.Enum(*new_values, name=temp_enum_name)
 # Describing of table
 table_name = "user_settings"
 columm_name = "language"
-temp_column = sa.sql.table(
-    table_name,
-    sa.Column(
-        columm_name,
-        new_type,
-        nullable=True
-    )
-)
 
 
 def upgrade():
