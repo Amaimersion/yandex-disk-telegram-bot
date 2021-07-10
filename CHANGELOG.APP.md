@@ -10,6 +10,7 @@ ___
 - Support for user settings.
 - Support for translations.
 - Information about project version naming.
+- Short name in information about the app.
 
 ## Changed
 

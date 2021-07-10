@@ -1,5 +1,6 @@
 {
     "name": "Yandex.Disk Bot",
+    "short_name": "yd-tg-bot",
     "version": "1.3.0",
     "description": "This bot integrates Yandex.Disk into Telegram.",
     "about": "Work with Yandex.Disk.",
