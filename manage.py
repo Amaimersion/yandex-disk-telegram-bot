@@ -4,6 +4,7 @@ from functools import wraps
 
 import click
 from sqlalchemy.exc import IntegrityError
+from cryptography.fernet import Fernet
 
 from src.app import create_app
 from src.extensions import db
@@ -400,6 +401,17 @@ def run_worker():
     Runs single worker for background tasks.
     """
     run_rq_worker()
+
+
+@cli.command()
+def generate_secret_key():
+    """
+    Generates single key that can be used for secrets.
+
+    - `FLASK_SECRET_KEY` env variable expects this key as value
+    """
+    key = Fernet.generate_key().decode()
+    click.echo(key)
 
 
 if (__name__ == "__main__"):
