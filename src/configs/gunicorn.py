@@ -1,22 +1,65 @@
 """
-Configurations of the gunicorn server for specific environments.
+Configurations of gunicorn server for specific environments.
 """
 
 import os
 import multiprocessing
 
 
-IS_DEVELOPMENT = (os.getenv("FLASK_ENV", "production") == "development")
+# region Env & Constants
+
+FLASK_ENV = os.getenv(
+    "FLASK_ENV",
+    "production"
+)
+PORT = os.getenv(
+    "GUNICORN_PORT",
+    "8080"
+)
+UNIX_SOCKET_PATH = os.getenv(
+    "GUNICORN_UNIX_SOCKET_PATH",
+    "/tmp/nginx-gunicorn.socket"
+)
+USE_IP_SOCKET = bool(os.getenv(
+    "GUNICORN_USE_IP_SOCKET",
+    False
+))
+WORKERS = int(os.getenv(
+    "GUNICORN_WORKERS",
+    -1 # -1 means "auto"
+))
+THREADS = int(os.getenv(
+    "GUNICORN_THREADS",
+    1
+))
+WORKER_CONNECTIONS = int(os.getenv(
+    "GUNICORN_WORKER_CONNECTIONS",
+    1024
+))
+
+IS_DEVELOPMENT = (FLASK_ENV == "development")
 SERVER_READY_FILE = "/tmp/gunicorn-ready"
 
-# gunicorn settings
+# endregion
+
+
+# region gunicorn config
+
 reload = IS_DEVELOPMENT
 accesslog = "-"
 errorlog = "-"
-loglevel = ("debug" if IS_DEVELOPMENT else "info")
+loglevel = (
+    "debug"
+    if IS_DEVELOPMENT else
+    "info"
+)
 syslog = True
 sendfile = True
-bind = "unix:/tmp/nginx-gunicorn.socket"
+bind = (
+    f"0.0.0.0:{PORT}"
+    if USE_IP_SOCKET else
+    f"unix:{UNIX_SOCKET_PATH}"
+)
 keepalive = 15
 """
 It is I/O bound app, so, we will use “pseudo-threads” (`gevent`).
@@ -24,11 +67,19 @@ It is I/O bound app, so, we will use “pseudo-threads” (`gevent`).
 `worker_connections` setting is only for either `eventlet` or `gevent` workers.
 """
 worker_class = "gevent"
-workers = multiprocessing.cpu_count() * 2 + 1
-workers = (2 if (IS_DEVELOPMENT and workers > 2) else workers)
-workers = int(os.getenv("GUNICORN_WORKERS", workers))
-threads = int(os.getenv("GUNICORN_THREADS", 1))
-worker_connections = int(os.getenv("GUNICORN_WORKER_CONNECTIONS", 1024))
+workers = (multiprocessing.cpu_count() * 2 + 1)
+workers = (
+    2
+    if (IS_DEVELOPMENT and workers > 2) else
+    workers
+)
+workers = (
+    WORKERS
+    if (WORKERS != -1) else
+    workers
+)
+threads = THREADS
+worker_connections = WORKER_CONNECTIONS
 
 
 def when_ready(server):
@@ -41,3 +92,5 @@ def on_exit(server):
         os.remove(SERVER_READY_FILE)
     except FileNotFoundError:
         pass
+
+# endregion
