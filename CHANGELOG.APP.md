@@ -23,7 +23,7 @@ ___
 - `language` column moved from `User` model to `UserSettings`.
 - Background tasks will have copy of request `g` data.
 - Worker for background tasks should be started with `python manage.py run-worker` instead of `python worker.py`.
-- Python runtime version to 3.8.10.
+- Python runtime version to 3.8.11.
 
 ## Fixed
 
