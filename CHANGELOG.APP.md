@@ -13,6 +13,8 @@ ___
 - Short name in information about the app.
 - `gunicorn` will support IP socket configuration through `GUNICORN_USE_IP_SOCKET` and `GUNICORN_PORT` env variables.
 - path of unix socket for `gunicorn` server can be changed through `GUNICORN_UNIX_SOCKET_PATH` env variable.
+- Docker images.
+- Support for docker-compose.
 
 ## Changed
 

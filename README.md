@@ -38,6 +38,13 @@
   - [Heroku](#heroku)
     - [First time](#first-time)
     - [What's next](#whats-next)
+  - [VPS](#vps)
+- [Docker](#docker)
+  - [Deployment](#deployment-1)
+  - [Development](#development)
+  - [Data](#data)
+  - [Backups](#backups)
+  - [Resources](#resources)
 - [Version naming](#version-naming)
 - [Contribution](#contribution)
   - [Translations](#translations-1)
@@ -71,8 +78,10 @@
 - [redis 6.0+](https://redis.io/) (optional)
 - [heroku 7.39+](https://www.heroku.com/) (optional)
 - [ngrok 2.3+](https://ngrok.com/) (optional)
+- [docker 20.10+](https://www.docker.com/) (optional)
+- [docker-compose 1.29+](https://www.docker.com/) (optional)
 
-It is expected that all of the above software is available as a global variables: `python3`, `python3 -m pip`, `python3 -m venv`, `git`, `curl`, `nginx`, `psql`, `heroku`, `ngrok`. See [this](https://github.com/pypa/pip/issues/5599#issuecomment-597042338) why you should use such syntax: `python3 -m <module>`.
+It is expected that all of the above software is available as a global variables: `python3`, `python3 -m pip`, `python3 -m venv`, `git`, `curl`, `nginx`, `psql`, `heroku`, `ngrok`, `docker`, `docker-compose`. See [this](https://github.com/pypa/pip/issues/5599#issuecomment-597042338) why you should use such syntax: `python3 -m <module>`.
 
 All subsequent instructions is for Unix-like systems, primarily for Linux. You may need to make some changes on your own if you work on non-Linux operating system.
 
@@ -195,9 +204,11 @@ In a root directory create `.env.development` file and fill it based on `.env.ex
 
 This WSGI App uses `gunicorn` as WSGI HTTP Server and `nginx` as HTTP Reverse Proxy Server. For development purposes only `flask` built-in WSGI HTTP Server is used.
 
-`flask` uses `http://localhost:8000`, `gunicorn` uses `unix:/tmp/nginx-gunicorn.socket`, `nginx` uses `http://localhost:80`. Make sure these addresses is free for usage, or change specific server configuration.
+`flask` uses `http://localhost:8000`, `gunicorn` uses `unix:/tmp/nginx-gunicorn.socket` or `http://0.0.0.0:8080`, `nginx` uses `http://localhost:80`. Make sure these addresses is free for usage, or change specific server configuration.
 
 `nginx` will not start until `gunicorn` creates `/tmp/gunicorn-ready` file. Make sure you have access rights to create this file.
+
+By default `gunicorn` listens on unix socket instead of ip socket. You can enable ip socket by setting `GUNICORN_USE_IP_SOCKET` environment variable.
 
 Open terminal and move in project root. Run `./scripts/wsgi/<environment>.sh <server>` where `<environment>` is either `prodction`, `development` or `testing`, and `<server>` is either `flask`, `gunicorn` or `nginx`. Example: `./scripts/wsgi/production.sh gunicorn`.
 
@@ -434,6 +445,111 @@ heroku scale worker=1
 #### What's next
 
 You should do steps № 7, 9 and 10 every time when you want to push changes.
+
+### VPS
+
+Use [docker](#docker) or see [installation](#installation).
+
+
+## Docker
+
+This project provides Docker images along with configured docker-compose file. Usage of docker-compose is recommended way to deploy or run this application.
+
+### Deployment
+
+1. Clone this repository.
+
+2. In the root directory create `.env.production` file and fill it based on `.env.example` file.
+
+3. Run docker-compose:
+
+```shell
+docker-compose up
+```
+
+Probably you will want to configure some process control system in order to run docker-compose in background on every system start. In that case append `--detach` option to the command above.
+
+4. By default docker-compose will listen for connections on `http://127.0.0.1:8080`. It is recommended to set up some reverse proxy server (along with TLS, logs and so on) in the front of docker-compose and redirect connections on that address. Or you can override docker-compose configuration to listen for connections immediately on `http://127.0.0.1:80`.
+
+### Development
+
+You can run docker-compose in development workflow.
+
+1. Clone this repository.
+
+2. In the root directory create `.env.development` file and fill it based on `.env.example` file.
+
+3. Run docker-compose:
+
+```shell
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+Keep in mind that [data](#data) that already stored in `./var` folder will be used. If there is no data, then new one will be created. It is means that [data](#data) is common for both development and production. If you don't want this behavior, then consider to create several clones of the project or override docker-compose config.
+
+4. Run ngrok to handle incoming connections:
+
+```shell
+source ./scripts/ngrok/run.sh 8080
+```
+
+5. Set a webhook:
+
+```shell
+source ./scripts/ngrok/set_webhook.sh <TELEGRAM_API_BOT_TOKEN>
+```
+
+6. After that you can edit code in `./src` folder. Hot reloading is enabled.
+
+### Data
+
+By default docker-compose will store data of some services locally on a host machine. It is persistent data that stores state of your app, so, don't delete it.
+
+`PostgreSQL` will store its data in `./var/lib/postgresql/data` folder. `Redis` will store its data in `./var/lib/redis`.
+
+Most probably you shouldn't interact with that data directly. Instead, consider to make [backups](#backup).
+
+### Backups
+
+On some point you may want to backup your `PostgreSQL` data. Don't copy/paste `./var/lib/postgresql/data` folder. Instead, perform following commands:
+
+- to backup data, run on a host machine:
+
+```shell
+docker exec -t yd-tg-bot-postgres pg_dump -U <POSTGRES_USER> -d <POSTGRES_DB> > dump.sql
+```
+
+- to restore data, run on a host machine:
+
+```shell
+cat dump.sql | docker exec -i yd-tg-bot-postgres psql -U <POSTGRES_USER> -d <POSTGRES_DB>
+```
+
+`dump.sql` is entire backup of your DB. Keep it somewhere safe, outside of host machine.
+
+Feel free to modify above commands. It is just an example of how to do it. You can even use your own way to backup/restore your data.
+
+Before restoring `<POSTGRES_DB>` database should be clean, but created. By default the app upgrades database at startup, which means that database will have some data. You will need to manually drop and create database:
+
+```shell
+docker exec -it yd-tg-bot-postgres psql -U <POSTGRES_USER> -d postgres
+DROP DATABASE <POSTGRES_DB>;
+CREATE DATABASE <POSTGRES_DB>;
+```
+
+### Resources
+
+This project have `gunicorn` and `rq`, which have workers that creating fork of parent process. It is means extensive usage of machine resources, particularly RAM.
+
+Consider your host machine resources when you configuring `GUNICORN_WORKERS`, `RQ_WORKERS` and other settings that may affect as usage of machine resources. Use these commands to monitor usage of resources:
+
+```shell
+docker stats
+```
+
+```shell
+docker-compose top
+```
 
 
 ## Version naming

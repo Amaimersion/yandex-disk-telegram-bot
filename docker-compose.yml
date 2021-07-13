@@ -1,0 +1,50 @@
+version: "3.8"
+
+
+services:
+  nginx:
+    image: nginx:1.21.1
+    container_name: yd-tg-bot-nginx
+    depends_on:
+      - app
+    ports:
+      - 8080:80
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./src/static:/srv/yd-tg-bot/src/static:ro
+    restart: on-failure:2
+
+  redis:
+    image: redis:6.2.4
+    container_name: yd-tg-bot-redis
+    volumes:
+      - ./var/lib/redis:/data
+    restart: on-failure:2
+
+  postgres:
+    image: postgres:13.3
+    container_name: yd-tg-bot-postgres
+    volumes:
+      - ./var/lib/postgresql/data:/var/lib/postgresql/data
+    env_file: .env.production
+    restart: on-failure:2
+
+  rq:
+    image: amaimersion/yd-tg-bot-rq
+    container_name: yd-tg-bot-rq
+    depends_on:
+      - redis
+    volumes:
+      - ./docker/rq/supervisor/conf.d:/etc/supervisor/conf.d:ro
+    env_file: .env.production
+    restart: on-failure:2
+
+  app:
+    image: amaimersion/yd-tg-bot-app
+    container_name: yd-tg-bot-app
+    depends_on:
+      - postgres
+      - rq
+    env_file: .env.production
+    restart: on-failure:2

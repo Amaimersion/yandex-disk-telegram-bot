@@ -1,0 +1,21 @@
+version: "3.8"
+
+
+services:
+  postgres:
+    env_file: .env.development
+
+  rq:
+    environment:
+      - FLASK_ENV=development
+      - CONFIG_NAME=development
+    env_file: .env.development
+
+  app:
+    volumes:
+      - ./src:/home/yd-tg-bot/app/src
+      - ./migrations:/home/yd-tg-bot/app/migrations
+    environment:
+      - FLASK_ENV=development
+      - CONFIG_NAME=development
+    env_file: .env.development

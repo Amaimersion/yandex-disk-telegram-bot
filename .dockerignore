@@ -1,0 +1,24 @@
+# You don't need to include every item in this file.
+# You need to includes items that 100% shouldn't
+# be in build context. You should avoid using `COPY . .`
+# in order to not leak sensitive information. Instead,
+# always specify items explicitly.
+
+# Files
+.env*
+**/*.md
+**/*.egg-info
+**/*.pyc
+**/*.log
+**/temp.*
+**/*.sqlite
+**/*.sqlite-journal
+**/*.mo
+
+# Folders
+**/__pycache__
+**/temp
+venv
+instance
+var
+.git
