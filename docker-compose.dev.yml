@@ -2,14 +2,22 @@ version: "3.8"
 
 
 services:
+  nginx:
+    restart: "no"
+
+  redis:
+    restart: "no"
+
   postgres:
     env_file: .env.development
+    restart: "no"
 
   rq:
     environment:
       - FLASK_ENV=development
       - CONFIG_NAME=development
     env_file: .env.development
+    restart: "no"
 
   app:
     volumes:
@@ -19,3 +27,4 @@ services:
       - FLASK_ENV=development
       - CONFIG_NAME=development
     env_file: .env.development
+    restart: "no"

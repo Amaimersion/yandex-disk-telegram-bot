@@ -13,14 +13,14 @@ services:
       - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./src/static:/srv/yd-tg-bot/src/static:ro
-    restart: on-failure:2
+    restart: always
 
   redis:
     image: redis:6.2.4
     container_name: yd-tg-bot-redis
     volumes:
       - ./var/lib/redis:/data
-    restart: on-failure:2
+    restart: always
 
   postgres:
     image: postgres:13.3
@@ -28,7 +28,7 @@ services:
     volumes:
       - ./var/lib/postgresql/data:/var/lib/postgresql/data
     env_file: .env.production
-    restart: on-failure:2
+    restart: always
 
   rq:
     image: amaimersion/yd-tg-bot-rq
@@ -38,7 +38,7 @@ services:
     volumes:
       - ./docker/rq/supervisor/conf.d:/etc/supervisor/conf.d:ro
     env_file: .env.production
-    restart: on-failure:2
+    restart: always
 
   app:
     image: amaimersion/yd-tg-bot-app
@@ -47,4 +47,4 @@ services:
       - postgres
       - rq
     env_file: .env.production
-    restart: on-failure:2
+    restart: always

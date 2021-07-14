@@ -467,7 +467,7 @@ This project provides Docker images along with configured docker-compose file. U
 docker-compose up
 ```
 
-Probably you will want to configure some process control system in order to run docker-compose in background on every system start. In that case append `--detach` option to the command above.
+You don't need to configure any process control system in order to run docker-compose in background on every system start. It is already done by Docker daemon.
 
 4. By default docker-compose will listen for connections on `http://127.0.0.1:8080`. It is recommended to set up some reverse proxy server (along with TLS, logs and so on) in the front of docker-compose and redirect connections on that address. Or you can override docker-compose configuration to listen for connections immediately on `http://127.0.0.1:80`.
 
