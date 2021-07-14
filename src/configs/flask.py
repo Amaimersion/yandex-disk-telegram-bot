@@ -201,6 +201,21 @@ class Config:
 
     # region Telegram API
 
+    # postfix of original webhook route.
+    # For example, original route is `/webhook`,
+    # and postfix is `_akdb2v`, final route that will
+    # be used is `/webhook_akdb2v`.
+    # You will need to set this address as webhook URL.
+    # It is intended for security reasons.
+    # WARNING: use env variable to set this value,
+    # don't use this app config to set it. It is because
+    # value will be read directly from env variable,
+    # and app config will not have any effect.
+    TELEGRAM_API_WEBHOOK_URL_POSTFIX = os.getenv(
+        "TELEGRAM_API_WEBHOOK_URL_POSTFIX",
+        ""
+    )
+
     # stop waiting for a Telegram response
     # after a given number of seconds
     TELEGRAM_API_TIMEOUT = 5

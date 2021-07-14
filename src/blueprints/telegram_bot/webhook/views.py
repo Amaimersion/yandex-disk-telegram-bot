@@ -1,3 +1,5 @@
+import os
+
 from flask import (
     request,
     make_response
@@ -9,7 +11,16 @@ from .dispatcher import intellectual_dispatch
 from .app_context import init_app_context
 
 
-@bp.route("/webhook", methods=["POST"])
+# `os.getenv` should be used instead of `current_app.config`,
+# because routes are created outside of app context
+URL_POSTFIX = os.getenv(
+    "TELEGRAM_API_WEBHOOK_URL_POSTFIX",
+    ""
+)
+URL = f"/webhook{URL_POSTFIX}"
+
+
+@bp.route(URL, methods=["POST"])
 def webhook():
     """
     Handles Webhook POST request from Telegram server.

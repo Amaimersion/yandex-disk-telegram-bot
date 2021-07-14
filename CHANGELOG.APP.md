@@ -25,6 +25,7 @@ ___
 - `language` column moved from `User` model to `UserSettings`.
 - Background tasks will have copy of request `g` data.
 - Worker for background tasks should be started with `python manage.py run-worker` instead of `python worker.py`.
+- To add webhook URL postfix use `TELEGRAM_API_WEBHOOK_URL_POSTFIX` env variable, from now don't edit `views.py` file and revert it back.
 - Python runtime version to 3.8.11.
 
 ## Fixed

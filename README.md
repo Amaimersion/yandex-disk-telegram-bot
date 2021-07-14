@@ -181,7 +181,7 @@ For parameter `MAX_CONNECTIONS` it is recommended to use maxium number of simult
 From Telegram documentation:
 > If you'd like to make sure that the Webhook request comes from Telegram, we recommend using a secret path in the URL, e.g. `https://www.example.com/<token>`. Since nobody else knows your bot‘s token, you can be pretty sure it’s us.
 
-So, instead of `/telegram_bot/webhook` you can use something like this: `/telegram_bot/webhook_fd1k3Bfa01WQl5S`. Don't forget to edit route in `./src/blueprints/telegram_bot/webhook/views.py` if you decide to use it.
+So, instead of `/telegram_bot/webhook` you can use something like this: `/telegram_bot/webhook_fd1k3Bfa01WQl5S`. To achieve this set environment variable `TELEGRAM_API_WEBHOOK_URL_POSTFIX`. In that case it is `TELEGRAM_API_WEBHOOK_URL_POSTFIX=_fd1k3Bfa01WQl5S`.
 
 ### Yandex.Disk
 
