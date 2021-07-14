@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-02 17:38+0300\n"
+"POT-Creation-Date: 2021-07-14 23:35+0300\n"
 "PO-Revision-Date: 2021-06-26 20:32+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -337,26 +337,26 @@ msgstr "Выберите новый язык из списка ниже:"
 #: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:240
 #: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:270
 #: src/blueprints/telegram_bot/webhook/commands/disk_info.py:85
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:764
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:768
 msgid "Yes"
 msgstr "Да"
 
 #: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:237
 #: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:267
 #: src/blueprints/telegram_bot/webhook/commands/disk_info.py:87
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:765
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:769
 msgid "No"
 msgstr "Нет"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:766
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:770
 msgid "Given"
 msgstr "Предоставлен"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:767
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:771
 msgid "Revoked"
 msgstr "Отозван"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:787
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:795
 #, python-format
 msgid ""
 "<b>Default upload folder:</b> <code>%(default_upload_folder)s</code>\n"
@@ -370,19 +370,19 @@ msgstr ""
 "<b>Язык:</b> %(language)s\n"
 "<b>Доступ к Яндекс.Диску:</b> %(yd_access)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:793
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:801
 msgid "Change default upload folder"
 msgstr "Изменить папку загрузки по умолчанию"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:802
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:810
 msgid "Disable public upload by default"
 msgstr "Выключить публичную загрузку по умолчанию"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:809
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:817
 msgid "Enable public upload by default"
 msgstr "Включить публичную загрузку по умолчанию"
 
-#: src/blueprints/telegram_bot/webhook/commands/settings.py:818
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:826
 msgid "Change language"
 msgstr "Изменить язык"
 
@@ -603,15 +603,15 @@ msgstr "<b>Доступно:</b> %(value)s"
 msgid "<b>Used space:</b> %(value)s"
 msgstr "<b>Использовано:</b> %(value)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:120
-#, python-format
-msgid "<b>Trash size:</b> %(value)s"
-msgstr "<b>Корзина:</b> %(value)s"
-
-#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:139
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:129
 #, python-format
 msgid "<b>Free space:</b> %(value)s"
 msgstr "<b>Свободно:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:139
+#, python-format
+msgid "<b>Trash size:</b> %(value)s"
+msgstr "<b>Корзина:</b> %(value)s"
 
 #: src/blueprints/telegram_bot/webhook/commands/disk_info.py:149
 #, python-format
@@ -701,46 +701,46 @@ msgstr ""
 "Яндекса</a>.\n"
 "Чтобы заново предоставить мне доступ, используйте %(yd_auth_command)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:46
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:48
 msgid "Generating..."
 msgstr "Создание..."
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:69
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:71
 #, python-format
 msgid "Yandex.Disk space at %(current_utc_date)s"
 msgstr "Информация о размере Яндекс.Диска на %(current_utc_date)s"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:122
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:124
 msgid "GB"
 msgstr "ГБ"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:123
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:125
 msgid "Total"
 msgstr "Всего"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:126
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:128
 msgid "Used Space"
 msgstr "Используемое место"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:127
-msgid "Trash Size"
-msgstr "Размер корзины"
-
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:128
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:129
 msgid "Free Space"
 msgstr "Свободное место"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:136
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:130
+msgid "Trash Size"
+msgstr "Размер корзины"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:138
 msgid "Used"
 msgstr "Использовано"
 
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:137
-msgid "Trash"
-msgstr "Корзина"
-
-#: src/blueprints/telegram_bot/webhook/commands/space_info.py:138
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:139
 msgid "Free"
 msgstr "Свободно"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:140
+msgid "Trash"
+msgstr "Корзина"
 
 #: src/blueprints/telegram_bot/webhook/commands/about.py:18
 #, python-format
