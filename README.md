@@ -537,6 +537,8 @@ DROP DATABASE <POSTGRES_DB>;
 CREATE DATABASE <POSTGRES_DB>;
 ```
 
+Keep in mind that database have encrypted data in some tables. It is means that you should use exact a same `FLASK_SECRET_KEY` environment variable that was used at the moment of database backup. You will be not able to fully interact with database if you will use different `FLASK_SECRET_KEY`. So, usually you will also want to backup your `.env.production` file in order to keep your secrets.
+
 ### Resources
 
 This project have `gunicorn` and `rq`, which have workers that creating fork of parent process. It is means extensive usage of machine resources, particularly RAM.
