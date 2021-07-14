@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2021-07-14 23:35+0300\n"
+"POT-Creation-Date: 2021-07-14 23:37+0300\n"
 "PO-Revision-Date: 2021-06-26 20:32+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ru\n"
@@ -906,6 +906,10 @@ msgstr "<b>SHA-256:</b> %(value)s"
 #, python-format
 msgid "<b>MD5:</b> %(value)s"
 msgstr "<b>MD5:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/decorators.py:112
+msgid "Temporary disabled. Try later please."
+msgstr "Временно отключено. Пожалуйста, попробуйте позже."
 
 #: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:35
 msgid "I can't handle this because something is wrong."
