@@ -2,6 +2,8 @@ from functools import wraps
 
 from flask import g
 
+from src.api import telegram
+from src.i18n import gettext
 from src.extensions import db
 from src.database import (
     User,
@@ -89,5 +91,27 @@ def yd_access_token_required(func):
             return g.direct_dispatch(CommandName.YD_AUTH)(*args, **kwargs)
 
         return func(*args, **kwargs)
+
+    return wrapper
+
+
+def disabled(func):
+    """
+    Disables function, i.e. it will be not executed.
+    Message that indicates about disable status will be
+    sent back to incoming Telegram user.
+
+    - usually it is only temporary stub, i.e. you shouldn't
+    use this decorator for permanent. Instead, implement some
+    solution while function is disabled.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        telegram.send_message(
+            chat_id=g.telegram_chat.id,
+            text=gettext(
+                "Temporary disabled. Try later please."
+            )
+        )
 
     return wrapper
