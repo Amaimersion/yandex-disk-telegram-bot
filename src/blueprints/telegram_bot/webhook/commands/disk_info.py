@@ -2,7 +2,7 @@ from collections import deque
 
 from flask import g, current_app
 
-from src.api import telegram
+from src.http import telegram
 from src.i18n import gettext
 from src.blueprints._common.utils import bytes_to_human_binary
 from src.blueprints.telegram_bot._common.yandex_disk import (

@@ -28,6 +28,7 @@ ___
 - To add webhook URL postfix use `TELEGRAM_API_WEBHOOK_URL_POSTFIX` env variable, from now don't edit `views.py` file and revert it back.
 - SQLAlchemy debug echo will be disabled by default. Use `SQLALCHEMY_ECHO` env variable to control it.
 - Python runtime version to 3.8.11.
+- `src.api` module renamed to `src.http`.
 
 ## Fixed
 

@@ -4,7 +4,7 @@ from collections import deque
 
 from flask import current_app
 
-from src.api import yandex
+from src.http import yandex
 from src.i18n import gettext
 
 

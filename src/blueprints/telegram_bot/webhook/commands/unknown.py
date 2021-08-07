@@ -1,6 +1,6 @@
 from flask import g
 
-from src.api import telegram
+from src.http import telegram
 from src.i18n import gettext
 from src.blueprints.telegram_bot._common.command_names import CommandName
 

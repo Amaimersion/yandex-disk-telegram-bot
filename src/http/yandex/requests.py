@@ -3,11 +3,11 @@ from os import environ
 from requests.auth import HTTPBasicAuth
 from flask import current_app
 
-from src.api.request import (
+from src.http.request import (
     create_url,
     request
 )
-from src.api.auth import HTTPOAuthAuth
+from src.http.auth import HTTPOAuthAuth
 
 
 def create_bot_oauth_url(method_name: str) -> str:

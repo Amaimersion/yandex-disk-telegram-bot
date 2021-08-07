@@ -2,8 +2,8 @@ from flask import g, current_app
 
 from src.rq import task_queue, prepare_task, run_task
 from src.i18n import gettext
-from src.api import telegram
-from src.api.yandex import make_photo_preview_request
+from src.http import telegram
+from src.http.yandex import make_photo_preview_request
 from src.blueprints.telegram_bot._common.yandex_disk import (
     get_element_info,
     YandexAPIGetElementInfoError,

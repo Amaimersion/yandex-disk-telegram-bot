@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 from flask import g, current_app
 
-from src.api import telegram
+from src.http import telegram
 from src.i18n import gettext
 from src.rq import task_queue, prepare_task, run_task
 from src.blueprints._common.utils import get_current_iso_datetime

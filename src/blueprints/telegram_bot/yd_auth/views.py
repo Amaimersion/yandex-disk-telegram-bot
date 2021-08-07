@@ -4,7 +4,7 @@ from flask import (
     render_template
 )
 
-from src.api import telegram
+from src.http import telegram
 from src.database import ChatQuery
 from src.i18n import gettext
 from src.blueprints._common.utils import get_current_datetime

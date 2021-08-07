@@ -1,7 +1,7 @@
 from flask import g
 
 from src.extensions import db
-from src.api import telegram
+from src.http import telegram
 from src.i18n import gettext
 from src.blueprints._common.utils import get_current_datetime
 from src.blueprints.telegram_bot._common.yandex_oauth import YandexOAuthClient

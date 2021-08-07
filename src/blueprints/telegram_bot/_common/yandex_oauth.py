@@ -6,7 +6,7 @@ from typing import Union
 from flask import current_app
 import jwt
 
-from src.api import yandex
+from src.http import yandex
 from src.extensions import db
 from src.database import (
     User,

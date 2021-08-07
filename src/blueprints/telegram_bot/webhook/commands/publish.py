@@ -1,6 +1,6 @@
 from flask import g, current_app
 
-from src.api import telegram
+from src.http import telegram
 from src.blueprints.telegram_bot._common.yandex_disk import (
     publish_item,
     get_element_info,

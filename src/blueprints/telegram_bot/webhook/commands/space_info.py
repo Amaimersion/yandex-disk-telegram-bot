@@ -7,7 +7,7 @@ from plotly.express import colors
 from plotly.io import to_image
 
 from src.rq import task_queue, prepare_task, run_task
-from src.api import telegram
+from src.http import telegram
 from src.i18n import gettext
 from src.blueprints._common.utils import get_current_iso_datetime
 from src.blueprints.telegram_bot._common.yandex_disk import (

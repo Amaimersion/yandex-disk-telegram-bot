@@ -2,7 +2,7 @@ from enum import IntEnum, unique
 
 from flask import current_app
 
-from src.api import telegram
+from src.http import telegram
 from src.i18n import gettext
 
 

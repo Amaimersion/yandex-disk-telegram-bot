@@ -4,7 +4,7 @@ from typing import Any, Tuple, Union
 
 from flask import g, current_app
 
-from src.api import telegram
+from src.http import telegram
 from src.i18n import gettext, SupportedLanguage
 from src.extensions import db
 from src.database import User, UserSettings
