@@ -26,6 +26,7 @@ ___
 - Background tasks will have copy of request `g` data.
 - Worker for background tasks should be started with `python manage.py run-worker` instead of `python worker.py`.
 - To add webhook URL postfix use `TELEGRAM_API_WEBHOOK_URL_POSTFIX` env variable, from now don't edit `views.py` file and revert it back.
+- SQLAlchemy debug echo will be disabled by default. Use `SQLALCHEMY_ECHO` env variable to control it.
 - Python runtime version to 3.8.11.
 
 ## Fixed

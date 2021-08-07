@@ -183,6 +183,7 @@ class Config:
         "sqlite:///temp.sqlite"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ECHO = os.getenv("SQLALCHEMY_ECHO")
 
     # endregion
 
@@ -290,7 +291,6 @@ class ProductionConfig(Config):
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
-    SQLALCHEMY_ECHO = "debug"
     YANDEX_OAUTH_API_METHOD = YandexOAuthAPIMethod.CONSOLE_CLIENT
 
 
