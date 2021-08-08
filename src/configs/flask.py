@@ -3,6 +3,7 @@ Configurations of the Flask app for specific environments.
 """
 
 import os
+import logging
 from enum import Enum, auto
 
 from dotenv import load_dotenv
@@ -75,6 +76,40 @@ class Config:
     PROJECT_URL_FOR_REQUEST = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=feature_request.md" # noqa
     PROJECT_URL_FOR_QUESTION = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=question.md" # noqa
     PROJECT_URL_FOR_BOT = "https://t.me/Ya_Disk_Bot"
+
+    # endregion
+
+    # region Logging
+
+    # Use numeric value from `logging` module
+    LOGGING_LEVEL = int(os.getenv(
+        "LOGGING_LEVEL",
+        logging.INFO
+    ))
+
+    # If `True`, all logs will be logged in a file
+    # instead of `sys.stdout`. Don't use it with Docker
+    LOGGING_LOG_TO_FILE = bool(os.getenv(
+        "LOGGING_LOG_TO_FILE",
+        False
+    ))
+
+    # Only in case of `LOGGING_LOG_TO_FILE = True`.
+    # See documentation:
+    # https://docs.python.org/3/library/logging.handlers.html#rotatingfilehandler
+    LOGGING_LOG_FOLDER_NAME = "var/log"
+    LOGGING_LOG_FILE_NAME = os.getenv(
+        "LOGGING_LOG_FILE_NAME",
+        "app.log"
+    )
+    LOGGING_LOG_FILE_MAX_BYTES = int(os.getenv(
+        "LOGGING_LOG_FILE_MAX_BYTES",
+        1024 * 1024 * 1
+    ))
+    LOGGING_LOG_FILE_BACKUP_COUNT = int(os.getenv(
+        "LOGGING_LOG_FILE_BACKUP_COUNT",
+        10
+    ))
 
     # endregion
 
@@ -292,6 +327,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
     YANDEX_OAUTH_API_METHOD = YandexOAuthAPIMethod.CONSOLE_CLIENT
+    LOGGING_LEVEL = logging.DEBUG
 
 
 class TestingConfig(Config):

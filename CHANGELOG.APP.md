@@ -15,6 +15,8 @@ ___
 - Support for docker-compose.
 - Information about project version naming.
 - Short name in information about the app.
+- Custom logger.
+- Ability to log in rotated file.
 
 ## Changed
 
