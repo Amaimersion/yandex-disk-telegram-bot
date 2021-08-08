@@ -36,6 +36,14 @@ WORKER_CONNECTIONS = int(os.getenv(
     "GUNICORN_WORKER_CONNECTIONS",
     1024
 ))
+ACCESS_LOG = os.getenv(
+    "GUNICORN_ACCESS_LOG",
+    "-" # means "stdout"
+)
+ERROR_LOG = os.getenv(
+    "GUNICORN_ERROR_LOG",
+    "-" # means "stderr"
+)
 
 IS_DEVELOPMENT = (FLASK_ENV == "development")
 SERVER_READY_FILE = "/tmp/gunicorn-ready"
@@ -46,8 +54,12 @@ SERVER_READY_FILE = "/tmp/gunicorn-ready"
 # region gunicorn config
 
 reload = IS_DEVELOPMENT
-accesslog = "-"
-errorlog = "-"
+accesslog = ACCESS_LOG
+errorlog = ERROR_LOG
+access_log_format = (
+    '%(h)s %(l)s %(u)s %(t)s "%(r)s" '
+    '%(s)s %(b)s "%(f)s" "%(a)s" %(L)s seconds'
+)
 loglevel = (
     "debug"
     if IS_DEVELOPMENT else
