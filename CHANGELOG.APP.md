@@ -15,8 +15,7 @@ ___
 - Support for docker-compose.
 - Information about project version naming.
 - Short name in information about the app.
-- Custom logger.
-- Ability to log in rotated file.
+- Custom logger for `Flask`, `gunicorn`. Set up it through env variables.
 
 ## Changed
 
