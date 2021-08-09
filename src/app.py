@@ -39,6 +39,9 @@ def create_app(config_name: str = None) -> Flask:
     """
     Creates and configures the app.
     """
+    if not isinstance(config_name, str):
+        config_name = os.getenv("CONFIG_NAME", "default")
+
     app = Flask(__name__)
 
     configure_app(app, config_name)
@@ -48,16 +51,17 @@ def create_app(config_name: str = None) -> Flask:
     configure_redirects(app)
     configure_error_handlers(app)
 
+    app.logger.debug(
+        f"App created and configured using {config_name} config"
+    )
+
     return app
 
 
-def configure_app(app: Flask, config_name: str = None) -> None:
+def configure_app(app: Flask, config_name: str) -> None:
     """
     Configures app.
     """
-    if (not isinstance(config_name, str)):
-        config_name = os.getenv("CONFIG_NAME", "default")
-
     config = flask_config[config_name]
 
     app.config.from_object(config)
