@@ -108,6 +108,13 @@ class YandexDiskPath:
         self.trash_namespace = "trash:"
         self.raw_paths = args
 
+    def __repr__(self) -> str:
+        """
+        :returns:
+        Debug representation.
+        """
+        return self.create_absolute_path()
+
     def get_absolute_path(self) -> Deque[str]:
         """
         :returns:
@@ -196,12 +203,23 @@ def create_yandex_error_text(data: dict) -> str:
     :returns:
     Human error message from Yandex error response.
     """
-    error_name = data.get("error", "?")
+    error_name = data.get("error")
     error_description = (
         data.get("message") or
-        data.get("description") or
-        "?"
+        data.get("description")
     )
+
+    if not error_name:
+        current_app.logger.warning(
+            f"Error name is unknown: {data}"
+        )
+        error_name = "?"
+
+    if not error_description:
+        current_app.logger.warning(
+            f"Error description is unknown: {data}"
+        )
+        error_description = "?"
 
     return (f"{error_name}: {error_description}")
 
@@ -270,6 +288,10 @@ def get_yandex_operation_text(data: dict) -> str:
     elif yandex_operation_is_failed(data):
         return gettext("failed")
 
+    current_app.logger.warning(
+        f"Unknown operation status: {data}"
+    )
+
     return data.get(
         "status",
         gettext("unknown")
@@ -306,6 +328,10 @@ def create_folder(
     resources = path.generate_absolute_path(True)
     last_status_code = 201  # namespace always created
     allowed_errors = [409]
+
+    current_app.logger.debug(
+        f"{folder_name} was converted to {path}"
+    )
 
     for resource in resources:
         result = None
@@ -349,6 +375,10 @@ def publish_item(
     path = YandexDiskPath(absolute_item_path)
     absolute_path = path.create_absolute_path()
 
+    current_app.logger.debug(
+        f"{absolute_item_path} was converted to {absolute_path}"
+    )
+
     try:
         response = yandex.publish(
             user_access_token,
@@ -379,6 +409,10 @@ def unpublish_item(
     """
     path = YandexDiskPath(absolute_item_path)
     absolute_path = path.create_absolute_path()
+
+    current_app.logger.debug(
+        f"{absolute_item_path} was converted to {absolute_path}"
+    )
 
     try:
         response = yandex.unpublish(
@@ -438,6 +472,13 @@ def upload_file_with_url(
     path = YandexDiskPath(folder_path, file_name)
     absolute_path = path.create_absolute_path()
     response = None
+
+    current_app.logger.debug(
+        f"Download URL: {download_url}"
+    )
+    current_app.logger.debug(
+        f"Final path: {absolute_path}"
+    )
 
     try:
         response = yandex.upload_file_with_url(
@@ -592,6 +633,10 @@ def get_element_info(
     """
     path = YandexDiskPath(absolute_element_path)
     absolute_path = path.create_absolute_path()
+
+    current_app.logger.debug(
+        f"{absolute_element_path} was converted to {absolute_path}"
+    )
 
     try:
         response = yandex.get_element_info(

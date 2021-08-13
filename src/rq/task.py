@@ -2,7 +2,8 @@ from typing import Union, Callable
 
 from flask import (
     g,
-    has_app_context
+    has_app_context,
+    current_app
 )
 
 
@@ -29,6 +30,8 @@ def prepare_task() -> RQTaskPrepareData:
     data = RQTaskPrepareData()
 
     if has_app_context():
+        current_app.logger.debug("App context copied")
+
         for key in g:
             data.g_data[key] = g.get(key)
 
@@ -44,6 +47,8 @@ def setup_task(prepare_data: RQTaskPrepareData) -> None:
     task.
     """
     if has_app_context():
+        current_app.logger.debug("App context installed")
+
         for key, value in prepare_data.g_data.items():
             setattr(g, key, value)
 
@@ -72,5 +77,9 @@ def run_task(
     """
     if prepare_data:
         setup_task(prepare_data)
+
+    current_app.logger.debug(
+        f"RQ task called: {f}"
+    )
 
     f(*args, **kwargs)

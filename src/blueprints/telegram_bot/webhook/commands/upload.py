@@ -393,8 +393,10 @@ class AttachmentHandler(metaclass=ABCMeta):
         file = None
 
         if isinstance(attachment, str):
+            current_app.logger.debug("Provided direct URL")
             download_url = attachment
         else:
+            current_app.logger.debug("Will fetch direct URL from Telegram")
             result = None
 
             try:
@@ -422,6 +424,13 @@ class AttachmentHandler(metaclass=ABCMeta):
             user_access_token,
             chat_id,
             message_id
+        )
+
+        current_app.logger.debug(
+            "Ready to upload: "
+            f"Download URL: {download_url} "
+            f"To: {folder_path} "
+            f"Name: {file_name}"
         )
 
         # Everything is fine by this moment.
@@ -532,7 +541,7 @@ class AttachmentHandler(metaclass=ABCMeta):
                                 full_path
                             )
                         except Exception as error:
-                            print(error)
+                            current_app.logger.error(error)
                             message = gettext(
                                 "\n"
                                 "Failed to publish. Type to do it:"
@@ -552,7 +561,7 @@ class AttachmentHandler(metaclass=ABCMeta):
                             get_public_info=False
                         )
                     except Exception as error:
-                        print(error)
+                        current_app.logger.error(error)
                         message = gettext(
                             "\n"
                             "Failed to get information. Type to do it:"
@@ -1161,7 +1170,7 @@ class IntellectualURLHandler(DirectURLHandler):
         except youtube_dl.UnsupportedURLError:
             # Unsupported URL's is expected here,
             # let's treat them as direct URL's to files
-            pass
+            current_app.logger.debug("Unsupported youtube_dl URL")
         except youtube_dl.UnexpectedError as error:
             # TODO:
             # Something goes wrong in `youtube_dl`.
@@ -1171,13 +1180,14 @@ class IntellectualURLHandler(DirectURLHandler):
             # which shouldn't be printed to user.
             # At the moment there is no best way for UX, so,
             # let's just print this information in logs.
-            print(
-                "Unexpected youtube_dl error:",
+            current_app.logger.error(
+                "Unexpected youtube_dl error: " +
                 error
             )
 
         if self.youtube_dl_info:
             best_url = self.youtube_dl_info["direct_url"]
+            current_app.logger.debug("youtube_dl was used to get direct URL")
 
         return best_url
 

@@ -48,6 +48,16 @@ class IntellectualDispatchResult:
         # Pass any additional `kwargs` for each handler
         self.kwargs = {}
 
+    def __repr__(self):
+        """
+        :returns:
+        Debug representation.
+        """
+        return (
+            f"Handlers: {self.handler_names} "
+            f"Route source: {self.route_source}"
+        )
+
     def create_handler(self) -> Callable:
         """
         Creates handler that will handle this dispatch.
@@ -79,6 +89,10 @@ class IntellectualDispatchResult:
             for handler_name in self.handler_names:
                 handler_method = direct_dispatch(handler_name)
 
+                current_app.logger.debug(
+                    f"{handler_name} handler will be called"
+                )
+
                 try:
                     handler_method(
                         *args,
@@ -87,9 +101,9 @@ class IntellectualDispatchResult:
                         route_source=self.route_source
                     )
                 except Exception as error:
-                    print(
-                        f"{handler_name}: {error}",
-                        "\n",
+                    current_app.logger.error(
+                        f"{handler_name}: {error}" +
+                        "\n" +
                         traceback.format_exc()
                     )
 
@@ -125,6 +139,7 @@ def intellectual_dispatch(update: TelegramUpdate) -> Union[Callable, None]:
     Raises an error if unable to route incoming Telegram update.
     """
     if not update.is_valid():
+        current_app.logger.debug("Invalid update")
         return None
 
     message = update.get_message()
@@ -138,7 +153,17 @@ def intellectual_dispatch(update: TelegramUpdate) -> Union[Callable, None]:
         dispatch_result = callback_query_dispatch(callback_query)
 
     if not dispatch_result:
+        current_app.logger.warning(
+            f"Unable to dispatch: {update}"
+        )
+
         return None
+
+    # we will print debug message without `update` kwarg,
+    # because `update` data already was printed earlier
+    current_app.logger.debug(
+        f"Dispatch result: {dispatch_result}"
+    )
 
     dispatch_result.kwargs["update"] = update
     handler = dispatch_result.create_handler()
@@ -188,6 +213,7 @@ def message_dispatch(
     Dispatch result or `None` if unable to dispatch.
     """
     if not message.is_valid():
+        current_app.logger.debug("Invalid message")
         return None
 
     user_id = message.get_user().id
@@ -201,6 +227,13 @@ def message_dispatch(
         disposable_handler = get_disposable_handler(user_id, chat_id)
         subscribed_handlers = get_subscribed_handlers(user_id, chat_id)
 
+    current_app.logger.debug(
+        f"Disposable handler: {disposable_handler}"
+    )
+    current_app.logger.debug(
+        f"Subscribed handlers: {subscribed_handlers}"
+    )
+
     message_events = (
         detect_message_events(message) if (
             disposable_handler or
@@ -209,10 +242,18 @@ def message_dispatch(
     )
     result = IntellectualDispatchResult()
 
+    current_app.logger.debug(
+        f"Message events: {message_events}"
+    )
+
     if disposable_handler:
         match = match_events(
             message_events,
             disposable_handler["events"]
+        )
+
+        current_app.logger.debug(
+            f"Disposable handler matches: {match}"
         )
 
         if match:
@@ -231,12 +272,20 @@ def message_dispatch(
                 handler["events"]
             )
 
+            current_app.logger.debug(
+                f"Subscribed handler {handler['name']} matches: {match}"
+            )
+
             if match:
                 result.route_source = RouteSource.SUBSCRIBED_HANDLER
                 result.handler_names.append(handler["name"])
 
     if not result.handler_names:
         command = message.get_entity_value("bot_command")
+
+        current_app.logger.debug(
+            f"Direct command: {command}"
+        )
 
         if command:
             result.route_source = RouteSource.DIRECT_COMMAND
@@ -277,11 +326,19 @@ def message_dispatch(
             message_date,
             command
         )
+
+        current_app.logger.debug(
+            f"Command {command} binded to date"
+        )
     elif should_get_command_by_date:
         command = get_command_by_date(
             user_id,
             chat_id,
             message_date
+        )
+
+        current_app.logger.debug(
+            f"Same date command: {command}"
         )
 
         if command:
@@ -290,7 +347,13 @@ def message_dispatch(
 
     if not result.handler_names:
         result.route_source = RouteSource.GUESSED_COMMAND
-        result.handler_names.append(guess_message_command(message))
+        guessed_command = guess_message_command(message)
+
+        current_app.logger.debug(
+            f"Guessed command: {guessed_command}"
+        )
+
+        result.handler_names.append(guessed_command)
 
     result.kwargs["user_id"] = user_id
     result.kwargs["chat_id"] = chat_id
@@ -323,6 +386,7 @@ def callback_query_dispatch(
     Dispatch result or `None` if unable to dispatch.
     """
     if not callback_query.is_valid():
+        current_app.logger.debug("Invalid callback query")
         return None
 
     raw_data = None
@@ -330,10 +394,14 @@ def callback_query_dispatch(
     try:
         raw_data = callback_query.get_data()
     except Exception as error:
-        print(error)
+        current_app.logger.error(error)
         return None
 
     if not CallbackQueryDispatcherData.data_is_valid(raw_data):
+        current_app.logger.warning(
+            f"Invalid callback query dispatcher data: {raw_data}"
+        )
+
         return None
 
     data = CallbackQueryDispatcherData.decode_data(raw_data)
@@ -401,7 +469,18 @@ def direct_dispatch(
         CommandName.DISK_INFO.value: commands.disk_info_handler,
         CommandName.COMMANDS_LIST.value: commands.commands_list_handler
     }
-    handler = routes.get(command, fallback)
+    handler = routes.get(command)
+
+    current_app.logger.debug(
+        f"Direct dispatch to: {command}"
+    )
+
+    if handler is None:
+        current_app.logger.warning(
+            f"Unknown command: {command}"
+        )
+
+        handler = fallback
 
     def method(*args, **kwargs):
         handler(*args, **kwargs)

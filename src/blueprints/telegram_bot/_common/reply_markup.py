@@ -1,5 +1,7 @@
 from typing import List, Any
 
+from flask import current_app
+
 from src.blueprints._common.utils import get_str_bytes_length
 from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     CallbackQueryDispatcherData
@@ -46,12 +48,16 @@ def create_callback_data(
     If your payload is really big, then you may need to use
     `stateful_chat` module.
     """
-    result = TelegramCallbackQuery.serialize_data(
-        CallbackQueryDispatcherData.encode_data(
-            handler_names=handler_names,
-            payload=payload
-        )
+    dispatcher_data = CallbackQueryDispatcherData.encode_data(
+        handler_names=handler_names,
+        payload=payload
     )
+    result = TelegramCallbackQuery.serialize_data(dispatcher_data)
+
+    current_app.logger.debug(
+        f"{handler_names} and {payload} were encoded into {dispatcher_data}"
+    )
+
     bytes_length = get_str_bytes_length(result)
     max_bytes_length = 64
     too_big = (bytes_length > max_bytes_length)

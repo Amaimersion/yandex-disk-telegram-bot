@@ -25,6 +25,9 @@ class TelegramObject:
     def __contains__(self, key: str) -> bool:
         return (key in self.raw_data)
 
+    def __repr__(self) -> str:
+        return str(self.raw_data)
+
     def get(self, *args, **kwargs) -> Any:
         """
         Implements `get()`, but for `raw_data` property.

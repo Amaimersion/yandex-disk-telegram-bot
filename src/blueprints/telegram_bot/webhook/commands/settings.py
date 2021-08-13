@@ -390,7 +390,7 @@ class ChangeDefaultUploadFolderHandler(UserActionHandler):
                 data.user_settings.default_upload_folder = new_value
                 self.db_commit()
             except Exception as error:
-                print(error)
+                current_app.logger.error(error)
                 return cancel_command(data.chat_id)
 
             response_text = gettext(
@@ -450,7 +450,7 @@ class ChangePublicUploadByDefaultHandler(UserActionHandler):
                 data.user.settings.public_upload_by_default = new_value
                 self.db_commit()
             except Exception as error:
-                print(error)
+                current_app.logger.error(error)
                 return cancel_command(data.chat_id)
 
         public_name = gettext("Public")
@@ -579,7 +579,7 @@ class ChangeLanguageToHandler(UserActionHandler):
                 data.user.settings.language = new_value
                 self.db_commit()
             except Exception as error:
-                print(error)
+                current_app.logger.error(error)
                 return cancel_command(data.chat_id)
 
         send_current_settings(

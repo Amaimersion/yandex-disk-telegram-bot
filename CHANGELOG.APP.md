@@ -16,6 +16,7 @@ ___
 - Information about project version naming.
 - Short name in information about the app.
 - Logger settings for `Flask` and `gunicorn`. Set it through env variables.
+- Debug logs.
 
 ## Changed
 

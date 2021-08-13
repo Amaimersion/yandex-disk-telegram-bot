@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import g
+from flask import g, current_app
 
 from src.http import telegram
 from src.i18n import gettext
@@ -51,11 +51,12 @@ def register_guest(func):
         )
 
         db.session.add(new_user)
+        current_app.logger.debug("It is new user. Registered")
 
         try:
             db.session.commit()
         except Exception as e:
-            print(e)
+            current_app.logger.error(e)
             return cancel_command(tg_chat.id)
 
         # we need to re-init global app context in order to

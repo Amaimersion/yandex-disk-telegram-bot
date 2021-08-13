@@ -1,7 +1,8 @@
 from flask import (
     request,
     abort,
-    render_template
+    render_template,
+    current_app
 )
 
 from src.http import telegram
@@ -73,7 +74,7 @@ def handle_success():
     except yandex_oauth.InvalidInsertToken:
         return create_error_response("invalid_insert_token")
     except Exception as error:
-        print(error)
+        current_app.logger.error(error)
         return create_error_response("internal_server_error")
 
     if not result["ok"]:

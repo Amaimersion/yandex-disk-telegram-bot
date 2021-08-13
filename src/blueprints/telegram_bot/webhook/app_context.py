@@ -1,4 +1,4 @@
-from flask import g
+from flask import g, current_app
 
 from src.database import (
     UserQuery,
@@ -82,3 +82,7 @@ def init_app_context(
         g.db_private_chat = ChatQuery.get_private_chat(
             g.db_user.id
         )
+
+    current_app.logger.debug(
+        f"DB user: {g.db_user}"
+    )

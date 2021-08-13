@@ -1,6 +1,7 @@
 from enum import Enum, unique
 
 from flask import (
+    current_app,
     g,
     request,
     has_app_context,
@@ -99,12 +100,26 @@ def localeselector() -> str:
 
     if have_app_context:
         if have_db_data:
+            current_app.logger.debug(
+                "Locale will be selected based on DB data"
+            )
+
             result = g.db_user.settings.language.value
         elif have_request_context:
+            current_app.logger.debug(
+                "Locale will be selected based on request context"
+            )
+
             if request.accept_languages:
                 result = request.accept_languages.best_match(
                     [lang.value for lang in SupportedLanguage]
                 )
+    else:
+        current_app.logger.debug("Default locale will be used")
+
+    current_app.logger.debug(
+        f"Selected locale: {result}"
+    )
 
     return result
 

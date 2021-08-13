@@ -2,7 +2,8 @@ import os
 
 from flask import (
     request,
-    make_response
+    make_response,
+    current_app
 )
 
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
@@ -34,6 +35,8 @@ def webhook():
         silent=True,
         cache=False
     )
+
+    current_app.logger.debug(f"Raw data: {raw_data}")
 
     if raw_data is None:
         return make_error_response()
