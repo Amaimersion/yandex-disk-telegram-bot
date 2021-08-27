@@ -24,6 +24,8 @@ from ._common.decorators import (
 )
 
 
+# `plotly` uses too much RAM.
+# Disabled at the moment, will be changed in future
 @disabled
 @yd_access_token_required
 def handle(*args, **kwargs):
