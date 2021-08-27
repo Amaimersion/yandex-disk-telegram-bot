@@ -44,6 +44,7 @@
   - [Development](#development)
   - [Data](#data)
   - [Backups](#backups)
+  - [Logs](#logs)
   - [Resources](#resources)
 - [Version naming](#version-naming)
 - [Contribution](#contribution)
@@ -538,6 +539,10 @@ CREATE DATABASE <POSTGRES_DB>;
 ```
 
 Keep in mind that database have encrypted data in some tables. It is means that you should use exact a same `FLASK_SECRET_KEY` environment variable that was used at the moment of database backup. You will be not able to fully interact with database if you will use different `FLASK_SECRET_KEY`. So, usually you will also want to backup your `.env.production` file in order to keep your secrets.
+
+### Logs
+
+Use `docker-compose logs`. If you want to write logs in file, do not change docker-compose config. Instead, redirect output of command to file.
 
 ### Resources
 
