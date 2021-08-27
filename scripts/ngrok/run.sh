@@ -1,3 +1,9 @@
 #!/bin/bash
 
-ngrok http 8000 -bind-tls=true
+port=$1
+
+if [ -z $port ]; then
+  port=8000
+fi
+
+ngrok http $port -bind-tls=true

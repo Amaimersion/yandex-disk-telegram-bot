@@ -1,8 +1,9 @@
 from flask import g, current_app
 
-from src.extensions import task_queue
-from src.api import telegram
-from src.api.yandex import make_photo_preview_request
+from src.rq import task_queue, prepare_task, run_task
+from src.i18n import gettext
+from src.http import telegram
+from src.http.yandex import make_photo_preview_request
 from src.blueprints.telegram_bot._common.yandex_disk import (
     get_element_info,
     YandexAPIGetElementInfoError,
@@ -15,7 +16,7 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
 from src.blueprints.telegram_bot._common.command_names import (
     CommandName
 )
-from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent
 )
 from ._common.responses import (
@@ -24,8 +25,7 @@ from ._common.responses import (
     send_yandex_disk_error
 )
 from ._common.decorators import (
-    yd_access_token_required,
-    get_db_data
+    yd_access_token_required
 )
 from ._common.utils import (
     extract_absolute_path,
@@ -34,7 +34,6 @@ from ._common.utils import (
 
 
 @yd_access_token_required
-@get_db_data
 def handle(*args, **kwargs):
     """
     Handles `/element_info` command.
@@ -108,7 +107,7 @@ def handle(*args, **kwargs):
         params["reply_markup"] = {
             "inline_keyboard": [[
                 {
-                    "text": "Download",
+                    "text": gettext("Download"),
                     "url": download_url
                 }
             ]]
@@ -138,10 +137,15 @@ def handle(*args, **kwargs):
             ttl = current_app.config[
                 "RUNTIME_ELEMENT_INFO_WORKER_TTL"
             ]
+            prepare_data = prepare_task()
 
             task_queue.enqueue(
-                send_preview,
-                args=arguments,
+                run_task,
+                kwargs={
+                    "f": send_preview,
+                    "args": arguments,
+                    "prepare_data": prepare_data
+                },
                 description=CommandName.ELEMENT_INFO.value,
                 job_timeout=job_timeout,
                 ttl=ttl,

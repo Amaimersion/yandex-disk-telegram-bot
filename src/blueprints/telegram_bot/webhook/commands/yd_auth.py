@@ -1,6 +1,7 @@
 from flask import g, current_app
 
-from src.api import telegram
+from src.http import telegram
+from src.i18n import gettext
 from src.configs.flask import YandexOAuthAPIMethod
 from src.blueprints._common.utils import (
     absolute_url_for,
@@ -14,13 +15,12 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
     get_user_chat_data,
     delete_user_chat_data
 )
-from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent,
     RouteSource
 )
 from ._common.decorators import (
-    register_guest,
-    get_db_data
+    register_guest
 )
 from ._common.responses import (
     request_private_chat,
@@ -30,7 +30,6 @@ from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
 @register_guest
-@get_db_data
 def handle(*args, **kwargs):
     """
     Handles `/grant_access` command.
@@ -44,7 +43,7 @@ def handle(*args, **kwargs):
     if private_chat is None:
         incoming_chat_id = kwargs.get(
             "chat_id",
-            g.db_chat.telegram_id
+            g.telegram_chat.id
         )
 
         return request_private_chat(incoming_chat_id)
@@ -163,9 +162,10 @@ def end_console_client(db_user, chat_id: int, code: str) -> None:
     if not state:
         return telegram.send_message(
             chat_id=chat_id,
-            text=(
+            text=gettext(
                 "You waited too long. "
-                f"Send {CommandName.YD_AUTH} again."
+                "Send %(yd_auth_command)s again.",
+                yd_auth_command=CommandName.YD_AUTH.value
             )
         )
 
@@ -176,19 +176,22 @@ def end_console_client(db_user, chat_id: int, code: str) -> None:
     try:
         result = client.handle_code(state, code)
     except yandex_oauth.InvalidState:
-        message = (
+        message = gettext(
             "Your credentials is not valid. "
-            f"Try send {CommandName.YD_AUTH} again."
+            "Try send %(yd_auth_command)s again.",
+            yd_auth_command=CommandName.YD_AUTH.value
         )
     except yandex_oauth.ExpiredInsertToken:
-        message = (
+        message = gettext(
             "You waited too long. "
-            f"Send {CommandName.YD_AUTH} again."
+            "Send %(yd_auth_command)s again.",
+            yd_auth_command=CommandName.YD_AUTH.value
         )
     except yandex_oauth.InvalidInsertToken:
-        message = (
+        message = gettext(
             "You have too many authorization sessions. "
-            f"Send {CommandName.YD_AUTH} again and use only last link."
+            "Send %(yd_auth_command)s again and use only last link.",
+            yd_auth_command=CommandName.YD_AUTH.value
         )
     except Exception as error:
         cancel_command(chat_id)
@@ -204,25 +207,28 @@ def end_console_client(db_user, chat_id: int, code: str) -> None:
         error = result["error"]
         title = error.get(
             "title",
-            "Unknown error"
+            gettext("Unknown error")
         )
         description = error.get(
             "description",
-            "Can't tell you more"
+            gettext("Can't tell you more")
         )
 
         return telegram.send_message(
             chat_id=chat_id,
             parse_mode="HTML",
-            text=(
+            text=gettext(
                 "<b>Yandex.OAuth Error</b>"
                 "\n\n"
-                f"<b>Error</b>: {title}"
+                "<b>Error</b>: %(title)s"
                 "\n"
-                f"<b>Description</b>: {description}"
+                "<b>Description</b>: %(description)s"
                 "\n\n"
                 "I still don't have access. "
-                f"Start new session using {CommandName.YD_AUTH.value}"
+                "Start new session using %(yd_auth_command)s",
+                title=title,
+                description=description,
+                yd_auth_command=CommandName.YD_AUTH.value
             )
         )
 
@@ -235,11 +241,11 @@ def end_console_client(db_user, chat_id: int, code: str) -> None:
 def message_have_access_token(chat_id: int) -> None:
     telegram.send_message(
         chat_id=chat_id,
-        text=(
+        text=gettext(
             "You already grant me access to your Yandex.Disk."
             "\n"
-            "You can revoke my access with "
-            f"{CommandName.YD_REVOKE.value}"
+            "You can revoke my access with %(yd_auth_command)s",
+            yd_auth_command=CommandName.YD_AUTH.value
         )
     )
 
@@ -253,14 +259,18 @@ def message_access_token_refreshed(chat_id: int) -> None:
     telegram.send_message(
         chat_id=chat_id,
         parse_mode="HTML",
-        text=(
+        text=gettext(
             "<b>Access to Yandex.Disk Refreshed</b>"
             "\n\n"
             "Your granted access was refreshed automatically by me "
-            f"on {date} at {time} {timezone}."
+            "on %(date)s at %(time)s %(timezone)s."
             "\n\n"
             "If it wasn't you, you can detach this access with "
-            f"{CommandName.YD_REVOKE.value}"
+            "%(yd_auth_command)s",
+            date=date,
+            time=time,
+            timezone=timezone,
+            yd_auth_command=CommandName.YD_AUTH.value
         )
     )
 
@@ -274,14 +284,18 @@ def message_access_token_granted(chat_id: int) -> None:
     telegram.send_message(
         chat_id=chat_id,
         parse_mode="HTML",
-        text=(
+        text=gettext(
             "<b>Access to Yandex.Disk Granted</b>"
             "\n\n"
             "My access was attached to your Telegram account "
-            f"on {date} at {time} {timezone}."
+            "on %(date)s at %(time)s %(timezone)s."
             "\n\n"
             "If it wasn't you, then detach this access with "
-            f"{CommandName.YD_REVOKE.value}"
+            "%(yd_revoke_command)s",
+            date=date,
+            time=time,
+            timezone=timezone,
+            yd_revoke_command=CommandName.YD_REVOKE.value
         )
     )
 
@@ -291,7 +305,7 @@ def message_grant_access_redirect(
     url: str,
     lifetime_in_seconds: int
 ) -> None:
-    open_link_button_text = "Grant access"
+    open_link_button_text = gettext("Grant access")
     revoke_command = CommandName.YD_REVOKE.value
     yandex_passport_url = "https://passport.yandex.ru/profile"
     source_code_url = current_app.config["PROJECT_URL_FOR_CODE"]
@@ -303,14 +317,14 @@ def message_grant_access_redirect(
         chat_id=chat_id,
         parse_mode="HTML",
         disable_web_page_preview=True,
-        text=(
-            f'Open special link by pressing on "{open_link_button_text}" '
+        text=gettext(
+            'Open special link by pressing on "%(open_link_button_text)s" '
             "button and grant me access to your Yandex.Disk."
             "\n\n"
             "<b>IMPORTANT: don't give this link to anyone, "
             "because it contains your secret information.</b>"
             "\n\n"
-            f"<i>This link will expire in {lifetime_in_minutes} minutes.</i>"
+            "<i>This link will expire in %(lifetime_in_minutes)s minutes.</i>"
             "\n"
             "<i>This link leads to Yandex page and redirects to bot page.</i>"
             "\n\n"
@@ -318,17 +332,24 @@ def message_grant_access_redirect(
             "\n"
             "Yes! I'm getting access only to your Yandex.Disk, "
             "not to your account. You can revoke my access at any time "
-            f"with {revoke_command} or in your "
-            f'<a href="{yandex_passport_url}">Yandex profile</a>. '
+            "with %(revoke_command)s or in your "
+            '<a href="%(yandex_passport_url)s">Yandex profile</a>. '
             "By the way, i'm "
-            f'<a href="{source_code_url}">open-source</a> '
+            '<a href="%(source_code_url)s">open-source</a> '
             "and you can make sure that your data will be safe. "
             "You can even create your own bot with my functionality "
             "if using me makes you feel uncomfortable (:"
             "\n\n"
             "By using me, you accept "
-            f'<a href="{privacy_policy_url}">Privacy Policy</a> and '
-            f'<a href="{terms_url}">Terms of service</a>. '
+            '<a href="%(privacy_policy_url)s">Privacy Policy</a> and '
+            '<a href="%(terms_url)s">Terms of service</a>.',
+            open_link_button_text=open_link_button_text,
+            lifetime_in_minutes=lifetime_in_minutes,
+            revoke_command=revoke_command,
+            yandex_passport_url=yandex_passport_url,
+            source_code_url=source_code_url,
+            privacy_policy_url=privacy_policy_url,
+            terms_url=terms_url
         ),
         reply_markup={
             "inline_keyboard": [
@@ -348,7 +369,7 @@ def message_grant_access_code(
     url: str,
     lifetime_in_seconds: int
 ) -> None:
-    open_link_button_text = "Grant access"
+    open_link_button_text = gettext("Grant access")
     revoke_command = CommandName.YD_REVOKE.value
     yandex_passport_url = "https://passport.yandex.ru/profile"
     source_code_url = current_app.config["PROJECT_URL_FOR_CODE"]
@@ -360,14 +381,14 @@ def message_grant_access_code(
         chat_id=chat_id,
         parse_mode="HTML",
         disable_web_page_preview=True,
-        text=(
-            f'Open special link by pressing on "{open_link_button_text}" '
+        text=gettext(
+            'Open special link by pressing on "%(open_link_button_text)s" '
             "button and grant me access to your Yandex.Disk."
             "\n\n"
             "<b>IMPORTANT: don't give this link to anyone, "
             "because it contains your secret information.</b>"
             "\n\n"
-            f"<i>This link will expire in {lifetime_in_minutes} minutes.</i>"
+            "<i>This link will expire in %(lifetime_in_minutes)s minutes.</i>"
             "\n"
             "<i>This link leads to Yandex page. After granting access, "
             "you will need to send me the issued code.</i>"
@@ -376,17 +397,24 @@ def message_grant_access_code(
             "\n"
             "Yes! I'm getting access only to your Yandex.Disk, "
             "not to your account. You can revoke my access at any time "
-            f"with {revoke_command} or in your "
-            f'<a href="{yandex_passport_url}">Yandex profile</a>. '
+            "with %(revoke_command)s or in your "
+            '<a href="%(yandex_passport_url)s">Yandex profile</a>. '
             "By the way, i'm "
-            f'<a href="{source_code_url}">open-source</a> '
+            '<a href="%(source_code_url)s">open-source</a> '
             "and you can make sure that your data will be safe. "
             "You can even create your own bot with my functionality "
             "if using me makes you feel uncomfortable (:"
             "\n\n"
             "By using me, you accept "
-            f'<a href="{privacy_policy_url}">Privacy Policy</a> and '
-            f'<a href="{terms_url}">Terms of service</a>. '
+            '<a href="%(privacy_policy_url)s">Privacy Policy</a> and '
+            '<a href="%(terms_url)s">Terms of service</a>.',
+            open_link_button_text=open_link_button_text,
+            lifetime_in_minutes=lifetime_in_minutes,
+            revoke_command=revoke_command,
+            yandex_passport_url=yandex_passport_url,
+            source_code_url=source_code_url,
+            privacy_policy_url=privacy_policy_url,
+            terms_url=terms_url
         ),
         reply_markup={
             "inline_keyboard": [
@@ -408,7 +436,7 @@ def message_grant_access_code(
     # because "Console Client" is mostly for developers, not users.
     telegram.send_message(
         chat_id=chat_id,
-        text=(
+        text=gettext(
             "Open this link, grant me an access "
             "and then send me a code"
         )

@@ -3,7 +3,6 @@ from enum import IntEnum, unique
 from sqlalchemy.sql import func
 
 from src.extensions import db
-from src.localization import SupportedLanguage
 
 
 @unique
@@ -28,7 +27,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     # Columns
-    id = db.Column(
+    id: int = db.Column(
         db.Integer,
         primary_key=True
     )
@@ -43,25 +42,19 @@ class User(db.Model):
         onupdate=func.now(),
         nullable=False
     )
-    telegram_id = db.Column(
+    telegram_id: int = db.Column(
         db.Integer,
         unique=True,
         index=True,
         nullable=False,
         comment="Unique ID to identificate user in Telegram"
     )
-    is_bot = db.Column(
+    is_bot: bool = db.Column(
         db.Boolean,
         nullable=False,
         comment="User is bot in Telegram"
     )
-    language = db.Column(
-        db.Enum(SupportedLanguage),
-        default=SupportedLanguage.EN,
-        nullable=False,
-        comment="Preferred language of user"
-    )
-    group = db.Column(
+    group: UserGroup = db.Column(
         db.Enum(UserGroup),
         default=UserGroup.USER,
         nullable=False,
@@ -76,6 +69,11 @@ class User(db.Model):
     )
     yandex_disk_token = db.relationship(
         "YandexDiskToken",
+        back_populates="user",
+        uselist=False
+    )
+    settings = db.relationship(
+        "UserSettings",
         back_populates="user",
         uselist=False
     )
@@ -113,7 +111,6 @@ class User(db.Model):
             step=1
         )
         result.is_bot = (fake.pyint() % 121 == 0)
-        result.language = fake.random_element(list(SupportedLanguage))
         result.group = (
             fake.random_element(list(UserGroup)) if (
                 random_number % 20 == 0

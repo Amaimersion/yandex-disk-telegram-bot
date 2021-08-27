@@ -11,10 +11,14 @@ from .yandex_disk_token import (
     DataCorruptedError,
     InvalidTokenError
 )
+from .user_settings import (
+    UserSettings
+)
 
 
 __all__ = [
     "User",
     "Chat",
-    "YandexDiskToken"
+    "YandexDiskToken",
+    "UserSettings"
 ]

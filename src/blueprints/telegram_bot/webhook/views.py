@@ -1,15 +1,27 @@
+import os
+
 from flask import (
     request,
-    g,
-    make_response
+    make_response,
+    current_app
 )
 
 from src.blueprints.telegram_bot import telegram_bot_blueprint as bp
 from src.blueprints.telegram_bot._common import telegram_interface
-from .dispatcher import intellectual_dispatch, direct_dispatch
+from .dispatcher import intellectual_dispatch
+from .app_context import init_app_context
 
 
-@bp.route("/webhook", methods=["POST"])
+# `os.getenv` should be used instead of `current_app.config`,
+# because routes are created outside of app context
+URL_POSTFIX = os.getenv(
+    "TELEGRAM_API_WEBHOOK_URL_POSTFIX",
+    ""
+)
+URL = f"/webhook{URL_POSTFIX}"
+
+
+@bp.route(URL, methods=["POST"])
 def webhook():
     """
     Handles Webhook POST request from Telegram server.
@@ -24,23 +36,19 @@ def webhook():
         cache=False
     )
 
-    if (raw_data is None):
+    current_app.logger.debug(f"Raw data: {raw_data}")
+
+    if raw_data is None:
         return make_error_response()
 
-    telegram_request = telegram_interface.Request(raw_data)
+    update = telegram_interface.Update(raw_data)
 
-    if not (telegram_request.is_valid()):
+    init_app_context(update)
+
+    handler = intellectual_dispatch(update)
+
+    if not handler:
         return make_error_response()
-
-    message = telegram_request.get_message()
-
-    if not (message.is_valid()):
-        return make_error_response()
-
-    g.telegram_message = message
-    g.telegram_user = message.get_user()
-    g.telegram_chat = message.get_chat()
-    g.direct_dispatch = direct_dispatch
 
     # We call this handler and do not handle any errors.
     # We assume that all errors already was handeld by
@@ -50,7 +58,7 @@ def webhook():
     # again and again until it get 200 from a server.
     # So, it is important to always return 200 or return
     # 500 and expect same message again
-    intellectual_dispatch(message)()
+    handler()
 
     return make_success_response()
 

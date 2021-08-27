@@ -3,6 +3,8 @@ Manages the app creation and configuration process.
 """
 
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 
 from flask import (
     Flask,
@@ -10,13 +12,17 @@ from flask import (
     url_for,
     current_app
 )
+from flask.logging import (
+    default_handler as default_logging_handler
+)
 
 from .configs import flask_config
 from .extensions import (
     db,
     migrate,
     redis_client,
-    task_queue
+    task_queue,
+    babel
 )
 from .blueprints import (
     telegram_bot_blueprint,
@@ -33,27 +39,101 @@ def create_app(config_name: str = None) -> Flask:
     """
     Creates and configures the app.
     """
+    if not isinstance(config_name, str):
+        config_name = os.getenv("CONFIG_NAME", "default")
+
     app = Flask(__name__)
 
     configure_app(app, config_name)
+    configure_logger(app)
     configure_extensions(app)
     configure_blueprints(app)
     configure_redirects(app)
     configure_error_handlers(app)
 
+    app.logger.debug(
+        f"App created and configured using {config_name} config"
+    )
+
     return app
 
 
-def configure_app(app: Flask, config_name: str = None) -> None:
+def configure_app(app: Flask, config_name: str) -> None:
     """
     Configures app.
     """
-    if (not isinstance(config_name, str)):
-        config_name = os.getenv("CONFIG_NAME", "default")
-
     config = flask_config[config_name]
 
     app.config.from_object(config)
+
+
+def configure_logger(app: Flask) -> None:
+    """
+    Configures app logger.
+
+    - should be called before any other configuration
+    (except app configuration)
+    """
+    log_to_file = app.config["LOGGING_LOG_TO_FILE"]
+    log_folder_name = app.config["LOGGING_LOG_FOLDER_NAME"]
+    log_file_name = app.config["LOGGING_LOG_FILE_NAME"]
+    log_file_max_bytes = app.config["LOGGING_LOG_FILE_MAX_BYTES"]
+    log_file_backup_count = app.config["LOGGING_LOG_FILE_BACKUP_COUNT"]
+    logging_level = app.config["LOGGING_LEVEL"]
+
+    default_formatter_template = (
+        "[{asctime}] [{levelname}] {module}: "
+        "{message} ({pathname}:{lineno})",
+    )
+    debug_formatter_template = (
+        "[{levelname}] {module}.{funcName}: {message}"
+    )
+    runtime_formatter_template = (
+        debug_formatter_template if
+        (logging_level == logging.DEBUG) else
+        default_formatter_template
+    )
+
+    handlers = []
+
+    if log_to_file:
+        os.makedirs(log_folder_name, exist_ok=True)
+
+        file_handler = RotatingFileHandler(
+            encoding="utf-8",
+            filename=os.path.join(
+                log_folder_name,
+                log_file_name
+            ),
+            maxBytes=log_file_max_bytes,
+            backupCount=log_file_backup_count
+        )
+        formatter = logging.Formatter(
+            runtime_formatter_template,
+            style="{",
+            validate=True
+        )
+
+        file_handler.setFormatter(formatter)
+        handlers.append(file_handler)
+    else:
+        stream_handler = logging.StreamHandler()
+        formatter = logging.Formatter(
+            runtime_formatter_template,
+            style="{",
+            validate=True
+        )
+
+        stream_handler.setFormatter(formatter)
+        handlers.append(stream_handler)
+
+    app.logger.removeHandler(default_logging_handler)
+
+    for handler in handlers:
+        handler.setLevel(logging_level)
+        app.logger.addHandler(handler)
+
+    app.logger.setLevel(logging_level)
 
 
 def configure_extensions(app: Flask) -> None:
@@ -65,6 +145,9 @@ def configure_extensions(app: Flask) -> None:
 
     # Migration
     migrate.init_app(app, db)
+
+    # i18n
+    babel.init_app(app)
 
     # Redis
     redis_client.init_app(app)

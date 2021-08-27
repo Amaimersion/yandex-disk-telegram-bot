@@ -1,6 +1,7 @@
 from flask import g, current_app
 
-from src.api import telegram
+from src.http import telegram
+from src.i18n import gettext
 from src.blueprints.telegram_bot._common.yandex_disk import (
     create_folder,
     YandexAPICreateFolderError,
@@ -13,7 +14,7 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
     stateful_chat_is_enabled,
     set_disposable_handler
 )
-from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent
 )
 from ._common.responses import (
@@ -22,14 +23,12 @@ from ._common.responses import (
     request_absolute_folder_name
 )
 from ._common.decorators import (
-    yd_access_token_required,
-    get_db_data
+    yd_access_token_required
 )
 from ._common.utils import extract_absolute_path
 
 
 @yd_access_token_required
-@get_db_data
 def handle(*args, **kwargs):
     message = kwargs.get(
         "message",
@@ -89,11 +88,14 @@ def handle(*args, **kwargs):
     text = None
 
     if (last_status_code == 201):
-        text = "Created"
+        text = gettext("Created")
     elif (last_status_code == 409):
-        text = "Already exists"
+        text = gettext("Already exists")
     else:
-        text = f"Unknown operation status: {last_status_code}"
+        text = gettext(
+            "Unknown operation status: %(last_status_code)s",
+            last_status_code=last_status_code
+        )
 
     telegram.send_message(
         chat_id=chat_id,

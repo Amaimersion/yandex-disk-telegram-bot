@@ -1,0 +1,1211 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2021 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2021-07-14 23:37+0300\n"
+"PO-Revision-Date: 2021-06-26 20:32+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ru\n"
+"Language-Team: ru <LL@li.org>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: src/blueprints/telegram_bot/_common/yandex_disk.py:267
+msgid "success"
+msgstr "успешно"
+
+#: src/blueprints/telegram_bot/_common/yandex_disk.py:269
+msgid "in progress"
+msgstr "в процессе"
+
+#: src/blueprints/telegram_bot/_common/yandex_disk.py:271
+msgid "failed"
+msgstr "ошибка"
+
+#: src/blueprints/telegram_bot/_common/yandex_disk.py:275
+msgid "unknown"
+msgstr "неизвестно"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:287
+#: src/blueprints/telegram_bot/yd_auth/views.py:98
+#, python-format
+msgid ""
+"<b>Access to Yandex.Disk Granted</b>\n"
+"\n"
+"My access was attached to your Telegram account on %(date)s at %(time)s "
+"%(timezone)s.\n"
+"\n"
+"If it wasn't you, then detach this access with %(yd_revoke_command)s"
+msgstr ""
+"<b>Доступ к Яндекс.Диску получен</b>\n"
+"\n"
+"Мой доступ был прикреплен к вашему Telegram-аккаунту %(date)s в %(time)s "
+"%(timezone)s.\n"
+"\n"
+"Если это были не вы, то открепите этот доступ с помощью "
+"%(yd_revoke_command)s"
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:166
+msgid "Access Denied"
+msgstr "Доступ запрещен"
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:167
+msgid "You refused to grant me access to your Yandex.Disk."
+msgstr "Вы отказались предоставить мне доступ к вашему Яндекс.Диску."
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:173
+msgid "Application is unavailable"
+msgstr "Приложение недоступно"
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:174
+msgid "There is a problems with me. Try later please."
+msgstr ""
+"В данный момент на моей стороне некоторые проблемы. Пожалуйста, "
+"попробуйте позже."
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:180
+#: src/blueprints/telegram_bot/yd_auth/views.py:184
+msgid "Invalid credentials"
+msgstr "Неверные учетные данные"
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:181
+msgid "Your credentials is not valid."
+msgstr "Ваши учетные данные недействительны."
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:185
+msgid "Your credentials is not valid anymore. Request a new authorization link."
+msgstr ""
+"Ваши учетные данные больше недействительны. Запросите новую ссылку для "
+"авторизации."
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:191
+msgid "Authorization link has expired"
+msgstr "У ссылки для авторизации истек срок действия"
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:192
+msgid "Your authorization link has expired. Request a new one."
+msgstr "У вашей ссылки для авторизации истек срок действия. Запросите новую."
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:198
+msgid "Internal server error"
+msgstr "Внутренняя ошибка сервера"
+
+#: src/blueprints/telegram_bot/yd_auth/views.py:199
+msgid ""
+"At the moment i can't handle you because of my internal error. Try later "
+"please."
+msgstr ""
+"В данный момент я не могу обработать вас из-за моей внутренней ошибки. "
+"Попробуйте позже, пожалуйста."
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:436
+msgid "Status: pending"
+msgstr "Статус: ожидание"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:536
+#, python-format
+msgid ""
+"\n"
+"Failed to publish. Type to do it:\n"
+"%(publish_command)s %(full_path)s"
+msgstr ""
+"\n"
+"Не удалось опубликовать. Чтобы сделать это вручную, отправьте:\n"
+"%(publish_command)s %(full_path)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:556
+#, python-format
+msgid ""
+"\n"
+"Failed to get information. Type to do it:\n"
+"%(element_info_command)s %(full_path)s"
+msgstr ""
+"\n"
+"Не удалось получить информацию. Чтобы сделать это вручную, отправьте:\n"
+"%(element_info_command)s %(full_path)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:567
+msgid ""
+"It is successfully uploaded, but i failed to perform some actions. You "
+"need to execute them manually."
+msgstr ""
+"Это успешно загружено, но мне не удалось выполнить некоторые действия. "
+"Вам нужно выполнить их вручную."
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:591
+#, python-format
+msgid "Status: %(upload_status)s"
+msgstr "Статус: %(upload_status)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:606
+msgid "I can't create default upload folder due to an unknown Yandex.Disk error."
+msgstr ""
+"Я не могу создать папку загрузки по умолчанию из-за неизвестной ошибки "
+"Яндекс.Диска."
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:617
+msgid "I can't upload this due to an unknown Yandex.Disk error."
+msgstr "Я не могу загрузить это из-за неизвестной ошибки Яндекс.Диска."
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:628
+#, python-format
+msgid ""
+"I can't track operation status of this anymore. It can be uploaded after "
+"a while. Type to check:\n"
+"%(element_info_command)s %(full_path)s"
+msgstr ""
+"Я больше не могу отслеживать статус операции. Это может быть загружено "
+"через некоторое время. Чтобы проверить статус вручную, отправьте:\n"
+"%(element_info_command)s %(full_path)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:760
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:828
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:883
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:952
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1005
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1053
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1119
+msgid "and publish"
+msgstr "и опубликовать"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:770
+#, python-format
+msgid ""
+"Send a photos that you want to upload%(publish_action)s.\n"
+"\n"
+"Note:\n"
+"- original name will be not saved\n"
+"- original quality and size will be decreased"
+msgstr ""
+"Отправьте фотографии, которые вы хотите загрузить%(publish_action)s.\n"
+"\n"
+"Обратите внимание:\n"
+"- исходное имя не будет сохранено\n"
+"- исходное качество и размер будут снижены"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:838
+#, python-format
+msgid ""
+"Send a files that you want to upload%(publish_action)s.\n"
+"\n"
+"Note:\n"
+"- original name will be saved\n"
+"- original quality and size will be saved"
+msgstr ""
+"Отправьте файлы, которые вы хотите загрузить%(publish_action)s.\n"
+"\n"
+"Обратите внимание:\n"
+"- исходное имя будет сохранено\n"
+"- исходное качество и размер будут сохранены"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:895
+#, python-format
+msgid ""
+"Send a music that you want to upload%(publish_action)s.\n"
+"\n"
+"Note:\n"
+"- original name will be saved\n"
+"- original quality and size will be saved\n"
+"- original type may be changed"
+msgstr ""
+"Отправьте музыку, которую вы хотите загрузить%(publish_action)s.\n"
+"\n"
+"Обратите внимание:\n"
+"- исходное имя будет сохранено\n"
+"- исходное качество и размер будут сохранены\n"
+"- исходный тип может быть изменен"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:964
+#, python-format
+msgid ""
+"Send a video that you want to upload%(publish_action)s.\n"
+"\n"
+"Note:\n"
+"- original name will be saved\n"
+"- original quality and size will be saved\n"
+"- original type may be changed"
+msgstr ""
+"Отправьте видео, которое вы хотите загрузить%(publish_action)s.\n"
+"\n"
+"Обратите внимание:\n"
+"- исходное имя будет сохранено\n"
+"- исходное качество и размер будут сохранены\n"
+"- исходный тип может быть изменен"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1009
+#, python-format
+msgid "Send a voice message that you want to upload%(publish_action)s."
+msgstr ""
+"Отправьте голосовое сообщение, которое вы хотите "
+"загрузить%(publish_action)s."
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1063
+#, python-format
+msgid ""
+"Send a direct URL to file that you want to upload%(publish_action)s.\n"
+"\n"
+"Note:\n"
+"- original name from URL will be saved\n"
+"- original quality and size will be saved"
+msgstr ""
+"Отправьте прямую ссылку на файл, который вы хотите "
+"загрузить%(publish_action)s.\n"
+"\n"
+"Обратите внимание:\n"
+"- исходное имя по ссылке будет сохранено\n"
+"- исходное качество и размер будут сохранены"
+
+#: src/blueprints/telegram_bot/webhook/commands/upload.py:1141
+#, python-format
+msgid ""
+"Send an URL to resource that you want to upload%(publish_action)s.\n"
+"\n"
+"Note:\n"
+"- for direct URL's to file original name, quality and size will be saved\n"
+"- for URL's to some resource best name and best possible quality will be "
+"selected\n"
+"- i will try to guess what resource you actually assumed. For example, "
+"you can send URL to YouTube video or Twitch clip, and video from that URL"
+" will be uploaded\n"
+"- you can send URL to any resource: video, audio, image, text, page, etc."
+" Not everything will work as you expect, but some URL's will\n"
+"- i'm using youtube-dl, if that means anything to you (:"
+msgstr ""
+"Отправьте ссылку на ресурс, который вы хотите "
+"загрузить%(publish_action)s.\n"
+"\n"
+"Обратите внимание:\n"
+"- если это прямая ссылка на файл, то исходное качество и размер будут "
+"сохранены\n"
+"- если это ссылка на какой-то другой ресурс, то будут выбраны лучшее имя "
+"и лучшее возможное качество\n"
+"- я попытаюсь угадать, что именно вы подразумевали. Например, вы можете "
+"отправить ссылку на YouTube-видео или Twitch-клип, и видео по этой ссылке"
+" будет загружено\n"
+"- вы можете отправить ссылку на любой ресурс: видео, аудио, изображение, "
+"текст, страница и т.д. Не все будет работать так, как вы ожидаете, но "
+"что-то определенно будет работать\n"
+"- я использую youtube-dl, если это что-то значит для вас (:"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:378
+msgid "a new path of default upload folder"
+msgstr "новый путь папки загрузки по умолчанию"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:396
+#, python-format
+msgid ""
+"Success.\n"
+"<code>%(old_value)s</code> was changed to <code>%(new_value)s</code>"
+msgstr ""
+"Успешно.\n"
+"<code>%(old_value)s</code> был изменен на <code>%(new_value)s</code>"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:406
+msgid "Success."
+msgstr "Успешно."
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:456
+msgid "Public"
+msgstr "публичная"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:457
+msgid "Private"
+msgstr "приватная"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:461
+#, python-format
+msgid ""
+"%(upload_name)s uploading will be used by default when you don't specify "
+"any commands."
+msgstr ""
+"Если вы не укажете конкретную команду, то по умолчанию будет "
+"использоваться %(upload_name)s загрузка."
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:511
+msgid "Choose a new language from the list below:"
+msgstr "Выберите новый язык из списка ниже:"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:240
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:270
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:85
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:768
+msgid "Yes"
+msgstr "Да"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:237
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:267
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:87
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:769
+msgid "No"
+msgstr "Нет"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:770
+msgid "Given"
+msgstr "Предоставлен"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:771
+msgid "Revoked"
+msgstr "Отозван"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:795
+#, python-format
+msgid ""
+"<b>Default upload folder:</b> <code>%(default_upload_folder)s</code>\n"
+"<b>Public upload by default:</b> %(public_upload_by_default)s\n"
+"<b>Language:</b> %(language)s\n"
+"<b>Yandex.Disk Access:</b> %(yd_access)s"
+msgstr ""
+"<b>Папка загрузки по умолчанию:</b> "
+"<code>%(default_upload_folder)s</code>\n"
+"<b>Публичная загрузка по умолчанию:</b> %(public_upload_by_default)s\n"
+"<b>Язык:</b> %(language)s\n"
+"<b>Доступ к Яндекс.Диску:</b> %(yd_access)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:801
+msgid "Change default upload folder"
+msgstr "Изменить папку загрузки по умолчанию"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:810
+msgid "Disable public upload by default"
+msgstr "Выключить публичную загрузку по умолчанию"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:817
+msgid "Enable public upload by default"
+msgstr "Включить публичную загрузку по умолчанию"
+
+#: src/blueprints/telegram_bot/webhook/commands/settings.py:826
+msgid "Change language"
+msgstr "Изменить язык"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:165
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:185
+#, python-format
+msgid "You waited too long. Send %(yd_auth_command)s again."
+msgstr "Вы ожидали слишком долго. Отправьте %(yd_auth_command)s еще раз."
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:179
+#, python-format
+msgid "Your credentials is not valid. Try send %(yd_auth_command)s again."
+msgstr ""
+"Ваши учетные данные недействительны. Попробуйте отправить "
+"%(yd_auth_command)s еще раз."
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:191
+#, python-format
+msgid ""
+"You have too many authorization sessions. Send %(yd_auth_command)s again "
+"and use only last link."
+msgstr ""
+"У вас слишком много сессий авторизации. Отправьте %(yd_auth_command)s еще"
+" раз и используйте только последнюю ссылку."
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:210
+msgid "Unknown error"
+msgstr "Неизвестная ошибка"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:214
+msgid "Can't tell you more"
+msgstr "Больше ничего не могу вам сказать"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:220
+#, python-format
+msgid ""
+"<b>Yandex.OAuth Error</b>\n"
+"\n"
+"<b>Error</b>: %(title)s\n"
+"<b>Description</b>: %(description)s\n"
+"\n"
+"I still don't have access. Start new session using %(yd_auth_command)s"
+msgstr ""
+"<b>Ошибка Яндекс.OAuth</b>\n"
+"\n"
+"<b>Ошибка</b>: %(title)s\n"
+"<b>Описание</b>: %(description)s\n"
+"\n"
+"У меня все еще нет доступа. Начните новую сессию, используя "
+"%(yd_auth_command)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:244
+#, python-format
+msgid ""
+"You already grant me access to your Yandex.Disk.\n"
+"You can revoke my access with %(yd_auth_command)s"
+msgstr ""
+"Вы уже предоставили мне доступ к вашему Яндекс.Диску.\n"
+"Вы можете отозвать мой доступ с помощью %(yd_auth_command)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:262
+#, python-format
+msgid ""
+"<b>Access to Yandex.Disk Refreshed</b>\n"
+"\n"
+"Your granted access was refreshed automatically by me on %(date)s at "
+"%(time)s %(timezone)s.\n"
+"\n"
+"If it wasn't you, you can detach this access with %(yd_auth_command)s"
+msgstr ""
+"<b>Доступ к Яндекс.Диску обновлен</b>\n"
+"\n"
+"Предоставленный мне доступ был обновлен мной автоматически %(date)s в "
+"%(time)s %(timezone)s.\n"
+"\n"
+"Если это были не вы, то открепите этот доступ с помощью "
+"%(yd_auth_command)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:308
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:372
+msgid "Grant access"
+msgstr "Предоставить доступ"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:320
+#, python-format
+msgid ""
+"Open special link by pressing on \"%(open_link_button_text)s\" button and"
+" grant me access to your Yandex.Disk.\n"
+"\n"
+"<b>IMPORTANT: don't give this link to anyone, because it contains your "
+"secret information.</b>\n"
+"\n"
+"<i>This link will expire in %(lifetime_in_minutes)s minutes.</i>\n"
+"<i>This link leads to Yandex page and redirects to bot page.</i>\n"
+"\n"
+"<b>It is safe to give the access?</b>\n"
+"Yes! I'm getting access only to your Yandex.Disk, not to your account. "
+"You can revoke my access at any time with %(revoke_command)s or in your "
+"<a href=\"%(yandex_passport_url)s\">Yandex profile</a>. By the way, i'm "
+"<a href=\"%(source_code_url)s\">open-source</a> and you can make sure "
+"that your data will be safe. You can even create your own bot with my "
+"functionality if using me makes you feel uncomfortable (:\n"
+"\n"
+"By using me, you accept <a href=\"%(privacy_policy_url)s\">Privacy "
+"Policy</a> and <a href=\"%(terms_url)s\">Terms of service</a>."
+msgstr ""
+"Откройте специальную ссылку, нажав на кнопку "
+"\"%(open_link_button_text)s\", и предоставьте мне доступ к вашему "
+"Яндекс.Диску.\n"
+"\n"
+"<b>ВАЖНО: никому не давайте эту ссылку, потому что она содержит вашу "
+"конфиденциальную информацию.</b>\n"
+"\n"
+"<i>Срок действия этой ссылки закончится через %(lifetime_in_minutes)s "
+"минут.</i>\n"
+"<i>Это ссылка ведет на страницу Яндекса, а затем перенаправляет на "
+"страницу этого бота.</i>\n"
+"\n"
+"<b>Безопасно ли предоставлять доступ?</b>\n"
+"Да! Я получу доступ только к вашему Яндекс.Диску, а не ко всему аккаунту."
+" Вы можете отозвать мой доступ в любое время с помощью %(revoke_command)s"
+" или в вашем <a href=\"%(yandex_passport_url)s\">профиле на странице "
+"Яндекса</a>. Кроме того, мой <a href=\"%(source_code_url)s\">исходный "
+"код</a> открыт, и вы можете убедиться, что ваши данные будут в "
+"безопасности. На основе этого кода можно создать даже своего собственного"
+" бота, если вам некомфортно использовать меня (:\n"
+"\n"
+"Используя меня, вы принимаете <a href=\"%(privacy_policy_url)s\">Политику"
+" конфиденциальности</a> и <a href=\"%(terms_url)s\">Условия использования"
+" сервиса</a>."
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:384
+#, python-format
+msgid ""
+"Open special link by pressing on \"%(open_link_button_text)s\" button and"
+" grant me access to your Yandex.Disk.\n"
+"\n"
+"<b>IMPORTANT: don't give this link to anyone, because it contains your "
+"secret information.</b>\n"
+"\n"
+"<i>This link will expire in %(lifetime_in_minutes)s minutes.</i>\n"
+"<i>This link leads to Yandex page. After granting access, you will need "
+"to send me the issued code.</i>\n"
+"\n"
+"<b>It is safe to give the access?</b>\n"
+"Yes! I'm getting access only to your Yandex.Disk, not to your account. "
+"You can revoke my access at any time with %(revoke_command)s or in your "
+"<a href=\"%(yandex_passport_url)s\">Yandex profile</a>. By the way, i'm "
+"<a href=\"%(source_code_url)s\">open-source</a> and you can make sure "
+"that your data will be safe. You can even create your own bot with my "
+"functionality if using me makes you feel uncomfortable (:\n"
+"\n"
+"By using me, you accept <a href=\"%(privacy_policy_url)s\">Privacy "
+"Policy</a> and <a href=\"%(terms_url)s\">Terms of service</a>."
+msgstr ""
+"Откройте специальную ссылку, нажав на кнопку "
+"\"%(open_link_button_text)s\", и предоставьте мне доступ к вашему "
+"Яндекс.Диску.\n"
+"\n"
+"<b>ВАЖНО: никому не давайте эту ссылку, потому что она содержит вашу "
+"конфиденциальную информацию.</b>\n"
+"\n"
+"<i>Срок действия этой ссылки закончится через %(lifetime_in_minutes)s "
+"минут.</i>\n"
+"<i>Эта ссылка ведет на страницу Яндекса. После предоставления доступа вам"
+" нужно будет отправить мне выданный код.</i>\n"
+"\n"
+"<b>Безопасно ли предоставлять доступ?</b>\n"
+"Да! Я получу доступ только к вашему Яндекс.Диску, а не ко всему аккаунту."
+" Вы можете отозвать мой доступ в любое время с помощью %(revoke_command)s"
+" или в вашем <a href=\"%(yandex_passport_url)s\">профиле на странице "
+"Яндекса</a>. Кроме того, мой <a href=\"%(source_code_url)s\">исходный "
+"код</a> открыт, и вы можете убедиться, что ваши данные будут в "
+"безопасности. На основе этого кода можно создать даже своего собственного"
+" бота, если вам некомфортно использовать меня (:\n"
+"\n"
+"Используя меня, вы принимаете <a href=\"%(privacy_policy_url)s\">Политику"
+" конфиденциальности</a> и <a href=\"%(terms_url)s\">Условия использования"
+" сервиса</a>."
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_auth.py:439
+msgid "Open this link, grant me an access and then send me a code"
+msgstr ""
+"Откройте эту ссылку, предоставьте мне доступ, а затем отправьте мне "
+"выданный код"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:59
+#, python-format
+msgid "<b>User — Name:</b> %(display_name)s"
+msgstr "<b>Пользователь — Имя:</b> %(display_name)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:67
+#, python-format
+msgid "<b>User — Login:</b> %(login)s"
+msgstr "<b>Пользователь — Логин:</b> %(login)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:75
+#, python-format
+msgid "<b>User — Country:</b> %(country)s"
+msgstr "<b>Пользователь — Страна:</b> %(country)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:82
+msgid "?"
+msgstr "?"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:90
+#, python-format
+msgid "<b>Paid:</b> %(status)s"
+msgstr "<b>Платный:</b> %(status)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:100
+#, python-format
+msgid "<b>Total space:</b> %(value)s"
+msgstr "<b>Доступно:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:110
+#, python-format
+msgid "<b>Used space:</b> %(value)s"
+msgstr "<b>Использовано:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:129
+#, python-format
+msgid "<b>Free space:</b> %(value)s"
+msgstr "<b>Свободно:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:139
+#, python-format
+msgid "<b>Trash size:</b> %(value)s"
+msgstr "<b>Корзина:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:149
+#, python-format
+msgid "<b>Maximum file size:</b> %(value)s"
+msgstr "<b>Максимальный размер файла:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:104
+#: src/blueprints/telegram_bot/webhook/commands/disk_info.py:159
+msgid "bytes"
+msgstr "байт"
+
+#: src/blueprints/telegram_bot/webhook/commands/unpublish.py:92
+msgid "Unpublished"
+msgstr "Публичный доступ закрыт"
+
+#: src/blueprints/telegram_bot/webhook/commands/help.py:37
+msgid "•"
+msgstr "•"
+
+#: src/blueprints/telegram_bot/webhook/commands/help.py:38
+#, python-format
+msgid ""
+"You can interact with <a href=\"https://disk.yandex.com\">Yandex.Disk</a>"
+" by using me. To control me send following commands.\n"
+"\n"
+"Note:\n"
+"%(bullet_char)s you can change default upload folder using "
+"%(settings_command)s command,\n"
+"%(bullet_char)s maximum size of every upload (except URL) is "
+"%(file_size_limit_in_mb)s MB.\n"
+msgstr ""
+"Используйте меня для взаимодействия с <a "
+"href=\"https://disk.yandex.com\">Яндекс.Диском</a>. Для управления "
+"отправляйте следующие команды.\n"
+"\n"
+"Обратите внимание:\n"
+"%(bullet_char)s вы можете изменить папку загрузки по умолчанию с помощью "
+"команды %(settings_command)s,\n"
+"%(bullet_char)s максимальный размер каждой загрузки (за исключением "
+"прямой ссылки на файл) %(file_size_limit_in_mb)s МБ.\n"
+
+#: src/blueprints/telegram_bot/webhook/commands/help.py:65
+#, python-format
+msgid "<b>%(group_name)s</b>"
+msgstr "<b>%(group_name)s</b>"
+
+#: src/blueprints/telegram_bot/webhook/commands/help.py:76
+#, python-format
+msgid "%(bullet_char)s %(command_name)s — %(help_message)s."
+msgstr "%(bullet_char)s %(command_name)s — %(help_message)s."
+
+#: src/blueprints/telegram_bot/webhook/commands/unknown.py:17
+#, python-format
+msgid "I don't know this command. See commands list or type %(help_command)s"
+msgstr ""
+"Я не знаю эту команду. Посмотрите список команд или напишите "
+"%(help_command)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_revoke.py:66
+#, python-format
+msgid ""
+"You don't granted me access to your Yandex.Disk.\n"
+"You can do that with %(yd_auth_command)s"
+msgstr ""
+"Вы не предоставили мне доступ к вашему Яндекс.Диску.\n"
+"Вы можете сделать это с помощью %(yd_auth_command)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/yd_revoke.py:85
+#, python-format
+msgid ""
+"<b>Access to Yandex.Disk Revoked</b>\n"
+"\n"
+"You successfully revoked my access to your Yandex.Disk on %(date)s at "
+"%(time)s %(timezone)s.\n"
+"\n"
+"Don't forget to do that in your <a "
+"href=\"https://passport.yandex.ru/profile\">Yandex Profile</a>.\n"
+"To grant access again use %(yd_auth_command)s"
+msgstr ""
+"<b>Доступ к Яндекс.Диску отозван</b>\n"
+"\n"
+"Вы успешно отозвали мой доступ к вашему Яндекс.Диску %(date)s в %(time)s "
+"%(timezone)s.\n"
+"\n"
+"Не забудьте это сделать в вашем <a "
+"href=\"https://passport.yandex.ru/profile\">профиле на странице "
+"Яндекса</a>.\n"
+"Чтобы заново предоставить мне доступ, используйте %(yd_auth_command)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:48
+msgid "Generating..."
+msgstr "Создание..."
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:71
+#, python-format
+msgid "Yandex.Disk space at %(current_utc_date)s"
+msgstr "Информация о размере Яндекс.Диска на %(current_utc_date)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:124
+msgid "GB"
+msgstr "ГБ"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:125
+msgid "Total"
+msgstr "Всего"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:128
+msgid "Used Space"
+msgstr "Используемое место"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:129
+msgid "Free Space"
+msgstr "Свободное место"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:130
+msgid "Trash Size"
+msgstr "Размер корзины"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:138
+msgid "Used"
+msgstr "Использовано"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:139
+msgid "Free"
+msgstr "Свободно"
+
+#: src/blueprints/telegram_bot/webhook/commands/space_info.py:140
+msgid "Trash"
+msgstr "Корзина"
+
+#: src/blueprints/telegram_bot/webhook/commands/about.py:18
+#, python-format
+msgid ""
+"I'm free and open-source bot that allows you to interact with Yandex.Disk"
+" through Telegram.\n"
+"\n"
+"Written by %(author)s"
+msgstr ""
+"Я бесплатный бот с открытым исходным кодом, который позволяет вам "
+"взаимодействовать с Яндекс.Диском через Телеграм.\n"
+"\n"
+"Автор: %(author)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/about.py:28
+msgid "Source code"
+msgstr "Исходный код"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:100
+#: src/blueprints/telegram_bot/webhook/commands/about.py:34
+msgid "Report a problem"
+msgstr "Сообщить о проблеме"
+
+#: src/blueprints/telegram_bot/webhook/commands/about.py:38
+msgid "Request a feature"
+msgstr "Попросить новую функцию"
+
+#: src/blueprints/telegram_bot/webhook/commands/about.py:42
+msgid "Ask a question"
+msgstr "Задать вопрос"
+
+#: src/blueprints/telegram_bot/webhook/commands/about.py:48
+msgid "Privacy Policy"
+msgstr "Политика конфиденциальности"
+
+#: src/blueprints/telegram_bot/webhook/commands/about.py:52
+msgid "Terms of service"
+msgstr "Условия использования сервиса"
+
+#: src/blueprints/telegram_bot/webhook/commands/element_info.py:110
+msgid "Download"
+msgstr "Скачать"
+
+#: src/blueprints/telegram_bot/webhook/commands/create_folder.py:91
+msgid "Created"
+msgstr "Создано"
+
+#: src/blueprints/telegram_bot/webhook/commands/create_folder.py:93
+msgid "Already exists"
+msgstr "Уже существует"
+
+#: src/blueprints/telegram_bot/webhook/commands/create_folder.py:95
+#, python-format
+msgid "Unknown operation status: %(last_status_code)s"
+msgstr "Неизвестный статус операции: %(last_status_code)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:74
+#, python-format
+msgid "<b>Name:</b> %(name)s"
+msgstr "<b>Имя:</b> %(name)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:158
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:82
+msgid "Unknown"
+msgstr "Неизвестно"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:85
+msgid "Folder"
+msgstr "Папка"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:90
+msgid "File"
+msgstr "Файл"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:96
+#, python-format
+msgid "<b>Type:</b> %(type)s"
+msgstr "<b>Тип:</b> %(type)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:112
+#, python-format
+msgid "<b>Size:</b> %(size)s"
+msgstr "<b>Размер:</b> %(size)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:124
+#, python-format
+msgid "<b>Created:</b> %(date)s %(time)s %(timezone)s"
+msgstr "<b>Создано:</b> %(date)s %(time)s %(timezone)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:139
+#, python-format
+msgid "<b>Modified:</b> %(date)s %(time)s %(timezone)s"
+msgstr "<b>Изменено:</b> %(date)s %(time)s %(timezone)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:153
+#, python-format
+msgid "<b>Full path:</b> <code>%(path)s</code>"
+msgstr "<b>Полный путь:</b> <code>%(path)s</code>"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:165
+#, python-format
+msgid "<b>Origin path:</b> <code>%(path)s</code>"
+msgstr "<b>Исходный путь:</b> <code>%(path)s</code>"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:177
+#, python-format
+msgid "<b>Total elements:</b> %(count)s"
+msgstr "<b>Всего элементов:</b> %(count)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:185
+#, python-format
+msgid "<b>Public URL:</b> %(url)s"
+msgstr "<b>Публичная ссылка:</b> %(url)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:196
+#, python-format
+msgid "<b>Views:</b> %(count)s"
+msgstr "<b>Просмотров:</b> %(count)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:224
+#, python-format
+msgid "<b>Owner:</b> %(owner)s"
+msgstr "<b>Владелец:</b> %(owner)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:243
+#, python-format
+msgid "<b>Shared access — Owner:</b> %(status)s"
+msgstr "<b>Общий доступ — Владелец:</b> %(status)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:253
+msgid "Full access"
+msgstr "Полный доступ"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:255
+msgid "Read"
+msgstr "Чтение"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:257
+msgid "Write"
+msgstr "Запись"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:260
+#, python-format
+msgid "<b>Shared access — Rights:</b> %(rights)s"
+msgstr "<b>Общий доступ — Права доступа:</b> %(rights)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:273
+#, python-format
+msgid "<b>Shared access — Root:</b> %(status)s"
+msgstr "<b>Общий доступ — Корневая папка:</b> %(status)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:286
+#, python-format
+msgid "<b>EXIF:</b> <code>%(exif)s</code>"
+msgstr "<b>EXIF:</b> <code>%(exif)s</code>"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:295
+#, python-format
+msgid "<b>SHA-256:</b> %(value)s"
+msgstr "<b>SHA-256:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/utils.py:303
+#, python-format
+msgid "<b>MD5:</b> %(value)s"
+msgstr "<b>MD5:</b> %(value)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/decorators.py:112
+msgid "Temporary disabled. Try later please."
+msgstr "Временно отключено. Пожалуйста, попробуйте позже."
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:35
+msgid "I can't handle this because something is wrong."
+msgstr "Я не могу это обработать, потому что что-то пошло не так."
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:38
+msgid ""
+"I can't handle this because you didn't send any suitable data for that "
+"command."
+msgstr ""
+"Я не могу это обработать, потому что вы не отправили мне никаких "
+"подходящих данных для этой команды."
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:47
+#, python-format
+msgid ""
+"I can't handle file of such a large size. At the moment my limit is "
+"%(limit_in_mb)s MB."
+msgstr ""
+"Я не могу обработать файл такого большого размера. На данный момент мое "
+"ограничение составляет %(limit_in_mb)s МБ."
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:87
+msgid ""
+"At the moment i can't process this because of my internal error. Try "
+"later please."
+msgstr ""
+"На данный момент я не могу это обработать из-за моей внутренней ошибки. "
+"Пожалуйста, попробуйте позже."
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:135
+msgid ""
+"I need to send you your secret information, but i don't know any private "
+"chat with you. First, contact me through private chat (direct message). "
+"After that repeat your request."
+msgstr ""
+"Мне нужно отправить вам конфиденциальную информацию, но я не знаю никаких"
+" личных чатов с вами. Сначала свяжитесь со мной через личный чат (прямое "
+"сообщение). После этого повторите ваш запрос."
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:166
+#, python-format
+msgid ""
+"<b>Yandex.Disk Error</b>\n"
+"\n"
+"%(error_text)s"
+msgstr ""
+"<b>Ошибка Яндекс.Диска</b>\n"
+"\n"
+"%(error_text)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:188
+#, python-format
+msgid ""
+"Send a full path.\n"
+"\n"
+"It should starts from root directory, nested folders should be separated "
+"with \"<code>%(separator)s</code>\" character. In short, i expect an "
+"absolute path to the item.\n"
+"\n"
+"Example: <code>%(path_1)s</code>\n"
+"Example: <code>%(path_2)s</code>"
+msgstr ""
+"Отправьте полный путь.\n"
+"\n"
+"Он должен начинаться с корневной папки, вложенные папки должны быть "
+"разделены с помощью знака \"<code>%(separator)s</code>\". Вкратце, я "
+"ожидаю абсолютный (полный) путь к элементу.\n"
+"\n"
+"Пример: <code>%(path_1)s</code>\n"
+"Пример: <code>%(path_2)s</code>"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:219
+msgid "a folder name"
+msgstr "имя папки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/responses.py:227
+#, python-format
+msgid ""
+"Send %(folder_name)s.\n"
+"\n"
+"It should starts from root directory, nested folders should be separated "
+"with \"<code>%(separator)s</code>\" character. In short, i expect a full "
+"path.\n"
+"\n"
+"Example: <code>%(path_1)s</code>"
+msgstr ""
+"Отправьте %(folder_name)s.\n"
+"\n"
+"Это должно начинаться с корневной папки, вложенные папки должны быть "
+"разделены с помощью знака \"<code>%(separator)s</code>\". Вкратце, я "
+"ожидаю абсолютный (полный) путь.\n"
+"\n"
+"Пример: <code>%(path_1)s</code>"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:20
+msgid "Yandex.Disk"
+msgstr "Яндекс.Диск"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:24
+#, python-format
+msgid ""
+"upload a photo. Original name will be not saved, quality of photo will be"
+" decreased. You can send photo without this command. Use "
+"%(public_upload_command)s for public uploading"
+msgstr ""
+"загрузить фото. Исходное имя не будет сохранено, качество фото будет "
+"снижено. Вы можете отправлять фото без этой команды. Используйте "
+"%(public_upload_command)s для публичной загрузки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:37
+#, python-format
+msgid ""
+"upload a file. Original name will be saved. For photos, original quality "
+"will be saved. You can send file without this command. Use "
+"%(public_upload_command)s for public uploading"
+msgstr ""
+"загрузить файл. Исходное имя будет сохранено. У фотографий исходное "
+"качество будет сохранено. Вы можете отправлять файлы без этой команды. "
+"Используйте %(public_upload_command)s для публичной загрузки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:50
+#, python-format
+msgid ""
+"upload an audio. Original name will be saved, original type may be "
+"changed. You can send audio file without this command. Use "
+"%(public_upload_command)s for public uploading"
+msgstr ""
+"загрузить аудио. Исходное имя будет сохранено, исходный тип может быть "
+"изменен. Вы можете отправлять аудио без этой команды. Используйте "
+"%(public_upload_command)s для публичной загрузки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:63
+#, python-format
+msgid ""
+"upload a video. Original name will be saved, original type may be "
+"changed. You can send video file without this command. Use "
+"%(public_upload_command)s for public uploading"
+msgstr ""
+"загрузить видео. Исходное имя будет сохранено, исходный тип может быть "
+"изменен. Вы можете отправлять видео без этой команды. Используйте "
+"%(public_upload_command)s для публичной загрузки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:76
+#, python-format
+msgid ""
+"upload a voice. You can send voice file without this command. Use "
+"%(public_upload_command)s for public uploading"
+msgstr ""
+"загрузить голосовое сообщение. Вы можете отправлять голосовые сообщения "
+"без этой команды. Используйте %(public_upload_command)s для публичной "
+"загрузки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:88
+#, python-format
+msgid ""
+"upload a some resource using URL. For direct URL's to file original name,"
+" quality and size will be saved. For URL's to some resource best name and"
+" best possible quality will be selected. \"Resource\" means anything: "
+"YouTube video, Twitch clip, music track, etc. Not everything will work as"
+" you expect, but some URL's will. See <a href=\"%(ytdl_url)s\">this</a> "
+"for all supported sites. Use %(public_upload_command)s for public "
+"uploading"
+msgstr ""
+"загрузить какой-нибудь ресурс используя ссылку. Для прямых ссылок на файл"
+" исходное имя, качество и размер будут сохранены. Для остальных ссылок "
+"будет выбрано лучшее имя и лучшее возможное качество. \"Ресурс\" означает"
+" что угодно: YouTube-видео, Twitch-клип, музыкальный трек и т.д. Не все "
+"будет работать так, как вы ожидаете, но что-то точно будет работать. "
+"Смотрите <a href=\"%(ytdl_url)s\">здесь</a> список всех поддерживаемых "
+"сайтов. Используйте %(public_upload_command)s для публичной загрузки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:114
+#, python-format
+msgid ""
+"publish a file or folder that already exists. Send full name of element "
+"to publish with this command. Example: %(example)s"
+msgstr ""
+"опубликовать файл или папку. На момент публикации они должны "
+"существовать. Вместе с этой командой отправьте полное имя элемента, "
+"который нужно опубликовать. Пример: %(example)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:124
+#, python-format
+msgid ""
+"unpublish a file or folder that already exists. Send full name of element"
+" to unpublish with this command. Example: %(example)s"
+msgstr ""
+"распубликовать файл или папку. На момент распубликации они должны "
+"существовать. Вместе с этой командой отправьте полное имя элемента, "
+"который нужно распубликовать. Пример: %(example)s"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:134
+#, python-format
+msgid ""
+"create a folder. Send folder name to create with this command. Folder "
+"name should starts from root, nested folders should be separated with "
+"\"%(separator)s\" character"
+msgstr ""
+"создать папку. Вместе с этой командой отправьте имя папки, которую нужно "
+"создать. Имя папки должно начинаться с корневной директории, вложенные "
+"папки должны быть разделены с помощью символа \"%(separator)s\""
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:139
+msgid ""
+"get information about file or folder. Send full path of element with this"
+" command"
+msgstr ""
+"получить информацию о файле или папке. Вместе с этой командой отправьте "
+"полное имя элемента"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:146
+msgid "get information about remaining space"
+msgstr "получить информацию об оставшемся месте"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:152
+msgid "get information about your Yandex.Disk"
+msgstr "получить информацию о вашем Яндекс.Диске"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:159
+msgid "Yandex.Disk Access"
+msgstr "Доступ к Яндекс.Диску"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:163
+msgid "grant me access to your Yandex.Disk"
+msgstr "предоставить мне доступ к вашему Яндекс.Диску"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:169
+msgid "revoke my access to your Yandex.Disk"
+msgstr "отозвать мой доступ к вашему Яндекс.Диску"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:176
+msgid "Settings"
+msgstr "Настройки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:180
+msgid "edit your settings"
+msgstr "изменить ваши настройки"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:187
+msgid "Information"
+msgstr "Информация"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:191
+msgid "read about me"
+msgstr "прочитать обо мне"
+
+#: src/blueprints/telegram_bot/webhook/commands/_common/commands_content.py:197
+msgid "see full list of available commands without help message"
+msgstr ""
+"просмотреть полный список доступных команд без этого вспомогательного "
+"сообщения"
+
+#: src/templates/telegram_bot/yd_auth/success.html:23
+msgid "Success"
+msgstr "Успешно"
+
+#: src/templates/telegram_bot/yd_auth/success.html:27
+#, python-format
+msgid "You've successfully granted an access to %(project_name)s."
+msgstr "Вы успешно предоставили доступ %(project_name)s."
+
+#: src/templates/telegram_bot/yd_auth/error.html:15
+msgid "Authorization Failed"
+msgstr "Не удалось авторизоваться"
+
+#: src/templates/telegram_bot/yd_auth/error.html:25
+msgid "Unknown Error"
+msgstr "Неизвестная ошибка"
+
+#: src/templates/telegram_bot/yd_auth/error.html:33
+#, python-format
+msgid "Granting of access to %(project_name)s failed due to an unknown error."
+msgstr "Не удалось предоставить доступ %(project_name)s из-за неизвестной ошибки."
+
+#: src/templates/telegram_bot/yd_auth/error.html:41
+msgid "report a problem"
+msgstr "сообщить о проблеме"
+
+#: src/templates/telegram_bot/yd_auth/error.html:46
+#, python-format
+msgid "You may %(action)s. Here is a data for debugging purposes:"
+msgstr "Вы можете %(action)s. Вот данные для отладки:"
+
+#: src/templates/telegram_bot/yd_auth/error.html:48
+#, python-format
+msgid "Title: %(title)s"
+msgstr "Название: %(title)s"
+
+#: src/templates/telegram_bot/yd_auth/error.html:50
+#, python-format
+msgid "Description: %(description)s"
+msgstr "Описание: %(description)s"
+
+#: src/templates/telegram_bot/yd_auth/error.html:52
+#, python-format
+msgid "State: %(state)s"
+msgstr "Состояние: %(state)s"
+

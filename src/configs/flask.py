@@ -3,6 +3,7 @@ Configurations of the Flask app for specific environments.
 """
 
 import os
+import logging
 from enum import Enum, auto
 
 from dotenv import load_dotenv
@@ -75,6 +76,40 @@ class Config:
     PROJECT_URL_FOR_REQUEST = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=feature_request.md" # noqa
     PROJECT_URL_FOR_QUESTION = "https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new?template=question.md" # noqa
     PROJECT_URL_FOR_BOT = "https://t.me/Ya_Disk_Bot"
+
+    # endregion
+
+    # region Logging
+
+    # Use numeric value from `logging` module
+    LOGGING_LEVEL = int(os.getenv(
+        "LOGGING_LEVEL",
+        logging.INFO
+    ))
+
+    # If `True`, all logs will be logged in a file
+    # instead of `sys.stdout`. Don't use it with Docker
+    LOGGING_LOG_TO_FILE = bool(os.getenv(
+        "LOGGING_LOG_TO_FILE",
+        False
+    ))
+
+    # Only in case of `LOGGING_LOG_TO_FILE = True`.
+    # See documentation:
+    # https://docs.python.org/3/library/logging.handlers.html#rotatingfilehandler
+    LOGGING_LOG_FOLDER_NAME = "var/log"
+    LOGGING_LOG_FILE_NAME = os.getenv(
+        "LOGGING_LOG_FILE_NAME",
+        "app.log"
+    )
+    LOGGING_LOG_FILE_MAX_BYTES = int(os.getenv(
+        "LOGGING_LOG_FILE_MAX_BYTES",
+        1024 * 1024 * 1
+    ))
+    LOGGING_LOG_FILE_BACKUP_COUNT = int(os.getenv(
+        "LOGGING_LOG_FILE_BACKUP_COUNT",
+        10
+    ))
 
     # endregion
 
@@ -152,6 +187,20 @@ class Config:
     # This value is for `/space_info` worker.
     RUNTIME_SPACE_INFO_WORKER_TIMEOUT = 5
 
+    # After what time `/settings` handler should forget
+    # about user last action.
+    # For example, user called `/settings` command, then
+    # clicked on "Change default upload folder" button.
+    # Bot will wait for next message (new folder name) and
+    # store some additional data (last action of that user).
+    # If user not sent any message in N seconds, then bot
+    # will clear all data about user last action and user
+    # have to click again on "Change default upload folder" button.
+    # In seconds.
+    # Set to 0 to disable expiration.
+    # Applied only if Redis is enabled
+    RUNTIME_SETTINGS_LAST_ACTION_EXPIRE = 60 * 60 * 24 * 1
+
     # endregion
 
     # region Flask
@@ -169,6 +218,14 @@ class Config:
         "sqlite:///temp.sqlite"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ECHO = os.getenv("SQLALCHEMY_ECHO")
+
+    # endregion
+
+    # region Babel
+
+    BABEL_DEFAULT_LOCALE = "en"
+    BABEL_TRANSLATION_DIRECTORIES = "../translations"
 
     # endregion
 
@@ -179,6 +236,21 @@ class Config:
     # endregion
 
     # region Telegram API
+
+    # postfix of original webhook route.
+    # For example, original route is `/webhook`,
+    # and postfix is `_akdb2v`, final route that will
+    # be used is `/webhook_akdb2v`.
+    # You will need to set this address as webhook URL.
+    # It is intended for security reasons.
+    # WARNING: use env variable to set this value,
+    # don't use this app config to set it. It is because
+    # value will be read directly from env variable,
+    # and app config will not have any effect.
+    TELEGRAM_API_WEBHOOK_URL_POSTFIX = os.getenv(
+        "TELEGRAM_API_WEBHOOK_URL_POSTFIX",
+        ""
+    )
 
     # stop waiting for a Telegram response
     # after a given number of seconds
@@ -234,10 +306,6 @@ class Config:
     # then request will be blocked maximum for (5 * 2) seconds.
     YANDEX_DISK_API_CHECK_OPERATION_STATUS_INTERVAL = 2
 
-    # in this folder files will be uploaded by default
-    # if user not specified custom folder.
-    YANDEX_DISK_API_DEFAULT_UPLOAD_FOLDER = "Telegram Bot"
-
     # endregion
 
     # region Google Analytics
@@ -258,8 +326,8 @@ class ProductionConfig(Config):
 class DevelopmentConfig(Config):
     DEBUG = True
     TESTING = False
-    SQLALCHEMY_ECHO = "debug"
     YANDEX_OAUTH_API_METHOD = YandexOAuthAPIMethod.CONSOLE_CLIENT
+    LOGGING_LEVEL = logging.DEBUG
 
 
 class TestingConfig(Config):

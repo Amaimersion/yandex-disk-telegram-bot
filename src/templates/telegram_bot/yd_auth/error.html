@@ -12,7 +12,7 @@
 
 
 {% block title %}
-  Authorization Failed
+  {{ gettext("Authorization Failed") }}
 {% endblock %}
 
 
@@ -22,7 +22,7 @@
       {% if error_title %}
         {{ error_title | title }}
       {% else %}
-        Unknown Error
+        {{ gettext("Unknown Error") }}
       {% endif %}
     </h1>
 
@@ -30,7 +30,7 @@
       {% if error_description %}
         {{ error_description }}
       {% else %}
-        Granting of access to {{ config["PROJECT_APP_NAME"] }} failed due to an unknown error.
+        {{ gettext("Granting of access to %(project_name)s failed due to an unknown error.", project_name=config["PROJECT_APP_NAME"]) }}
       {% endif %}
     </p>
 
@@ -38,18 +38,18 @@
       <div class="report-problem-container">
         {% set issue_href = macros.href(
             config['PROJECT_URL_FOR_ISSUE'],
-            "report a problem",
+            gettext("report a problem"),
             "_blank"
           )
         %}
 
-        You may {{ issue_href | trim }}. Here is a data for debugging purposes:
+        {{ gettext("You may %(action)s. Here is a data for debugging purposes:", action=(issue_href | trim)) }}
         <br />
-        Title: {{ raw_error_title or "?" }}
+        {{ gettext("Title: %(title)s", title=(raw_error_title or "?")) }}
         <br />
-        Description: {{ raw_error_description or "?" }}
+        {{ gettext("Description: %(description)s", description=(raw_error_description or "?")) }}
         <br />
-        State: {{ raw_state or "?" }}
+        {{ gettext("State: %(state)s", state=(raw_state or "?")) }}
       </div>
     {% endif %}
   </main>

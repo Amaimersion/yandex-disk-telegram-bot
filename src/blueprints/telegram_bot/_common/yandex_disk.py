@@ -4,7 +4,8 @@ from collections import deque
 
 from flask import current_app
 
-from src.api import yandex
+from src.http import yandex
+from src.i18n import gettext
 
 
 # region Exceptions
@@ -107,6 +108,13 @@ class YandexDiskPath:
         self.trash_namespace = "trash:"
         self.raw_paths = args
 
+    def __repr__(self) -> str:
+        """
+        :returns:
+        Debug representation.
+        """
+        return self.create_absolute_path()
+
     def get_absolute_path(self) -> Deque[str]:
         """
         :returns:
@@ -195,12 +203,23 @@ def create_yandex_error_text(data: dict) -> str:
     :returns:
     Human error message from Yandex error response.
     """
-    error_name = data.get("error", "?")
+    error_name = data.get("error")
     error_description = (
         data.get("message") or
-        data.get("description") or
-        "?"
+        data.get("description")
     )
+
+    if not error_name:
+        current_app.logger.warning(
+            f"Error name is unknown: {data}"
+        )
+        error_name = "?"
+
+    if not error_description:
+        current_app.logger.warning(
+            f"Error description is unknown: {data}"
+        )
+        error_description = "?"
 
     return (f"{error_name}: {error_description}")
 
@@ -240,6 +259,45 @@ def yandex_operation_is_failed(data: dict) -> bool:
     )
 
 
+def yandex_operation_is_in_progress(data: dict) -> bool:
+    """
+    :returns:
+    Yandex response contains status which
+    indicates that operation is in progress.
+    """
+    return (
+        ("status" in data) and
+        (data["status"] == "in-progress")
+    )
+
+
+def get_yandex_operation_text(data: dict) -> str:
+    """
+    :param data:
+    Yandex response which contains
+    data about operation status.
+
+    :returns:
+    Text status of Yandex operation which
+    can be used to display to user.
+    """
+    if yandex_operation_is_success(data):
+        return gettext("success")
+    elif yandex_operation_is_in_progress(data):
+        return gettext("in progress")
+    elif yandex_operation_is_failed(data):
+        return gettext("failed")
+
+    current_app.logger.warning(
+        f"Unknown operation status: {data}"
+    )
+
+    return data.get(
+        "status",
+        gettext("unknown")
+    )
+
+
 # endregion
 
 
@@ -270,6 +328,10 @@ def create_folder(
     resources = path.generate_absolute_path(True)
     last_status_code = 201  # namespace always created
     allowed_errors = [409]
+
+    current_app.logger.debug(
+        f"{folder_name} was converted to {path}"
+    )
 
     for resource in resources:
         result = None
@@ -313,6 +375,10 @@ def publish_item(
     path = YandexDiskPath(absolute_item_path)
     absolute_path = path.create_absolute_path()
 
+    current_app.logger.debug(
+        f"{absolute_item_path} was converted to {absolute_path}"
+    )
+
     try:
         response = yandex.publish(
             user_access_token,
@@ -343,6 +409,10 @@ def unpublish_item(
     """
     path = YandexDiskPath(absolute_item_path)
     absolute_path = path.create_absolute_path()
+
+    current_app.logger.debug(
+        f"{absolute_item_path} was converted to {absolute_path}"
+    )
 
     try:
         response = yandex.unpublish(
@@ -403,6 +473,13 @@ def upload_file_with_url(
     absolute_path = path.create_absolute_path()
     response = None
 
+    current_app.logger.debug(
+        f"Download URL: {download_url}"
+    )
+    current_app.logger.debug(
+        f"Final path: {absolute_path}"
+    )
+
     try:
         response = yandex.upload_file_with_url(
             user_access_token,
@@ -454,6 +531,7 @@ def upload_file_with_url(
         is_success = yandex_operation_is_success(operation_status)
         is_failed = yandex_operation_is_failed(operation_status)
         is_completed = (is_success or is_failed)
+        operation_status_text = get_yandex_operation_text(operation_status)
         attempt += 1
         too_many_attempts = (attempt >= max_attempts)
 
@@ -462,10 +540,7 @@ def upload_file_with_url(
                 "success": is_success,
                 "failed": is_failed,
                 "completed": (is_success or is_failed),
-                "status": operation_status.get(
-                    "status",
-                    "unknown"
-                )
+                "status": operation_status_text
             }
 
     if is_error:
@@ -558,6 +633,10 @@ def get_element_info(
     """
     path = YandexDiskPath(absolute_element_path)
     absolute_path = path.create_absolute_path()
+
+    current_app.logger.debug(
+        f"{absolute_element_path} was converted to {absolute_path}"
+    )
 
     try:
         response = yandex.get_element_info(

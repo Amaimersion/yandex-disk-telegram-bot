@@ -8,6 +8,7 @@
   {{ macros.css_file("telegram_bot/yd_auth/common.css") }}
   {{ macros.google_analytics() }}
   {{ macros.js_file("telegram_bot/yd_auth/analytics.js") }}
+  {{ macros.js_file("telegram_bot/yd_auth/index-success.js") }}
 {% endblock %}
 
 
@@ -19,11 +20,18 @@
 {% block main %}
   <main data-status="success">
     <h1>
-      Success
+      {{ gettext('Success') }}
     </h1>
 
     <p>
-      You've successfully granted an access to {{ config["PROJECT_APP_NAME"] }}.
+      {{ gettext("You've successfully granted an access to %(project_name)s.", project_name=config["PROJECT_APP_NAME"]) }}
+    </p>
+
+    <p
+      class="redirect-message"
+      id="redirect-message"
+      data-redirect-url="{{ config['PROJECT_URL_FOR_BOT'] }}"
+    >
     </p>
   </main>
 {% endblock %}

@@ -2,7 +2,11 @@
 .editorconfig
 .env.example
 .flake8
+.dockerignore
+Dockerfile
+docker-compose.yml
 CHANGELOG.md
+CHANGELOG.APP.md
 LICENSE
 README.md
 
@@ -10,3 +14,5 @@ README.md
 .vscode
 info
 .github
+docker
+var

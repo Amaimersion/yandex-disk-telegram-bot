@@ -2,7 +2,7 @@ from collections import deque
 
 from flask import g
 
-from src.api import telegram
+from src.http import telegram
 from ._common.commands_content import commands_html_content
 
 

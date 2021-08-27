@@ -6,7 +6,7 @@ from typing import Union
 from flask import current_app
 import jwt
 
-from src.api import yandex
+from src.http import yandex
 from src.extensions import db
 from src.database import (
     User,
@@ -252,6 +252,8 @@ class YandexOAuthClient:
             response["refresh_token"]
         )
 
+        current_app.logger.debug("Access token was set")
+
         return {
             "ok": True
         }
@@ -293,6 +295,8 @@ class YandexOAuthClient:
             response["refresh_token"]
         )
 
+        current_app.logger.debug("Access token was refreshed")
+
         return {
             "ok": True
         }
@@ -305,6 +309,8 @@ class YandexOAuthClient:
         """
         user.yandex_disk_token.clear_access_token()
         user.yandex_disk_token.clear_refresh_token()
+
+        current_app.logger.debug("Access token was cleared")
 
     def have_valid_access_token(self, user: User) -> bool:
         """
@@ -357,6 +363,8 @@ class YandexOAuthClient:
             ]
         )
 
+        current_app.logger.debug("Insert token was set")
+
         # it is necessary to check if we able to get
         # valid token after inseting
         insert_token = user.yandex_disk_token.get_insert_token()
@@ -390,6 +398,9 @@ class YandexOAuthAutoCodeClient(YandexOAuthClient):
         """
         # it can be not created if it is a new user
         if not user.yandex_disk_token:
+            current_app.logger.debug(
+                "Yandex token is missing. New one will be created"
+            )
             db.session.add(
                 YandexDiskToken(user=user)
             )

@@ -2,7 +2,7 @@ from os import environ
 
 from flask import current_app
 
-from src.api.request import (
+from src.http.request import (
     create_url,
     request
 )

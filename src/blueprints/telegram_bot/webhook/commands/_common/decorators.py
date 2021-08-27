@@ -1,18 +1,22 @@
 from functools import wraps
 
-from flask import g
+from flask import g, current_app
 
+from src.http import telegram
+from src.i18n import gettext
 from src.extensions import db
 from src.database import (
     User,
     UserQuery,
     Chat,
-    ChatQuery
+    ChatQuery,
+    UserSettings
 )
 from src.database.models import (
     ChatType
 )
-from src.localization import SupportedLanguage
+from src.i18n import SupportedLanguage
+from src.blueprints.telegram_bot.webhook.app_context import init_app_context
 from src.blueprints.telegram_bot._common.command_names import CommandName
 from .responses import cancel_command
 
@@ -20,9 +24,7 @@ from .responses import cancel_command
 def register_guest(func):
     """
     If incoming Telegram user doesn't exists in DB,
-    then that user will be created and saved.
-
-    - rows will be created in next tables: `users`, `chats`
+    then that user and all related data will be created and saved.
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -36,8 +38,11 @@ def register_guest(func):
 
         new_user = User(
             telegram_id=tg_user.id,
-            is_bot=tg_user.is_bot,
-            language=SupportedLanguage.get(tg_user.language_code)
+            is_bot=tg_user.is_bot
+        )
+        UserSettings(
+            user=new_user,
+            language=SupportedLanguage.get(tg_user.language_code or "")
         )
         Chat(
             telegram_id=tg_chat.id,
@@ -46,38 +51,18 @@ def register_guest(func):
         )
 
         db.session.add(new_user)
+        current_app.logger.debug("It is new user. Registered")
 
         try:
             db.session.commit()
         except Exception as e:
-            print(e)
+            current_app.logger.error(e)
             return cancel_command(tg_chat.id)
 
-        return func(*args, **kwargs)
-
-    return wrapper
-
-
-def get_db_data(func):
-    """
-    Gets data from DB based on `g.telegram_user` and
-    `g.telegram_chat`. Data can be `None` if incoming
-    data not exists in DB.
-
-    DB data will be available as: `g.db_user`,
-    `g.db_chat`, `g.db_private_chat`.
-    """
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        g.db_user = UserQuery.get_user_by_telegram_id(
-            g.telegram_user.id
-        )
-        g.db_chat = ChatQuery.get_chat_by_telegram_id(
-            g.telegram_chat.id
-        )
-        g.db_private_chat = ChatQuery.get_private_chat(
-            g.db_user.id
-        )
+        # we need to re-init global app context in order to
+        # update old data with new data about user from DB.
+        # That data will be available instantly to next handlers
+        init_app_context()
 
         return func(*args, **kwargs)
 
@@ -102,8 +87,32 @@ def yd_access_token_required(func):
             (user.yandex_disk_token is None) or
             (not user.yandex_disk_token.have_access_token())
         ):
-            return g.direct_dispatch(CommandName.YD_AUTH)()
+            # `*args` and `**kwargs` contains data from dispatcher
+            # and also should be passed to handler
+            return g.direct_dispatch(CommandName.YD_AUTH)(*args, **kwargs)
 
         return func(*args, **kwargs)
+
+    return wrapper
+
+
+def disabled(func):
+    """
+    Disables function, i.e. it will be not executed.
+    Message that indicates about disable status will be
+    sent back to incoming Telegram user.
+
+    - usually it is only temporary stub, i.e. you shouldn't
+    use this decorator for permanent. Instead, implement some
+    solution while function is disabled.
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        telegram.send_message(
+            chat_id=g.telegram_chat.id,
+            text=gettext(
+                "Temporary disabled. Try later please."
+            )
+        )
 
     return wrapper

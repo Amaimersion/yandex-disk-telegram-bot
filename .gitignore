@@ -4,6 +4,7 @@
 **/temp.*
 *.sqlite
 *.sqlite-journal
+**/*.mo
 
 # Folders
 __pycache__
@@ -13,5 +14,6 @@ venv
 
 # Secrets
 instance
+var
 .env*
 !.env.example

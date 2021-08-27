@@ -1,7 +1,8 @@
 from .models import (
     User,
     Chat,
-    YandexDiskToken
+    YandexDiskToken,
+    UserSettings
 )
 from .queries import (
     UserQuery,

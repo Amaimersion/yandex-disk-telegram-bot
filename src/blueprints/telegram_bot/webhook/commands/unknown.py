@@ -1,6 +1,7 @@
 from flask import g
 
-from src.api import telegram
+from src.http import telegram
+from src.i18n import gettext
 from src.blueprints.telegram_bot._common.command_names import CommandName
 
 
@@ -13,8 +14,9 @@ def handle(*args, **kwargs):
             "chat_id",
             g.telegram_chat.id
         ),
-        text=(
+        text=gettext(
             "I don't know this command. "
-            f"See commands list or type {CommandName.HELP.value}"
+            "See commands list or type %(help_command)s",
+            help_command=CommandName.HELP.value
         )
     )

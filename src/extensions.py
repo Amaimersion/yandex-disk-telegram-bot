@@ -14,6 +14,7 @@ from typing import (
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_babel import Babel
 from sqlalchemy.pool import NullPool
 import redis
 from rq import Queue as RQ
@@ -37,6 +38,11 @@ migrate = Migrate(
     compare_type=True,
     render_as_batch=True
 )
+
+
+# i18n
+
+babel = Babel()
 
 
 # Redis

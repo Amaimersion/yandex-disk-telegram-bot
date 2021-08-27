@@ -1,6 +1,7 @@
 import typing
 
 import requests
+from flask import current_app
 
 
 CONTENT_TYPE = typing.Literal[
@@ -47,6 +48,11 @@ def request(
     :raises requests.RequestException:
     https://requests.readthedocs.io/en/master/api/#exceptions
     """
+    current_app.logger.debug(
+        f"HTTP request: "
+        f"{kwargs.get('method')} {kwargs.get('url')}"
+    )
+
     response = requests.request(**kwargs)
 
     if (raise_for_status):

@@ -30,12 +30,25 @@
   - [Expose local server](#expose-local-server)
     - [What the app uses](#what-the-app-uses-3)
     - [What you should use](#what-you-should-use-2)
+  - [Translations](#translations)
+    - [What the app uses](#what-the-app-uses-4)
+    - [How to use that](#how-to-use-that-1)
 - [Deployment](#deployment)
   - [Before](#before)
   - [Heroku](#heroku)
     - [First time](#first-time)
     - [What's next](#whats-next)
+  - [VPS](#vps)
+- [Docker](#docker)
+  - [Deployment](#deployment-1)
+  - [Development](#development)
+  - [Data](#data)
+  - [Backups](#backups)
+  - [Logs](#logs)
+  - [Resources](#resources)
+- [Version naming](#version-naming)
 - [Contribution](#contribution)
+  - [Translations](#translations-1)
 - [License](#license)
 
 
@@ -66,8 +79,10 @@
 - [redis 6.0+](https://redis.io/) (optional)
 - [heroku 7.39+](https://www.heroku.com/) (optional)
 - [ngrok 2.3+](https://ngrok.com/) (optional)
+- [docker 20.10+](https://www.docker.com/) (optional)
+- [docker-compose 1.29+](https://www.docker.com/) (optional)
 
-It is expected that all of the above software is available as a global variables: `python3`, `python3 -m pip`, `python3 -m venv`, `git`, `curl`, `nginx`, `psql`, `heroku`, `ngrok`. See [this](https://github.com/pypa/pip/issues/5599#issuecomment-597042338) why you should use such syntax: `python3 -m <module>`.
+It is expected that all of the above software is available as a global variables: `python3`, `python3 -m pip`, `python3 -m venv`, `git`, `curl`, `nginx`, `psql`, `heroku`, `ngrok`, `docker`, `docker-compose`. See [this](https://github.com/pypa/pip/issues/5599#issuecomment-597042338) why you should use such syntax: `python3 -m <module>`.
 
 All subsequent instructions is for Unix-like systems, primarily for Linux. You may need to make some changes on your own if you work on non-Linux operating system.
 
@@ -167,7 +182,7 @@ For parameter `MAX_CONNECTIONS` it is recommended to use maxium number of simult
 From Telegram documentation:
 > If you'd like to make sure that the Webhook request comes from Telegram, we recommend using a secret path in the URL, e.g. `https://www.example.com/<token>`. Since nobody else knows your bot‘s token, you can be pretty sure it’s us.
 
-So, instead of `/telegram_bot/webhook` you can use something like this: `/telegram_bot/webhook_fd1k3Bfa01WQl5S`. Don't forget to edit route in `./src/blueprints/telegram_bot/webhook/views.py` if you decide to use it.
+So, instead of `/telegram_bot/webhook` you can use something like this: `/telegram_bot/webhook_fd1k3Bfa01WQl5S`. To achieve this set environment variable `TELEGRAM_API_WEBHOOK_URL_POSTFIX`. In that case it is `TELEGRAM_API_WEBHOOK_URL_POSTFIX=_fd1k3Bfa01WQl5S`.
 
 ### Yandex.Disk
 
@@ -190,9 +205,11 @@ In a root directory create `.env.development` file and fill it based on `.env.ex
 
 This WSGI App uses `gunicorn` as WSGI HTTP Server and `nginx` as HTTP Reverse Proxy Server. For development purposes only `flask` built-in WSGI HTTP Server is used.
 
-`flask` uses `http://localhost:8000`, `gunicorn` uses `unix:/tmp/nginx-gunicorn.socket`, `nginx` uses `http://localhost:80`. Make sure these addresses is free for usage, or change specific server configuration.
+`flask` uses `http://localhost:8000`, `gunicorn` uses `unix:/tmp/nginx-gunicorn.socket` or `http://0.0.0.0:8080`, `nginx` uses `http://localhost:80`. Make sure these addresses is free for usage, or change specific server configuration.
 
 `nginx` will not start until `gunicorn` creates `/tmp/gunicorn-ready` file. Make sure you have access rights to create this file.
+
+By default `gunicorn` listens on unix socket instead of ip socket. You can enable ip socket by setting `GUNICORN_USE_IP_SOCKET` environment variable.
 
 Open terminal and move in project root. Run `./scripts/wsgi/<environment>.sh <server>` where `<environment>` is either `prodction`, `development` or `testing`, and `<server>` is either `flask`, `gunicorn` or `nginx`. Example: `./scripts/wsgi/production.sh gunicorn`.
 
@@ -254,7 +271,7 @@ It is highly recommended that you run at least one worker.
 1. Make sure `REDIS_URL` is specified.
 2. Open separate terminal window.
 3. Activate `venv` and set environment variables.
-4. Run: `python worker.py`
+4. Run: `python manage.py run-worker`
 
 These steps will run one worker instance. Count of workers depends on your expected server load. For `development` environment recommend count is 2.
 
@@ -295,6 +312,32 @@ source ./scripts/ngrok/set_webhook.sh <TELEGRAM_API_BOT_TOKEN>
 ```
 
 Where `<TELEGRAM_API_BOT_TOKEN>` is your Telegram bot API token for specific environment (you can have different bots for different environments).
+
+### Translations
+
+#### What the app uses
+
+Translations are built on top of `Babel`, which provides support for GNU `gettext`.
+
+#### How to use that
+
+If you want to enable translations, then before server start you should compile existing raw translations:
+
+```shell
+python manage.py compile-translations
+```
+
+If you want to update existing translations to match actual app state, then run this, edit changed lines in translations files, and recompile updated translations:
+
+```shell
+python manage.py update-translations
+```
+
+If you want to add translations for new language, then run this, fill translations file, and recompile updated translations:
+
+```shell
+python manage.py init-translations <SMALL LETTERS LANGUAGE CODE>
+```
 
 
 ## Deployment
@@ -404,10 +447,148 @@ heroku scale worker=1
 
 You should do steps № 7, 9 and 10 every time when you want to push changes.
 
+### VPS
+
+Use [docker](#docker) or see [installation](#installation).
+
+
+## Docker
+
+This project provides Docker images along with configured docker-compose file. Usage of docker-compose is recommended way to deploy or run this application.
+
+### Deployment
+
+1. Clone this repository.
+
+2. In the root directory create `.env.production` file and fill it based on `.env.example` file.
+
+3. Run docker-compose:
+
+```shell
+docker-compose up
+```
+
+You don't need to configure any process control system in order to run docker-compose in background on every system start. It is already done by Docker daemon.
+
+4. By default docker-compose will listen for connections on `http://127.0.0.1:8080`. It is recommended to set up some reverse proxy server (along with TLS, logs and so on) in the front of docker-compose and redirect connections on that address. Or you can override docker-compose configuration to listen for connections immediately on `http://127.0.0.1:80`.
+
+### Development
+
+You can run docker-compose in development workflow.
+
+1. Clone this repository.
+
+2. In the root directory create `.env.development` file and fill it based on `.env.example` file.
+
+3. Run docker-compose:
+
+```shell
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+```
+
+Keep in mind that [data](#data) that already stored in `./var` folder will be used. If there is no data, then new one will be created. It is means that [data](#data) is common for both development and production. If you don't want this behavior, then consider to create several clones of the project or override docker-compose config.
+
+4. Run ngrok to handle incoming connections:
+
+```shell
+source ./scripts/ngrok/run.sh 8080
+```
+
+5. Set a webhook:
+
+```shell
+source ./scripts/ngrok/set_webhook.sh <TELEGRAM_API_BOT_TOKEN>
+```
+
+6. After that you can edit code in `./src` folder. Hot reloading is enabled.
+
+### Data
+
+By default docker-compose will store data of some services locally on a host machine. It is persistent data that stores state of your app, so, don't delete it.
+
+`PostgreSQL` will store its data in `./var/lib/postgresql/data` folder. `Redis` will store its data in `./var/lib/redis`.
+
+Most probably you shouldn't interact with that data directly. Instead, consider to make [backups](#backup).
+
+### Backups
+
+On some point you may want to backup your `PostgreSQL` data. Don't copy/paste `./var/lib/postgresql/data` folder. Instead, perform following commands:
+
+- to backup data, run on a host machine:
+
+```shell
+docker exec -t yd-tg-bot-postgres pg_dump -U <POSTGRES_USER> -d <POSTGRES_DB> > dump.sql
+```
+
+- to restore data, run on a host machine:
+
+```shell
+cat dump.sql | docker exec -i yd-tg-bot-postgres psql -U <POSTGRES_USER> -d <POSTGRES_DB>
+```
+
+`dump.sql` is entire backup of your DB. Keep it somewhere safe, outside of host machine.
+
+Feel free to modify above commands. It is just an example of how to do it. You can even use your own way to backup/restore your data.
+
+Before restoring `<POSTGRES_DB>` database should be clean, but created. By default the app upgrades database at startup, which means that database will have some data. You will need to manually drop and create database:
+
+```shell
+docker exec -it yd-tg-bot-postgres psql -U <POSTGRES_USER> -d postgres
+DROP DATABASE <POSTGRES_DB>;
+CREATE DATABASE <POSTGRES_DB>;
+```
+
+Keep in mind that database have encrypted data in some tables. It is means that you should use exact a same `FLASK_SECRET_KEY` environment variable that was used at the moment of database backup. You will be not able to fully interact with database if you will use different `FLASK_SECRET_KEY`. So, usually you will also want to backup your `.env.production` file in order to keep your secrets.
+
+### Logs
+
+Use `docker-compose logs`. If you want to write logs in file, do not change docker-compose config. Instead, redirect output of command to file.
+
+### Resources
+
+This project have `gunicorn` and `rq`, which have workers that creating fork of parent process. It is means extensive usage of machine resources, particularly RAM.
+
+Consider your host machine resources when you configuring `GUNICORN_WORKERS`, `RQ_WORKERS` and other settings that may affect as usage of machine resources. Use these commands to monitor usage of resources:
+
+```shell
+docker stats
+```
+
+```shell
+docker-compose top
+```
+
+
+## Version naming
+
+This project uses following structure for version naming: `<MAJOR CHANGES>.<BIG CHANGES>.<SMALL CHANGES>`.
+
+- "Major changes" usually means really cardinal changes. Such changes may require from developers to set up application again, inspect new technical stack and app architecture. It is certainly incompatible with the earlier application code.
+- "Big changes" usually means new features, big changes or long-awaited bug fixes. Such changes may require big time to test and complete. Main development workflow goes here.
+- "Small changes" usually means some small changes or fast bug fixes. Most likely every version will contain small amount of changes.
+
 
 ## Contribution
 
 Feel free to use [issues](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/new). [Pull requests](https://github.com/Amaimersion/yandex-disk-telegram-bot/compare) are also always welcome!
+
+### Translations
+
+If you want to translate this app, then you will need to perform following steps:
+
+1. Make sure you [installed](#installation) the project.
+
+2. Run:
+
+```shell
+python manage.py init-translations <LANGUAGE CODE>
+```
+
+3. Fill new translation file that is located at `translations/<LANGUAGE CODE>/LC_MESSAGES/messages.po`.
+
+Next step is not mandatory for you and can be performed by project owner. You can just create a PR with result from step up to № 3. However, next changes are required in order to enable new translation.
+
+4. Make code changes according to these commits: [d6bc3fe](https://github.com/Amaimersion/yandex-disk-telegram-bot/commit/d6bc3fe3ff8ebdab9d390b88c7f26bd5f609f434), [9a34008](https://github.com/Amaimersion/yandex-disk-telegram-bot/commit/9a34008f4dae537790a210e4fc30388fbb3c25b6). Actual code may be slightly different.
 
 
 ## License

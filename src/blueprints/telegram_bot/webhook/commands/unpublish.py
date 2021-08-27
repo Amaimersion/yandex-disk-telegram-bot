@@ -1,6 +1,7 @@
 from flask import g, current_app
 
-from src.api import telegram
+from src.http import telegram
+from src.i18n import gettext
 from src.blueprints.telegram_bot._common.yandex_disk import (
     unpublish_item,
     YandexAPIUnpublishItemError,
@@ -13,7 +14,7 @@ from src.blueprints.telegram_bot._common.stateful_chat import (
 from src.blueprints.telegram_bot._common.command_names import (
     CommandName
 )
-from src.blueprints.telegram_bot.webhook.dispatcher_events import (
+from src.blueprints.telegram_bot.webhook.dispatcher_interface import (
     DispatcherEvent
 )
 from ._common.responses import (
@@ -22,14 +23,12 @@ from ._common.responses import (
     send_yandex_disk_error
 )
 from ._common.decorators import (
-    yd_access_token_required,
-    get_db_data
+    yd_access_token_required
 )
 from ._common.utils import extract_absolute_path
 
 
 @yd_access_token_required
-@get_db_data
 def handle(*args, **kwargs):
     """
     Handles `/unpublish` command.
@@ -90,5 +89,5 @@ def handle(*args, **kwargs):
 
     telegram.send_message(
         chat_id=chat_id,
-        text="Unpublished"
+        text=gettext("Unpublished")
     )
