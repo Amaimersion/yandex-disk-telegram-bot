@@ -83,7 +83,7 @@ def configure_logger(app: Flask) -> None:
 
     default_formatter_template = (
         "[{asctime}] [{levelname}] {module}: "
-        "{message} ({pathname}:{lineno})",
+        "{message} ({pathname}:{lineno})"
     )
     debug_formatter_template = (
         "[{levelname}] {module}.{funcName}: {message}"
