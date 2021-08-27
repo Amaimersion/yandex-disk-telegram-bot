@@ -1,10 +1,7 @@
-from string import ascii_letters, digits
+from string import ascii_letters, digits, Template
 from datetime import datetime, timezone
 
 from flask import g, current_app
-from plotly.graph_objects import Pie, Figure
-from plotly.express import colors
-from plotly.io import to_image
 
 from src.rq import task_queue, prepare_task, run_task
 from src.http import telegram
@@ -19,18 +16,120 @@ from src.blueprints.telegram_bot._common.command_names import (
 )
 from ._common.responses import cancel_command
 from ._common.decorators import (
-    yd_access_token_required,
-    disabled
+    yd_access_token_required
 )
 
 
 # `plotly` uses too much RAM.
-# Disabled at the moment, will be changed in future
-@disabled
+# Disabled at the moment, will be refactored in future
+USE_GRAPH = False
+
+
+if USE_GRAPH:
+    from plotly.graph_objects import Pie, Figure
+    from plotly.express import colors
+    from plotly.io import to_image
+
+
 @yd_access_token_required
 def handle(*args, **kwargs):
     """
     Handles `/space_info` command.
+    """
+    if USE_GRAPH:
+        handle_with_graph(*args, **kwargs)
+    else:
+        handle_with_text(*args, **kwargs)
+
+
+def handle_with_text(*args, **kwargs):
+    """
+    Handles `/space_info` command using plain text.
+    """
+    user = g.db_user
+    chat_id = kwargs.get(
+        "chat_id",
+        g.telegram_chat.id
+    )
+    access_token = user.yandex_disk_token.get_access_token()
+    disk_info = None
+
+    try:
+        disk_info = get_disk_info(access_token)
+    except YandexAPIRequestError as error:
+        cancel_command(
+            chat_telegram_id=chat_id
+        )
+
+        raise error
+
+    total_space = disk_info.get("total_space", 0)
+    used_space = disk_info.get("used_space", 0)
+    trash_size = disk_info.get("trash_size", 0)
+
+    free_space_in_gb = b_to_gb(total_space - used_space - trash_size)
+    total_space_in_gb = b_to_gb(total_space)
+    used_space_in_gb = b_to_gb(used_space)
+    trash_size_in_gb = b_to_gb(trash_size)
+    free_space_in_p = to_percent(total_space_in_gb, free_space_in_gb)
+    used_space_in_p = to_percent(total_space_in_gb, used_space_in_gb)
+    trash_size_in_p = to_percent(total_space_in_gb, trash_size_in_gb)
+
+    current_utc_date = get_current_utc_datetime()
+    title = gettext(
+        "Yandex.Disk space at %(current_utc_date)s",
+        current_utc_date=current_utc_date
+    )
+    gb_text = gettext("GB")
+    total_text = gettext("Total")
+    used_text = gettext("Used")
+    free_text = gettext("Free")
+    trash_text = gettext("Trash")
+
+    space_template = Template("<b>$name:</b> $size $unit, $percent%")
+
+    message = (
+        title +
+        "\n\n" +
+        space_template.substitute(
+            name=total_text,
+            size=f"{total_space_in_gb:.2f}",
+            unit=gb_text,
+            percent=100
+        ) +
+        "\n" +
+        space_template.substitute(
+            name=free_text,
+            size=f"{free_space_in_gb:.2f}",
+            unit=gb_text,
+            percent=f"{free_space_in_p:.0f}"
+        ) +
+        "\n" +
+        space_template.substitute(
+            name=used_text,
+            size=f"{used_space_in_gb:.2f}",
+            unit=gb_text,
+            percent=f"{used_space_in_p:.0f}"
+        ) +
+        "\n" +
+        space_template.substitute(
+            name=trash_text,
+            size=f"{trash_size_in_gb:.2f}",
+            unit=gb_text,
+            percent=f"{trash_size_in_p:.0f}"
+        )
+    )
+
+    telegram.send_message(
+        chat_id=chat_id,
+        text=message,
+        parse_mode="HTML"
+    )
+
+
+def handle_with_graph(*args, **kwargs):
+    """
+    Handles `/space_info` command using graphs.
     """
     user = g.db_user
     chat_id = kwargs.get(
@@ -204,6 +303,13 @@ def b_to_gb(value: int) -> int:
     Converts binary bytes to binary gigabytes.
     """
     return (value / 1024 / 1024 / 1024)
+
+
+def to_percent(whole: int, part: int) -> int:
+    """
+    :returns: `part` as percentage of `whole`.
+    """
+    return (part * 100 / whole)
 
 
 def get_current_utc_datetime() -> str:
