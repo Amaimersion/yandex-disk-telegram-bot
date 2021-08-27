@@ -2,6 +2,9 @@ This changelog includes records about notable changes that are only visible from
 ___
 
 
+# 1.3.1
+
+
 # 1.3.0 (August 27, 2021)
 
 ## Added
