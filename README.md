@@ -1,3 +1,9 @@
+**This bot is off**
+
+At the moment this bot is disabled due to the reason that it is impossible to pay for VPS and domain name. It is impossible to pay from Russia becaue Visa and MasterCard suspended their operations in Russia, which means cross-border transactions with Visa and MasterCard cards are unavailable, including for both purchases in foreign online stores and transactions abroad.
+
+**If you interested in the bot to continue to work, please answer in [this issue](https://github.com/Amaimersion/yandex-disk-telegram-bot/issues/21).** This way I will be able to understand if this bot is really used by people. If yes, then I will work on workarounds to launch it again.
+
 <h1 align="center">
   Yandex.Disk in Telegram
 </h1>
